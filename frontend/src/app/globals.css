@@ -10,6 +10,7 @@ button { color:inherit; }
 .worldcup-shell { min-height:100vh; padding:0 64px; overflow:hidden; background:radial-gradient(circle at 73% 47%,rgba(245,184,46,.2) 0 18%,transparent 18.2%),linear-gradient(rgba(27,25,22,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(27,25,22,.035) 1px,transparent 1px),var(--cream); background-size:auto,32px 32px,32px 32px,auto; }
 .site-header { height:92px; display:flex; align-items:center; justify-content:space-between; border-bottom:2px solid var(--ink); }
 .brand { display:flex; align-items:center; gap:12px; color:var(--ink); text-decoration:none; font-family:'Black Han Sans',sans-serif; font-size:23px; letter-spacing:-.5px; }
+.brand-button { border:0; background:transparent; cursor:pointer; }
 .brand-mark { width:38px; height:38px; display:grid; place-items:center; border-radius:50%; background:var(--red); color:var(--paper); transform:rotate(-8deg); }
 .header-caption,.site-footer { font-size:13px; font-weight:700; letter-spacing:.08em; }
 
@@ -51,3 +52,38 @@ button { color:inherit; }
 .versus-badge { position:absolute; left:55px; bottom:68px; z-index:3; width:74px; height:74px; display:grid; place-items:center; border:3px solid var(--ink); border-radius:50%; background:var(--paper); color:var(--red); font-family:'Black Han Sans'; font-size:32px; transform:rotate(-10deg); }
 .hero-visual>p { position:absolute; bottom:5px; font-size:12px; font-weight:800; letter-spacing:.2em; }
 .site-footer { height:64px; display:flex; align-items:center; justify-content:space-between; border-top:1px solid var(--line); color:#6d665c; font-size:10px; }
+
+.match-screen { max-width:1380px; min-height:calc(100vh - 156px); margin:0 auto; padding:38px 0 28px; }
+.match-heading { display:flex; align-items:flex-end; justify-content:space-between; }
+.round-tag { display:inline-block; margin-bottom:8px; color:var(--red); font-size:12px; font-weight:800; letter-spacing:.18em; }
+.match-heading h1 { font-family:'Black Han Sans',sans-serif; font-size:40px; font-weight:400; letter-spacing:-1.5px; }
+.match-counter { display:flex; align-items:baseline; gap:8px; }
+.match-counter strong { font-family:'Black Han Sans'; color:var(--red); font-size:39px; font-weight:400; }
+.match-counter span { font-size:11px; font-weight:800; letter-spacing:.12em; color:#71695f; }
+.progress-track { height:6px; margin-top:18px; overflow:hidden; border:1px solid var(--ink); background:var(--paper); }
+.progress-track span { display:block; height:100%; background:var(--red); transition:width .25s ease; }
+
+.versus-stage { position:relative; display:grid; grid-template-columns:1fr 1fr; gap:50px; margin-top:28px; }
+.burger-card { position:relative; height:510px; overflow:hidden; border:2px solid var(--ink); border-radius:12px; background:var(--paper); text-align:left; cursor:pointer; box-shadow:8px 8px 0 var(--ink); transition:transform .18s ease,box-shadow .18s ease; }
+.burger-card:hover { transform:translate(-3px,-5px); box-shadow:12px 14px 0 var(--ink); }
+.burger-card:focus-visible { outline:5px solid var(--mustard); outline-offset:4px; }
+.card-number { position:absolute; z-index:3; top:18px; left:20px; padding:6px 10px; border:1.5px solid var(--ink); border-radius:999px; background:var(--cream); font-size:10px; font-weight:800; letter-spacing:.14em; }
+.burger-photo { position:relative; height:314px; display:grid; place-items:center; overflow:hidden; background:var(--accent); border-bottom:2px solid var(--ink); }
+.burger-photo::before { content:''; position:absolute; width:420px; height:420px; border:1px dashed rgba(255,255,255,.5); border-radius:50%; }
+.burger-photo::after { content:''; position:absolute; width:270px; height:270px; border:45px solid rgba(255,255,255,.12); border-radius:50%; }
+.burger-photo b { position:relative; z-index:2; font-size:150px; line-height:1; filter:drop-shadow(0 20px 8px rgba(35,22,10,.25)); transition:transform .18s ease; }
+.burger-card:hover .burger-photo b { transform:scale(1.07) rotate(-2deg); }
+.burger-photo i { position:absolute; right:28px; top:22px; z-index:2; font-size:44px; font-style:normal; transform:rotate(8deg); }
+.card-copy { display:block; padding:22px 26px; }
+.card-copy>small { display:block; color:var(--red); font-size:10px; font-weight:800; letter-spacing:.18em; }
+.card-copy>strong { display:block; margin-top:5px; font-family:'Black Han Sans'; font-size:28px; font-weight:400; letter-spacing:-.8px; }
+.card-copy>em { display:block; margin-top:4px; color:#70685e; font-size:13px; font-style:normal; }
+.card-copy>span { position:absolute; right:24px; bottom:22px; display:flex; gap:14px; align-items:center; font-size:12px; font-weight:800; }
+.card-copy>span b { width:25px; height:25px; display:grid; place-items:center; border-radius:50%; background:var(--ink); color:white; }
+.vs-divider { position:absolute; z-index:5; left:50%; top:245px; width:76px; height:76px; display:grid; place-items:center; transform:translate(-50%,-50%) rotate(-7deg); border:3px solid var(--ink); border-radius:50%; background:var(--mustard); box-shadow:4px 4px 0 var(--ink); }
+.vs-divider span { font-family:'Black Han Sans'; font-size:30px; }
+.match-help { display:flex; justify-content:space-between; align-items:center; margin-top:26px; font-size:12px; color:#71695f; }
+.match-help button { border:0; border-bottom:1px solid currentColor; background:transparent; color:#71695f; font-weight:700; cursor:pointer; }
+.result-placeholder { min-height:calc(100vh - 156px); display:grid; place-content:center; text-align:center; }
+.result-placeholder span { color:var(--red); font-weight:800; letter-spacing:.2em; }
+.result-placeholder h1 { margin-top:12px; font-family:'Black Han Sans'; font-size:68px; font-weight:400; }
