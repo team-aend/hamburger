@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import SiteHeader from '@/components/SiteHeader';
 import { Burger, burgers } from '@/data/burgers';
 
 type RoundSize = 8 | 16;
@@ -65,12 +66,7 @@ export default function HomePage() {
 
   return (
     <main className="worldcup-shell">
-      <header className="site-header">
-        <button className="brand brand-button" type="button" onClick={resetToSetup} aria-label="버거픽 홈">
-          <span className="brand-mark" aria-hidden="true">B</span><span>BURGER PICK</span>
-        </button>
-        <span className="header-caption">나만의 최애 버거 찾기</span>
-      </header>
+      <SiteHeader activeMenu="worldcup" onSelectMenu={resetToSetup} />
 
       {phase === 'setup' && (
         <section className="start-screen" aria-labelledby="start-title">
