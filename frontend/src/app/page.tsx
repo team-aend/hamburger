@@ -70,6 +70,8 @@ interface FilterMetadata {
   };
 }
 
+type SectionKey = 'brand' | 'include' | 'exclude' | 'price' | 'calories';
+
 export default function HomePage() {
   // 필터 메타데이터 상태
   const [metadata, setMetadata] = useState<FilterMetadata | null>(null);
@@ -91,6 +93,31 @@ export default function HomePage() {
   const [maxCalories, setMaxCalories] = useState<number | null>(900);
   const [variantType, setVariantType] = useState<'SINGLE' | 'SET'>('SINGLE');
   const [sortBy, setSortBy] = useState<string>('calories_asc');
+
+  // 아코디언(자세히 보기 / 접기) 상태 — 기본적으로 모두 컴팩트하게 접어두어 모바일 스크롤 최소화
+  const [openSections, setOpenSections] = useState<Record<SectionKey, boolean>>({
+    brand: false,
+    include: false,
+    exclude: false,
+    price: false,
+    calories: false,
+  });
+
+  const toggleSection = (key: SectionKey) => {
+    setOpenSections((prev) => ({ ...prev, [key]: !prev[key] }));
+  };
+
+  const isAllExpanded = Object.values(openSections).every(Boolean);
+  const toggleAllSections = () => {
+    const nextState = !isAllExpanded;
+    setOpenSections({
+      brand: nextState,
+      include: nextState,
+      exclude: nextState,
+      price: nextState,
+      calories: nextState,
+    });
+  };
 
   // 추천 결과 상태
   const [items, setItems] = useState<RecommendedBurger[]>([]);
@@ -223,7 +250,6 @@ export default function HomePage() {
     setIsRandomModalOpen(true);
     setIsRolling(true);
 
-    // 슬롯머신 롤링 텍스트 애니메이션
     if (rollingIntervalRef.current) {
       clearInterval(rollingIntervalRef.current);
     }
@@ -246,7 +272,6 @@ export default function HomePage() {
       setRandomPicked(data.picked || null);
       setRandomTotalCandidates(data.totalCandidates || items.length);
     } catch {
-      // 네트워크 오류 시 클라이언트 후보 풀에서 즉시 폴백 추첨
       const fallbackPool =
         excludeProductId && items.length > 1
           ? items.filter((i) => i.id !== excludeProductId)
@@ -339,21 +364,21 @@ export default function HomePage() {
 
   // 금액 조건 요약 텍스트 생성
   const formatPriceSummary = () => {
-    if (minPrice === null && maxPrice === null) return null;
     const channelLabel = priceChannel === 'DELIVERY' ? '배달가' : '매장가';
+    if (minPrice === null && maxPrice === null) return `${channelLabel} 전체`;
     if (minPrice !== null && maxPrice !== null) {
-      return `💰 ${channelLabel} ${minPrice.toLocaleString()}원 ~ ${maxPrice.toLocaleString()}원`;
+      return `${channelLabel} ${minPrice.toLocaleString()}~${maxPrice.toLocaleString()}원`;
     }
     if (minPrice !== null) {
-      return `💰 ${channelLabel} ${minPrice.toLocaleString()}원 이상`;
+      return `${channelLabel} ${minPrice.toLocaleString()}원 이상`;
     }
-    return `💰 ${channelLabel} ${maxPrice!.toLocaleString()}원 이하`;
+    return `${channelLabel} ${maxPrice!.toLocaleString()}원 이하`;
   };
 
   return (
     <div className="container">
       {/* 상단 헤더 */}
-      <header style={{ marginBottom: '1.75rem' }}>
+      <header style={{ marginBottom: '1.5rem' }}>
         <div
           style={{
             display: 'flex',
@@ -361,30 +386,30 @@ export default function HomePage() {
             alignItems: 'center',
             justifyContent: 'space-between',
             gap: '1rem',
-            marginBottom: '1rem',
+            marginBottom: '0.85rem',
           }}
         >
           <div>
             <span
               style={{
                 display: 'inline-block',
-                fontSize: '0.8rem',
+                fontSize: '0.78rem',
                 fontWeight: 700,
                 color: 'var(--primary)',
                 backgroundColor: 'var(--primary-soft)',
-                padding: '0.25rem 0.65rem',
+                padding: '0.22rem 0.65rem',
                 borderRadius: '999px',
-                marginBottom: '0.5rem',
+                marginBottom: '0.4rem',
               }}
             >
               CUSTOM BURGER FINDER & RANDOM ROULETTE
             </span>
-            <h1 style={{ fontSize: '1.9rem', fontWeight: 800 }}>
+            <h1 style={{ fontSize: '1.8rem', fontWeight: 800 }}>
               🍔 취향 맞춤 햄버거 추천
             </h1>
-            <p style={{ color: 'var(--muted)', fontSize: '0.95rem' }}>
-              원하는 조건(브랜드, 포함/제외 재료, 최소~최대 금액, 칼로리)으로
-              추려보거나, <strong>그 조건 안에서 랜덤 1개</strong>를 뽑아보세요!
+            <p style={{ color: 'var(--muted)', fontSize: '0.92rem' }}>
+              항목별 <strong>[자세히 보기 ▾]</strong>를 눌러 원하는 조건을
+              선택하거나, 조건 안에서 <strong>랜덤 1개</strong>를 뽑아보세요!
             </p>
           </div>
 
@@ -409,7 +434,7 @@ export default function HomePage() {
           style={{
             display: 'flex',
             flexWrap: 'wrap',
-            gap: '0.5rem',
+            gap: '0.45rem',
             alignItems: 'center',
           }}
         >
@@ -473,89 +498,83 @@ export default function HomePage() {
             className="chip"
             style={{ color: 'var(--muted)' }}
           >
-            ↺ 조건 전체 해제 (전체 메뉴 보기)
+            ↺ 조건 전체 해제
           </button>
         </div>
       </header>
 
       <div className="layout-grid">
-        {/* 좌측: 조건 선택 필터 패널 */}
-        <aside className="card" style={{ position: 'sticky', top: '1.25rem' }}>
+        {/* 좌측: 조건 선택 필터 패널 (모바일 친화적 아코디언 구조) */}
+        <aside className="card" style={{ position: 'sticky', top: '1.25rem', padding: '1.15rem' }}>
           <div
             style={{
               display: 'flex',
               justifyContent: 'space-between',
               alignItems: 'center',
-              marginBottom: '1.25rem',
+              marginBottom: '0.9rem',
             }}
           >
-            <h2 style={{ fontSize: '1.15rem', fontWeight: 700 }}>
+            <h2 style={{ fontSize: '1.08rem', fontWeight: 800 }}>
               조건 필터 설정
             </h2>
-            <button
-              type="button"
-              onClick={resetAllFilters}
-              style={{
-                background: 'none',
-                border: 'none',
-                color: 'var(--muted)',
-                fontSize: '0.85rem',
-                textDecoration: 'underline',
-              }}
-            >
-              초기화
-            </button>
+            <div style={{ display: 'flex', alignItems: 'center', gap: '0.6rem' }}>
+              <button
+                type="button"
+                onClick={toggleAllSections}
+                style={{
+                  background: 'none',
+                  border: '1px solid var(--border-color)',
+                  borderRadius: '6px',
+                  padding: '0.2rem 0.5rem',
+                  color: 'var(--foreground)',
+                  fontSize: '0.76rem',
+                  fontWeight: 600,
+                }}
+              >
+                {isAllExpanded ? '전체 접기 ▴' : '전체 펼치기 ▾'}
+              </button>
+              <button
+                type="button"
+                onClick={resetAllFilters}
+                style={{
+                  background: 'none',
+                  border: 'none',
+                  color: 'var(--muted)',
+                  fontSize: '0.82rem',
+                  textDecoration: 'underline',
+                }}
+              >
+                초기화
+              </button>
+            </div>
           </div>
 
-          {/* 0. 키워드(버거명/브랜드) 검색 */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                marginBottom: '0.45rem',
-              }}
-            >
-              🔍 메뉴명·브랜드 직접 검색
-            </label>
+          {/* 검색창 + 단품/세트 기준 토글 (컴팩트 상단 고정) */}
+          <div
+            style={{
+              display: 'grid',
+              gridTemplateColumns: '1fr auto',
+              gap: '0.45rem',
+              marginBottom: '0.85rem',
+            }}
+          >
             <input
               type="text"
-              placeholder="예: 와퍼, 싸이버거, 치즈, 새우..."
+              placeholder="🔍 버거명·브랜드 검색 (예: 와퍼, 싸이)"
               value={keyword}
               onChange={(e) => setKeyword(e.target.value)}
               style={{
                 width: '100%',
-                padding: '0.58rem 0.8rem',
+                padding: '0.52rem 0.75rem',
                 borderRadius: '10px',
                 border: '1px solid var(--border-color)',
                 backgroundColor: 'var(--background)',
                 color: 'var(--foreground)',
-                fontSize: '0.88rem',
+                fontSize: '0.84rem',
                 fontWeight: 500,
               }}
             />
-          </div>
-
-          {/* 1. 기준 판매 형태 (ProductVariant: 단품 vs 세트) */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <label
-              style={{
-                display: 'block',
-                fontSize: '0.9rem',
-                fontWeight: 700,
-                marginBottom: '0.5rem',
-              }}
-            >
-              1. 기준 판매 형태 (금액·칼로리 기준)
-            </label>
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr 1fr',
-                gap: '0.5rem',
-              }}
-            >
+            <div style={{ display: 'flex', gap: '0.25rem' }}>
               {(['SINGLE', 'SET'] as const).map((type) => {
                 const active = variantType === type;
                 return (
@@ -564,7 +583,7 @@ export default function HomePage() {
                     type="button"
                     onClick={() => setVariantType(type)}
                     style={{
-                      padding: '0.55rem',
+                      padding: '0.5rem 0.65rem',
                       borderRadius: '10px',
                       border: `1px solid ${
                         active ? 'var(--primary)' : 'var(--border-color)'
@@ -573,417 +592,443 @@ export default function HomePage() {
                         ? 'var(--primary)'
                         : 'transparent',
                       color: active ? '#fff' : 'var(--foreground)',
-                      fontWeight: 600,
-                      fontSize: '0.88rem',
+                      fontWeight: 700,
+                      fontSize: '0.8rem',
+                      whiteSpace: 'nowrap',
                     }}
                   >
-                    {type === 'SINGLE' ? '🍔 단품 기준' : '🍟 세트 기준'}
+                    {type === 'SINGLE' ? '단품' : '세트'}
                   </button>
                 );
               })}
             </div>
           </div>
 
-          {/* 2. 브랜드 선택 (Supabase brands 테이블 실시간 연동) */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.5rem',
-              }}
+          {/* 1. 브랜드 아코디언 */}
+          <div className={`filter-section-box ${openSections.brand ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="filter-section-header"
+              onClick={() => toggleSection('brand')}
             >
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
-                <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                  2. 브랜드
-                </label>
-                <span
-                  style={{
-                    fontSize: '0.72rem',
-                    fontWeight: 700,
-                    padding: '0.12rem 0.45rem',
-                    borderRadius: '999px',
-                    backgroundColor: 'var(--include-soft)',
-                    color: 'var(--include-color)',
-                  }}
-                >
-                  DB {metadata?.brands.length ?? 0}개
-                </span>
-              </div>
-              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-                <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0 }}>
+                <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                  <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>
+                    1. 브랜드
+                  </span>
+                  <span
+                    style={{
+                      fontSize: '0.7rem',
+                      fontWeight: 700,
+                      padding: '0.08rem 0.4rem',
+                      borderRadius: '999px',
+                      backgroundColor: 'var(--include-soft)',
+                      color: 'var(--include-color)',
+                    }}
+                  >
+                    DB {metadata?.brands.length ?? 0}개
+                  </span>
+                </div>
+                <div style={{ fontSize: '0.78rem', color: 'var(--muted)', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
                   {selectedBrands.length === 0
-                    ? '전체 브랜드'
-                    : `${selectedBrands.length}개 선택됨`}
+                    ? '전체 브랜드 선택됨'
+                    : selectedBrands.map((b) => getBrandName(b)).join(', ')}
+                </div>
+              </div>
+              <span className="filter-toggle-badge">
+                {openSections.brand ? '접기 ▴' : '자세히 보기 ▾'}
+              </span>
+            </button>
+
+            {openSections.brand && (
+              <div className="filter-section-body">
+                <div style={{ display: 'flex', justifyContent: 'flex-end', marginBottom: '0.45rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => fetchFiltersAndBrands()}
+                    style={{
+                      background: 'none',
+                      border: '1px solid var(--border-color)',
+                      borderRadius: '6px',
+                      padding: '0.15rem 0.45rem',
+                      fontSize: '0.72rem',
+                      color: 'var(--muted)',
+                    }}
+                  >
+                    ↻ Supabase DB 브랜드 동기화
+                  </button>
+                </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem' }}>
+                  <button
+                    type="button"
+                    onClick={() => setSelectedBrands([])}
+                    className={`chip ${
+                      selectedBrands.length === 0 ? 'chip-active-brand' : ''
+                    }`}
+                  >
+                    전체
+                  </button>
+                  {metadata?.brands.map((brand) => {
+                    const isSelected = selectedBrands.includes(brand.slug);
+                    return (
+                      <button
+                        key={brand.id}
+                        type="button"
+                        onClick={() => toggleBrand(brand.slug)}
+                        className={`chip ${isSelected ? 'chip-active-brand' : ''}`}
+                      >
+                        {brand.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 2. 꼭 들어갈 재료 (+ 포함) 아코디언 */}
+          <div className={`filter-section-box ${openSections.include ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="filter-section-header"
+              onClick={() => toggleSection('include')}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0 }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--include-color)' }}>
+                  2. 꼭 들어갈 재료 (+ 포함)
                 </span>
-                <button
-                  type="button"
-                  onClick={() => fetchFiltersAndBrands()}
-                  title="Supabase DB에서 브랜드 다시 불러오기"
+                <div style={{ fontSize: '0.78rem', color: includeIngredients.length > 0 ? 'var(--include-color)' : 'var(--muted)', fontWeight: includeIngredients.length > 0 ? 600 : 400 }}>
+                  {includeIngredients.length === 0
+                    ? '선택 안 함 (전체)'
+                    : includeIngredients.map((s) => `✓ ${getIngredientName(s)}`).join(', ')}
+                </div>
+              </div>
+              <span className="filter-toggle-badge">
+                {openSections.include ? '접기 ▴' : '자세히 보기 ▾'}
+              </span>
+            </button>
+
+            {openSections.include && (
+              <div className="filter-section-body">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem', paddingTop: '0.35rem' }}>
+                  {metadata?.ingredients.map((ing) => {
+                    const isIncluded = includeIngredients.includes(ing.slug);
+                    return (
+                      <button
+                        key={`inc-${ing.id}`}
+                        type="button"
+                        onClick={() => toggleIncludeIngredient(ing.slug)}
+                        className={`chip ${isIncluded ? 'chip-include' : ''}`}
+                      >
+                        {isIncluded ? '✓ ' : '+ '}
+                        {ing.name}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 3. 뺄 재료 (🚫 OO 빼고) 아코디언 */}
+          <div className={`filter-section-box ${openSections.exclude ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="filter-section-header"
+              onClick={() => toggleSection('exclude')}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem', minWidth: 0 }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700, color: 'var(--exclude-color)' }}>
+                  3. 뺄 재료 (🚫 OO 빼고)
+                </span>
+                <div style={{ fontSize: '0.78rem', color: excludeIngredients.length > 0 ? 'var(--exclude-color)' : 'var(--muted)', fontWeight: excludeIngredients.length > 0 ? 600 : 400 }}>
+                  {excludeIngredients.length === 0
+                    ? '제외할 재료 없음'
+                    : excludeIngredients.map((s) => `🚫 ${getIngredientName(s)} 빼고`).join(', ')}
+                </div>
+              </div>
+              <span className="filter-toggle-badge">
+                {openSections.exclude ? '접기 ▴' : '자세히 보기 ▾'}
+              </span>
+            </button>
+
+            {openSections.exclude && (
+              <div className="filter-section-body">
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.38rem', paddingTop: '0.35rem' }}>
+                  {metadata?.ingredients.map((ing) => {
+                    const isExcluded = excludeIngredients.includes(ing.slug);
+                    return (
+                      <button
+                        key={`exc-${ing.id}`}
+                        type="button"
+                        onClick={() => toggleExcludeIngredient(ing.slug)}
+                        className={`chip ${isExcluded ? 'chip-exclude' : ''}`}
+                      >
+                        {isExcluded ? '🚫 ' : '− '}
+                        {ing.name}
+                        {isExcluded ? ' 빼고' : ''}
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+            )}
+          </div>
+
+          {/* 4. 금액 범위 (최소 ~ 최대) 아코디언 */}
+          <div className={`filter-section-box ${openSections.price ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="filter-section-header"
+              onClick={() => toggleSection('price')}
+            >
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>
+                  4. 금액 범위 (최소 ~ 최대)
+                </span>
+                <span style={{ fontSize: '0.78rem', color: minPrice !== null || maxPrice !== null ? 'var(--primary)' : 'var(--muted)', fontWeight: minPrice !== null || maxPrice !== null ? 700 : 400 }}>
+                  💰 {formatPriceSummary()}
+                </span>
+              </div>
+              <span className="filter-toggle-badge">
+                {openSections.price ? '접기 ▴' : '자세히 보기 ▾'}
+              </span>
+            </button>
+
+            {openSections.price && (
+              <div className="filter-section-body">
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', paddingTop: '0.35rem', marginBottom: '0.5rem' }}>
+                  <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>기준 채널</span>
+                  <div style={{ display: 'flex', gap: '0.25rem' }}>
+                    {(['STORE', 'DELIVERY'] as const).map((ch) => {
+                      const active = priceChannel === ch;
+                      return (
+                        <button
+                          key={ch}
+                          type="button"
+                          onClick={() => setPriceChannel(ch)}
+                          style={{
+                            padding: '0.2rem 0.55rem',
+                            fontSize: '0.74rem',
+                            fontWeight: 600,
+                            borderRadius: '6px',
+                            border: `1px solid ${
+                              active ? 'var(--primary)' : 'var(--border-color)'
+                            }`,
+                            backgroundColor: active
+                              ? 'var(--primary-soft)'
+                              : 'transparent',
+                            color: active ? 'var(--primary)' : 'var(--muted)',
+                          }}
+                        >
+                          {ch === 'STORE' ? '매장가' : '배달가'}
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                <div
                   style={{
-                    background: 'none',
-                    border: '1px solid var(--border-color)',
-                    borderRadius: '6px',
-                    padding: '0.12rem 0.4rem',
-                    fontSize: '0.72rem',
-                    color: 'var(--muted)',
+                    display: 'grid',
+                    gridTemplateColumns: '1fr auto 1fr',
+                    alignItems: 'center',
+                    gap: '0.45rem',
+                    marginBottom: '0.55rem',
                   }}
                 >
-                  ↻ DB 동기화
-                </button>
-              </div>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              <button
-                type="button"
-                onClick={() => setSelectedBrands([])}
-                className={`chip ${
-                  selectedBrands.length === 0 ? 'chip-active-brand' : ''
-                }`}
-              >
-                전체
-              </button>
-              {metadata?.brands.map((brand) => {
-                const isSelected = selectedBrands.includes(brand.slug);
-                return (
-                  <button
-                    key={brand.id}
-                    type="button"
-                    onClick={() => toggleBrand(brand.slug)}
-                    className={`chip ${isSelected ? 'chip-active-brand' : ''}`}
-                  >
-                    {brand.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 3. 포함할 재료 (Include Ingredients) */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.4rem',
-              }}
-            >
-              <label
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: 'var(--include-color)',
-                }}
-              >
-                3. 꼭 들어갈 재료 (+ 포함)
-              </label>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                선택 재료 모두 포함
-              </span>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {metadata?.ingredients.map((ing) => {
-                const isIncluded = includeIngredients.includes(ing.slug);
-                return (
-                  <button
-                    key={`inc-${ing.id}`}
-                    type="button"
-                    onClick={() => toggleIncludeIngredient(ing.slug)}
-                    className={`chip ${isIncluded ? 'chip-include' : ''}`}
-                  >
-                    {isIncluded ? '✓ ' : '+ '}
-                    {ing.name}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 4. 제외할 재료 ("OO 빼고" - Exclude Ingredients) */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.4rem',
-              }}
-            >
-              <label
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: 'var(--exclude-color)',
-                }}
-              >
-                4. 뺄 재료 (🚫 OO 빼고)
-              </label>
-              <span style={{ fontSize: '0.75rem', color: 'var(--muted)' }}>
-                하나라도 들어있으면 제외
-              </span>
-            </div>
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
-              {metadata?.ingredients.map((ing) => {
-                const isExcluded = excludeIngredients.includes(ing.slug);
-                return (
-                  <button
-                    key={`exc-${ing.id}`}
-                    type="button"
-                    onClick={() => toggleExcludeIngredient(ing.slug)}
-                    className={`chip ${isExcluded ? 'chip-exclude' : ''}`}
-                  >
-                    {isExcluded ? '🚫 ' : '− '}
-                    {ing.name}
-                    {isExcluded ? ' 빼고' : ''}
-                  </button>
-                );
-              })}
-            </div>
-          </div>
-
-          {/* 5. 금액 조건 (최소 ~ 최대값 범위 비교) */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.5rem',
-              }}
-            >
-              <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                5. 금액 범위 (최소 ~ 최대)
-              </label>
-              <div style={{ display: 'flex', gap: '0.25rem' }}>
-                {(['STORE', 'DELIVERY'] as const).map((ch) => {
-                  const active = priceChannel === ch;
-                  return (
-                    <button
-                      key={ch}
-                      type="button"
-                      onClick={() => setPriceChannel(ch)}
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="number"
+                      min={0}
+                      max={30000}
+                      step={100}
+                      placeholder="최소 금액"
+                      value={minPrice ?? ''}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setMinPrice(raw === '' ? null : Number(raw));
+                      }}
                       style={{
-                        padding: '0.18rem 0.5rem',
-                        fontSize: '0.74rem',
+                        width: '100%',
+                        padding: '0.48rem 1.7rem 0.48rem 0.6rem',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--foreground)',
+                        fontSize: '0.84rem',
                         fontWeight: 600,
-                        borderRadius: '6px',
-                        border: `1px solid ${
-                          active ? 'var(--primary)' : 'var(--border-color)'
-                        }`,
-                        backgroundColor: active
-                          ? 'var(--primary-soft)'
-                          : 'transparent',
-                        color: active ? 'var(--primary)' : 'var(--muted)',
+                      }}
+                    />
+                    <span
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: '0.75rem',
+                        color: 'var(--muted)',
                       }}
                     >
-                      {ch === 'STORE' ? '매장가' : '배달가'}
-                    </button>
-                  );
-                })}
+                      원
+                    </span>
+                  </div>
+
+                  <span style={{ color: 'var(--muted)', fontWeight: 700 }}>~</span>
+
+                  <div style={{ position: 'relative' }}>
+                    <input
+                      type="number"
+                      min={0}
+                      max={30000}
+                      step={100}
+                      placeholder="최대 금액"
+                      value={maxPrice ?? ''}
+                      onChange={(e) => {
+                        const raw = e.target.value;
+                        setMaxPrice(raw === '' ? null : Number(raw));
+                      }}
+                      style={{
+                        width: '100%',
+                        padding: '0.48rem 1.7rem 0.48rem 0.6rem',
+                        borderRadius: '8px',
+                        border: '1px solid var(--border-color)',
+                        backgroundColor: 'var(--background)',
+                        color: 'var(--foreground)',
+                        fontSize: '0.84rem',
+                        fontWeight: 600,
+                      }}
+                    />
+                    <span
+                      style={{
+                        position: 'absolute',
+                        right: '0.5rem',
+                        top: '50%',
+                        transform: 'translateY(-50%)',
+                        fontSize: '0.75rem',
+                        color: 'var(--muted)',
+                      }}
+                    >
+                      원
+                    </span>
+                  </div>
+                </div>
+
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  {[
+                    { label: '전체 금액', min: null, max: null },
+                    { label: '~ 5,000원', min: null, max: 5000 },
+                    { label: '5,000 ~ 6,500원', min: 5000, max: 6500 },
+                    { label: '6,500 ~ 8,500원', min: 6500, max: 8500 },
+                    { label: '8,000원 ~', min: 8000, max: null },
+                  ].map((range) => {
+                    const isSelected =
+                      minPrice === range.min && maxPrice === range.max;
+                    return (
+                      <button
+                        key={range.label}
+                        type="button"
+                        onClick={() => {
+                          setMinPrice(range.min);
+                          setMaxPrice(range.max);
+                        }}
+                        className={`chip ${isSelected ? 'chip-active-brand' : ''}`}
+                        style={{ fontSize: '0.75rem', padding: '0.26rem 0.52rem' }}
+                      >
+                        {range.label}
+                      </button>
+                    );
+                  })}
+                </div>
               </div>
-            </div>
-
-            {/* 최소 금액 ~ 최대 금액 입력 필드 */}
-            <div
-              style={{
-                display: 'grid',
-                gridTemplateColumns: '1fr auto 1fr',
-                alignItems: 'center',
-                gap: '0.45rem',
-                marginBottom: '0.6rem',
-              }}
-            >
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="number"
-                  min={0}
-                  max={30000}
-                  step={100}
-                  placeholder="최소 금액"
-                  value={minPrice ?? ''}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    setMinPrice(raw === '' ? null : Number(raw));
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 1.8rem 0.5rem 0.65rem',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--background)',
-                    color: 'var(--foreground)',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                  }}
-                />
-                <span
-                  style={{
-                    position: 'absolute',
-                    right: '0.55rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: '0.78rem',
-                    color: 'var(--muted)',
-                  }}
-                >
-                  원
-                </span>
-              </div>
-
-              <span style={{ color: 'var(--muted)', fontWeight: 700 }}>~</span>
-
-              <div style={{ position: 'relative' }}>
-                <input
-                  type="number"
-                  min={0}
-                  max={30000}
-                  step={100}
-                  placeholder="최대 금액"
-                  value={maxPrice ?? ''}
-                  onChange={(e) => {
-                    const raw = e.target.value;
-                    setMaxPrice(raw === '' ? null : Number(raw));
-                  }}
-                  style={{
-                    width: '100%',
-                    padding: '0.5rem 1.8rem 0.5rem 0.65rem',
-                    borderRadius: '8px',
-                    border: '1px solid var(--border-color)',
-                    backgroundColor: 'var(--background)',
-                    color: 'var(--foreground)',
-                    fontSize: '0.86rem',
-                    fontWeight: 600,
-                  }}
-                />
-                <span
-                  style={{
-                    position: 'absolute',
-                    right: '0.55rem',
-                    top: '50%',
-                    transform: 'translateY(-50%)',
-                    fontSize: '0.78rem',
-                    color: 'var(--muted)',
-                  }}
-                >
-                  원
-                </span>
-              </div>
-            </div>
-
-            {/* 빠른 금액 구간 선택 버튼 */}
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-              {[
-                { label: '전체 금액', min: null, max: null },
-                { label: '~ 5,000원', min: null, max: 5000 },
-                { label: '5,000 ~ 6,500원', min: 5000, max: 6500 },
-                { label: '6,500 ~ 8,500원', min: 6500, max: 8500 },
-                { label: '8,000원 ~', min: 8000, max: null },
-              ].map((range) => {
-                const isSelected =
-                  minPrice === range.min && maxPrice === range.max;
-                return (
-                  <button
-                    key={range.label}
-                    type="button"
-                    onClick={() => {
-                      setMinPrice(range.min);
-                      setMaxPrice(range.max);
-                    }}
-                    className={`chip ${isSelected ? 'chip-active-brand' : ''}`}
-                    style={{ fontSize: '0.76rem', padding: '0.28rem 0.55rem' }}
-                  >
-                    {range.label}
-                  </button>
-                );
-              })}
-            </div>
+            )}
           </div>
 
-          {/* 6. 칼로리 조건 */}
-          <div style={{ marginBottom: '1.4rem' }}>
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: '0.5rem',
-              }}
+          {/* 5. 최대 칼로리 제한 아코디언 */}
+          <div className={`filter-section-box ${openSections.calories ? 'is-open' : ''}`}>
+            <button
+              type="button"
+              className="filter-section-header"
+              onClick={() => toggleSection('calories')}
             >
-              <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                6. 최대 칼로리 제한
-              </label>
-              <span
-                style={{
-                  fontSize: '0.9rem',
-                  fontWeight: 700,
-                  color: 'var(--primary)',
-                }}
-              >
-                {maxCalories === null
-                  ? '제한 없음'
-                  : `${maxCalories.toLocaleString()} kcal 이하`}
+              <div style={{ display: 'flex', flexDirection: 'column', gap: '0.2rem' }}>
+                <span style={{ fontSize: '0.88rem', fontWeight: 700 }}>
+                  5. 최대 칼로리 제한
+                </span>
+                <span style={{ fontSize: '0.78rem', color: maxCalories !== null ? 'var(--primary)' : 'var(--muted)', fontWeight: maxCalories !== null ? 700 : 400 }}>
+                  🔥{' '}
+                  {maxCalories === null
+                    ? '제한 없음'
+                    : `${maxCalories.toLocaleString()} kcal 이하`}
+                </span>
+              </div>
+              <span className="filter-toggle-badge">
+                {openSections.calories ? '접기 ▴' : '자세히 보기 ▾'}
               </span>
-            </div>
+            </button>
 
-            <input
-              type="range"
-              min={450}
-              max={1200}
-              step={50}
-              value={maxCalories ?? 1200}
-              onChange={(e) => {
-                const val = Number(e.target.value);
-                setMaxCalories(val >= 1200 ? null : val);
-              }}
-              style={{
-                width: '100%',
-                accentColor: 'var(--primary)',
-                marginBottom: '0.6rem',
-              }}
-            />
+            {openSections.calories && (
+              <div className="filter-section-body">
+                <input
+                  type="range"
+                  min={450}
+                  max={1200}
+                  step={50}
+                  value={maxCalories ?? 1200}
+                  onChange={(e) => {
+                    const val = Number(e.target.value);
+                    setMaxCalories(val >= 1200 ? null : val);
+                  }}
+                  style={{
+                    width: '100%',
+                    accentColor: 'var(--primary)',
+                    marginTop: '0.45rem',
+                    marginBottom: '0.55rem',
+                  }}
+                />
 
-            <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
-              {[500, 600, 750, 900, 1050].map((cal) => (
-                <button
-                  key={cal}
-                  type="button"
-                  onClick={() => setMaxCalories(cal)}
-                  className={`chip ${
-                    maxCalories === cal ? 'chip-active-brand' : ''
-                  }`}
-                  style={{ fontSize: '0.78rem', padding: '0.3rem 0.6rem' }}
-                >
-                  {cal}kcal 이하
-                </button>
-              ))}
-              <button
-                type="button"
-                onClick={() => setMaxCalories(null)}
-                className={`chip ${
-                  maxCalories === null ? 'chip-active-brand' : ''
-                }`}
-                style={{ fontSize: '0.78rem', padding: '0.3rem 0.6rem' }}
-              >
-                제한 없음
-              </button>
-            </div>
+                <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.35rem' }}>
+                  {[500, 600, 750, 900, 1050].map((cal) => (
+                    <button
+                      key={cal}
+                      type="button"
+                      onClick={() => setMaxCalories(cal)}
+                      className={`chip ${
+                        maxCalories === cal ? 'chip-active-brand' : ''
+                      }`}
+                      style={{ fontSize: '0.76rem', padding: '0.28rem 0.55rem' }}
+                    >
+                      {cal}kcal 이하
+                    </button>
+                  ))}
+                  <button
+                    type="button"
+                    onClick={() => setMaxCalories(null)}
+                    className={`chip ${
+                      maxCalories === null ? 'chip-active-brand' : ''
+                    }`}
+                    style={{ fontSize: '0.76rem', padding: '0.28rem 0.55rem' }}
+                  >
+                    제한 없음
+                  </button>
+                </div>
+              </div>
+            )}
           </div>
 
           {/* 좌측 패널 하단: 1) 조건에 맞는 전체 메뉴 검색 버튼 + 2) 랜덤 1개 뽑기 버튼 */}
-          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.5rem', marginTop: '0.9rem' }}>
             <button
               type="button"
               onClick={() => fetchRecommendations()}
               style={{
                 width: '100%',
-                padding: '0.72rem 1rem',
+                padding: '0.68rem 1rem',
                 borderRadius: '12px',
                 border: '1px solid var(--foreground)',
                 backgroundColor: 'var(--foreground)',
                 color: 'var(--background)',
-                fontSize: '0.92rem',
+                fontSize: '0.9rem',
                 fontWeight: 700,
               }}
             >
@@ -1052,7 +1097,7 @@ export default function HomePage() {
                 </span>
               ))}
 
-              {formatPriceSummary() && (
+              {(minPrice !== null || maxPrice !== null) && (
                 <span
                   className="chip"
                   style={{
@@ -1062,7 +1107,7 @@ export default function HomePage() {
                     fontWeight: 600,
                   }}
                 >
-                  {formatPriceSummary()}
+                  💰 {formatPriceSummary()}
                 </span>
               )}
 
