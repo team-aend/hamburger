@@ -26,8 +26,8 @@ import {
 const router = Router();
 
 /**
- * DATABASE_URL 설정 시 Supabase PostgreSQL에서 실시간 데이터를 조회하고,
- * 미설정 시(또는 연결 실패 시) 로컬 시드 데이터로 자동 폴백
+ * Supabase DB에서 브랜드(brands) 테이블은 항상 최우선으로 직접 조회하고,
+ * 나머지 상품/영양성분 테이블도 DB에 데이터가 있으면 DB 값을, 비어있으면 시드 데이터를 사용
  */
 async function loadDataset() {
   if (!isDbConfigured()) {
@@ -46,10 +46,32 @@ async function loadDataset() {
     };
   }
 
+  const pool = getDbPool();
+
+  // 1. brands 테이블은 사용자가 직접 넣은 Supabase DB 데이터를 단독으로 먼저 가져옴
+  let dbBrands: Brand[] = [];
   try {
-    const pool = getDbPool();
+    const brandsRes = await pool.query(
+      `SELECT id, name, slug, logo_url, homepage_url, is_active
+       FROM brands
+       ORDER BY id ASC`
+    );
+    if (brandsRes.rows.length > 0) {
+      dbBrands = brandsRes.rows.map((r) => ({
+        id: Number(r.id),
+        name: r.name,
+        slug: r.slug,
+        logoUrl: r.logo_url ?? undefined,
+        homepageUrl: r.homepage_url ?? undefined,
+        isActive: r.is_active !== false,
+      }));
+    }
+  } catch (err) {
+    console.warn('⚠️ Supabase brands 테이블 단독 조회 오류:', err);
+  }
+
+  try {
     const [
-      brandsRes,
       categoriesRes,
       ingredientsRes,
       tagsRes,
@@ -60,9 +82,10 @@ async function loadDataset() {
       prodIngRes,
       prodTagsRes,
     ] = await Promise.all([
-      pool.query('SELECT id, name, slug, is_active FROM brands ORDER BY id'),
       pool.query('SELECT id, name, slug FROM categories ORDER BY id'),
-      pool.query('SELECT id, name, slug, ingredient_group FROM ingredients ORDER BY id'),
+      pool.query(
+        'SELECT id, name, slug, ingredient_group FROM ingredients ORDER BY id'
+      ),
       pool.query('SELECT id, name, slug FROM tags ORDER BY id'),
       pool.query(
         'SELECT id, brand_id, category_id, name, slug, description, status, is_limited FROM products ORDER BY id'
@@ -82,82 +105,104 @@ async function loadDataset() {
       pool.query('SELECT product_id, tag_id FROM product_tags'),
     ]);
 
-    const brands: Brand[] = brandsRes.rows.map((r) => ({
-      id: Number(r.id),
-      name: r.name,
-      slug: r.slug,
-      isActive: Boolean(r.is_active),
-    }));
+    const brands = dbBrands.length > 0 ? dbBrands : seedBrands;
 
-    const categories: Category[] = categoriesRes.rows.map((r) => ({
-      id: Number(r.id),
-      name: r.name,
-      slug: r.slug,
-    }));
+    const categories: Category[] =
+      categoriesRes.rows.length > 0
+        ? categoriesRes.rows.map((r) => ({
+            id: Number(r.id),
+            name: r.name,
+            slug: r.slug,
+          }))
+        : seedCategories;
 
-    const ingredients: Ingredient[] = ingredientsRes.rows.map((r) => ({
-      id: Number(r.id),
-      name: r.name,
-      slug: r.slug,
-      group: r.ingredient_group,
-    }));
+    const ingredients: Ingredient[] =
+      ingredientsRes.rows.length > 0
+        ? ingredientsRes.rows.map((r) => ({
+            id: Number(r.id),
+            name: r.name,
+            slug: r.slug,
+            group: r.ingredient_group,
+          }))
+        : seedIngredients;
 
-    const tags: Tag[] = tagsRes.rows.map((r) => ({
-      id: Number(r.id),
-      name: r.name,
-      slug: r.slug,
-    }));
+    const tags: Tag[] =
+      tagsRes.rows.length > 0
+        ? tagsRes.rows.map((r) => ({
+            id: Number(r.id),
+            name: r.name,
+            slug: r.slug,
+          }))
+        : seedTags;
 
-    const products: Product[] = productsRes.rows.map((r) => ({
-      id: Number(r.id),
-      brandId: Number(r.brand_id),
-      categoryId: Number(r.category_id),
-      name: r.name,
-      slug: r.slug,
-      description: r.description ?? '',
-      status: r.status,
-      isLimited: Boolean(r.is_limited),
-    }));
+    const products: Product[] =
+      productsRes.rows.length > 0
+        ? productsRes.rows.map((r) => ({
+            id: Number(r.id),
+            brandId: Number(r.brand_id),
+            categoryId: Number(r.category_id),
+            name: r.name,
+            slug: r.slug,
+            description: r.description ?? '',
+            status: r.status,
+            isLimited: Boolean(r.is_limited),
+          }))
+        : seedProducts;
 
-    const productVariants: ProductVariant[] = variantsRes.rows.map((r) => ({
-      id: Number(r.id),
-      productId: Number(r.product_id),
-      name: r.name,
-      variantType: r.variant_type,
-      isDefault: Boolean(r.is_default),
-      isActive: Boolean(r.is_active),
-    }));
+    const productVariants: ProductVariant[] =
+      variantsRes.rows.length > 0
+        ? variantsRes.rows.map((r) => ({
+            id: Number(r.id),
+            productId: Number(r.product_id),
+            name: r.name,
+            variantType: r.variant_type,
+            isDefault: Boolean(r.is_default),
+            isActive: Boolean(r.is_active),
+          }))
+        : seedProductVariants;
 
-    const productPrices: ProductPrice[] = pricesRes.rows.map((r) => ({
-      id: Number(r.id),
-      productVariantId: Number(r.product_variant_id),
-      price: Number(r.price),
-      channel: r.channel,
-      startedAt: String(r.started_at),
-      endedAt: r.ended_at ? String(r.ended_at) : null,
-    }));
+    const productPrices: ProductPrice[] =
+      pricesRes.rows.length > 0
+        ? pricesRes.rows.map((r) => ({
+            id: Number(r.id),
+            productVariantId: Number(r.product_variant_id),
+            price: Number(r.price),
+            channel: r.channel,
+            startedAt: String(r.started_at),
+            endedAt: r.ended_at ? String(r.ended_at) : null,
+          }))
+        : seedProductPrices;
 
-    const nutritions: Nutrition[] = nutritionRes.rows.map((r) => ({
-      id: Number(r.id),
-      productVariantId: Number(r.product_variant_id),
-      servingSizeG: Number(r.serving_size_g ?? 0),
-      caloriesKcal: Number(r.calories_kcal ?? 0),
-      proteinG: Number(r.protein_g ?? 0),
-      sugarG: Number(r.sugar_g ?? 0),
-      saturatedFatG: Number(r.saturated_fat_g ?? 0),
-      sodiumMg: Number(r.sodium_mg ?? 0),
-    }));
+    const nutritions: Nutrition[] =
+      nutritionRes.rows.length > 0
+        ? nutritionRes.rows.map((r) => ({
+            id: Number(r.id),
+            productVariantId: Number(r.product_variant_id),
+            servingSizeG: Number(r.serving_size_g ?? 0),
+            caloriesKcal: Number(r.calories_kcal ?? 0),
+            proteinG: Number(r.protein_g ?? 0),
+            sugarG: Number(r.sugar_g ?? 0),
+            saturatedFatG: Number(r.saturated_fat_g ?? 0),
+            sodiumMg: Number(r.sodium_mg ?? 0),
+          }))
+        : seedNutritions;
 
-    const productIngredients: ProductIngredient[] = prodIngRes.rows.map((r) => ({
-      productId: Number(r.product_id),
-      ingredientId: Number(r.ingredient_id),
-      sortOrder: Number(r.sort_order ?? 0),
-    }));
+    const productIngredients: ProductIngredient[] =
+      prodIngRes.rows.length > 0
+        ? prodIngRes.rows.map((r) => ({
+            productId: Number(r.product_id),
+            ingredientId: Number(r.ingredient_id),
+            sortOrder: Number(r.sort_order ?? 0),
+          }))
+        : seedProductIngredients;
 
-    const productTags: ProductTag[] = prodTagsRes.rows.map((r) => ({
-      productId: Number(r.product_id),
-      tagId: Number(r.tag_id),
-    }));
+    const productTags: ProductTag[] =
+      prodTagsRes.rows.length > 0
+        ? prodTagsRes.rows.map((r) => ({
+            productId: Number(r.product_id),
+            tagId: Number(r.tag_id),
+          }))
+        : seedProductTags;
 
     return {
       source: 'supabase' as const,
@@ -173,10 +218,13 @@ async function loadDataset() {
       productTags,
     };
   } catch (err) {
-    console.warn('⚠️ Supabase DB 조회 실패로 인메모리 시드 데이터를 사용합니다:', err);
+    console.warn(
+      '⚠️ 일부 테이블 조회 실패, brands는 Supabase DB 값을 유지하고 나머지는 시드를 사용합니다:',
+      err
+    );
     return {
-      source: 'memory' as const,
-      brands: seedBrands,
+      source: dbBrands.length > 0 ? ('supabase' as const) : ('memory' as const),
+      brands: dbBrands.length > 0 ? dbBrands : seedBrands,
       categories: seedCategories,
       ingredients: seedIngredients,
       tags: seedTags,
@@ -266,8 +314,20 @@ async function getFilteredProducts(query: Request['query']) {
   const enrichedProducts = products
     .filter((p) => p.status === 'ACTIVE')
     .map((product) => {
-      const brand = brands.find((b) => b.id === product.brandId)!;
-      const category = categories.find((c) => c.id === product.categoryId)!;
+      // ID로 먼저 매칭하고, 만약 brands 테이블이 재생성되어 ID가 달라진 경우 시드 브랜드의 slug로 안전하게 매칭
+      const seedBrandSlug = seedBrands.find((sb) => sb.id === product.brandId)?.slug;
+      const brand =
+        brands.find((b) => b.id === product.brandId) ||
+        (seedBrandSlug ? brands.find((b) => b.slug === seedBrandSlug) : undefined) ||
+        seedBrands.find((sb) => sb.id === product.brandId) || {
+          id: product.brandId,
+          name: '기타 브랜드',
+          slug: 'other',
+          isActive: true,
+        };
+
+      const category =
+        categories.find((c) => c.id === product.categoryId) || seedCategories[0];
 
       const prodIngRows = productIngredients
         .filter((pi) => pi.productId === product.id)
@@ -443,6 +503,7 @@ router.get('/filters', async (_req: Request, res: Response) => {
   res.status(200).json({
     dataSource: source,
     brands: brands.filter((b) => b.isActive),
+    allBrands: brands,
     ingredients,
     tags,
     calorieRange: {

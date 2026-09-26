@@ -156,24 +156,40 @@ export default function HomePage() {
     ]
   );
 
-  // 1. 초기 필터 메타데이터 로드
-  useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const res = await fetch('/api/recommend/filters');
-        if (!res.ok) throw new Error('필터 데이터를 불러오지 못했습니다.');
-        const data: FilterMetadata = await res.json();
-        setMetadata(data);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : '백엔드 서버(Port 4000) 연결을 확인해 주세요.'
-        );
+  // 1. 초기 필터 메타데이터 및 Supabase brands 테이블 데이터 로드
+  const fetchFiltersAndBrands = useCallback(async () => {
+    try {
+      const [filtersRes, brandsRes] = await Promise.all([
+        fetch('/api/recommend/filters'),
+        fetch('/api/brands'),
+      ]);
+
+      if (!filtersRes.ok) {
+        throw new Error('필터 데이터를 불러오지 못했습니다.');
       }
-    };
-    fetchFilters();
+
+      const filterData: FilterMetadata = await filtersRes.json();
+
+      if (brandsRes.ok) {
+        const brandsData = await brandsRes.json();
+        if (Array.isArray(brandsData.brands) && brandsData.brands.length > 0) {
+          filterData.brands = brandsData.brands;
+        }
+      }
+
+      setMetadata(filterData);
+    } catch (err) {
+      setError(
+        err instanceof Error
+          ? err.message
+          : '백엔드 서버(Port 4000) 연결을 확인해 주세요.'
+      );
+    }
   }, []);
+
+  useEffect(() => {
+    fetchFiltersAndBrands();
+  }, [fetchFiltersAndBrands]);
 
   // 2. 조건 변경 시 맞춤 추천 메뉴 조회
   const fetchRecommendations = useCallback(async () => {
@@ -568,7 +584,7 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 2. 브랜드 선택 */}
+          {/* 2. 브랜드 선택 (Supabase brands 테이블 실시간 연동) */}
           <div style={{ marginBottom: '1.4rem' }}>
             <div
               style={{
@@ -578,14 +594,45 @@ export default function HomePage() {
                 marginBottom: '0.5rem',
               }}
             >
-              <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
-                2. 브랜드
-              </label>
-              <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
-                {selectedBrands.length === 0
-                  ? '전체 브랜드'
-                  : `${selectedBrands.length}개 선택됨`}
-              </span>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.4rem' }}>
+                <label style={{ fontSize: '0.9rem', fontWeight: 700 }}>
+                  2. 브랜드
+                </label>
+                <span
+                  style={{
+                    fontSize: '0.72rem',
+                    fontWeight: 700,
+                    padding: '0.12rem 0.45rem',
+                    borderRadius: '999px',
+                    backgroundColor: 'var(--include-soft)',
+                    color: 'var(--include-color)',
+                  }}
+                >
+                  DB {metadata?.brands.length ?? 0}개
+                </span>
+              </div>
+              <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
+                <span style={{ fontSize: '0.78rem', color: 'var(--muted)' }}>
+                  {selectedBrands.length === 0
+                    ? '전체 브랜드'
+                    : `${selectedBrands.length}개 선택됨`}
+                </span>
+                <button
+                  type="button"
+                  onClick={() => fetchFiltersAndBrands()}
+                  title="Supabase DB에서 브랜드 다시 불러오기"
+                  style={{
+                    background: 'none',
+                    border: '1px solid var(--border-color)',
+                    borderRadius: '6px',
+                    padding: '0.12rem 0.4rem',
+                    fontSize: '0.72rem',
+                    color: 'var(--muted)',
+                  }}
+                >
+                  ↻ DB 동기화
+                </button>
+              </div>
             </div>
             <div style={{ display: 'flex', flexWrap: 'wrap', gap: '0.4rem' }}>
               <button
