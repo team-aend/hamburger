@@ -201,3 +201,71 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
   .ranking-burger small { font-size:8px; }
   .ranking-shell .site-footer { gap:12px; font-size:8px; }
 }
+
+/* ── 가격 비교 화면 (.compare-shell) ──────────────────────────────
+   월드컵/랭킹의 전역 스타일(cream 배경, Black Han Sans, min-width:1100px)을
+   그대로 두고, 비교 화면에서만 중립 톤과 반응형을 적용한다.
+   랭킹 페이지의 html:has(.ranking-shell) 패턴과 같은 방식이다. */
+:root:has(.compare-shell) {
+  --background: #ffffff;
+  --foreground: #171717;
+  --border-color: #e9ecef;
+  --surface: #ffffff;
+  --surface-muted: #f8f9fa;
+  --muted: #6b7280;
+  --muted-strong: #374151;
+  --selected: #171717;
+  --selected-foreground: #ffffff;
+  --radius: 12px;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:has(.compare-shell) {
+    --background: #0f1115;
+    --foreground: #ededed;
+    --border-color: #2a2f3a;
+    --surface: #14171d;
+    --surface-muted: #1b1f27;
+    --muted: #9ca3af;
+    --muted-strong: #d1d5db;
+    --selected: #ededed;
+    --selected-foreground: #14171d;
+  }
+}
+
+html:has(.compare-shell),
+body:has(.compare-shell) {
+  min-width: 320px;
+  background: var(--background);
+  color: var(--foreground);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  line-height: 1.6;
+}
+
+/* color 는 건드리지 않는다. 전역 button { color: inherit } 보다 특이성이 높아지면
+   CSS Module 의 선택 상태 색(.chipSelected 등)을 덮어써 버린다. */
+.compare-shell input,
+.compare-shell select {
+  font-family: inherit;
+}
+
+.compare-shell button {
+  cursor: pointer;
+}
+
+/* 비교 화면 안에서는 공통 헤더도 중립 톤에 맞춘다 */
+.compare-shell .site-header {
+  padding: 0 16px;
+  height: 64px;
+  border-bottom: 1px solid var(--border-color);
+}
+
+/* 모바일 가로 스크롤 영역에서 스크롤바를 숨긴다 */
+.scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}

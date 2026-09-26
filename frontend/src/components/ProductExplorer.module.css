@@ -1,0 +1,68 @@
+.page {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
+.main {
+  flex: 1;
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 1.25rem 1rem 2.5rem;
+}
+
+/* Sticky Compare Bar 에 목록 하단이 가리지 않도록 여백을 준다 */
+.mainWithBar {
+  padding-bottom: 7rem;
+}
+
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  margin: 1.5rem 0 0.875rem;
+}
+
+.count {
+  font-size: 0.9rem;
+  color: var(--muted);
+}
+
+.count strong {
+  color: var(--foreground);
+  font-weight: 700;
+}
+
+.comparison {
+  margin-top: 2.5rem;
+  scroll-margin-top: 4rem;
+}
+
+.comparisonHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 0.75rem;
+}
+
+.comparisonTitle {
+  font-size: 1.2rem;
+  font-weight: 700;
+}
+
+.closeButton {
+  padding: 0.375rem 0.75rem;
+  border: 1px solid var(--border-color);
+  border-radius: 8px;
+  background: var(--surface);
+  font-size: 0.8rem;
+  color: var(--muted-strong);
+}
