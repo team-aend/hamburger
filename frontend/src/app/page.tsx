@@ -2,12 +2,28 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import SiteHeader from '@/components/SiteHeader';
 import { Burger, burgers } from '@/data/burgers';
 
 type RoundSize = 8 | 16;
 type Phase = 'setup' | 'playing' | 'finished';
+type WorldcupOptions = {
+  eligibleProductCount: number;
+  roundOptions: { roundSize: RoundSize; available: boolean }[];
+};
+
+function parseOptions(value: unknown): WorldcupOptions {
+  const data = value as WorldcupOptions | null;
+  if (!data || !Number.isSafeInteger(data.eligibleProductCount) || data.eligibleProductCount < 0 ||
+    !Array.isArray(data.roundOptions) || data.roundOptions.length !== 2 ||
+    !([8, 16] as const).every((size) => data.roundOptions.some((option) =>
+      option?.roundSize === size && typeof option.available === 'boolean' &&
+      option.available === (data.eligibleProductCount >= size)))) {
+    throw new Error('참가 옵션 응답을 확인할 수 없습니다. 다시 시도해 주세요.');
+  }
+  return data;
+}
 
 const shuffle = <T,>(items: T[]) => {
   const result = [...items];
@@ -28,8 +44,50 @@ export default function HomePage() {
   const [matchIndex, setMatchIndex] = useState(0);
   const [roundWinners, setRoundWinners] = useState<Burger[]>([]);
   const [winner, setWinner] = useState<Burger | null>(null);
+  const [options, setOptions] = useState<WorldcupOptions | null>(null);
+  const [optionsLoading, setOptionsLoading] = useState(true);
+  const [optionsError, setOptionsError] = useState<string | null>(null);
+  const [optionsRequest, setOptionsRequest] = useState(0);
+
+  const reloadOptions = () => {
+    setOptions(null);
+    setOptionsError(null);
+    setOptionsLoading(true);
+    setOptionsRequest((request) => request + 1);
+  };
+
+  useEffect(() => {
+    const controller = new AbortController();
+    const timeout = window.setTimeout(() => controller.abort(), 10000);
+    let disposed = false;
+    const load = async () => {
+      try {
+        const response = await fetch('/api/worldcup/options', { signal: controller.signal, cache: 'no-store' });
+        if (!response.ok) throw new Error('참가 옵션을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.');
+        const data = parseOptions(await response.json());
+        if (disposed) return;
+        setOptions(data);
+        setRoundSize((current) => data.roundOptions.some((option) => option.roundSize === current && option.available)
+          ? current : data.roundOptions.find((option) => option.available)?.roundSize ?? 8);
+      } catch (error) {
+        if (disposed) return;
+        setOptions(null);
+        setOptionsError(controller.signal.aborted ? '조회 시간이 초과되었습니다. 다시 시도해 주세요.'
+          : error instanceof Error ? error.message : '참가 옵션을 불러오지 못했습니다.');
+      } finally {
+        window.clearTimeout(timeout);
+        if (!disposed) setOptionsLoading(false);
+      }
+    };
+    void load();
+    return () => { disposed = true; window.clearTimeout(timeout); controller.abort(); };
+  }, [optionsRequest]);
+
+  const isRoundAvailable = (size: RoundSize) => !optionsLoading && !optionsError &&
+    Boolean(options?.roundOptions.some((option) => option.roundSize === size && option.available));
 
   const startGame = (size = roundSize) => {
+    if (!isRoundAvailable(size)) return;
     setContestants(shuffle(burgers).slice(0, size));
     setMatchIndex(0);
     setRoundWinners([]);
@@ -60,6 +118,7 @@ export default function HomePage() {
 
   const resetToSetup = () => {
     if (phase === 'playing' && !window.confirm('진행 중인 월드컵을 종료할까요?')) return;
+    reloadOptions();
     setPhase('setup');
     setContestants([]);
     setRoundWinners([]);
@@ -84,13 +143,18 @@ export default function HomePage() {
               <span>몇 강으로 시작할까요?</span>
               <div className="round-options">
                 {([8, 16] as const).map((size) => (
-                  <button className={roundSize === size ? 'round-option selected' : 'round-option'} key={size} type="button" aria-pressed={roundSize === size} onClick={() => setRoundSize(size)}>
-                    <b>{size}강</b><small>{size === 8 ? '빠르게 즐기기' : '제대로 겨루기'}</small>
+                  <button className={roundSize === size && isRoundAvailable(size) ? 'round-option selected' : 'round-option'} key={size} type="button" disabled={!isRoundAvailable(size)} aria-pressed={roundSize === size && isRoundAvailable(size)} onClick={() => setRoundSize(size)}>
+                    <b>{size}강</b><small>{options && !isRoundAvailable(size) ? '참가 수 부족' : size === 8 ? '빠르게 즐기기' : '제대로 겨루기'}</small>
                   </button>
                 ))}
               </div>
             </div>
-            <button className="start-button" type="button" onClick={() => startGame()}>{roundSize}강 월드컵 시작하기<span aria-hidden="true">→</span></button>
+            <div className="worldcup-options-status" aria-live="polite" aria-atomic="true">
+              {optionsLoading && <p role="status">참가 가능한 강수를 확인하고 있습니다.</p>}
+              {optionsError && <div><p role="alert">{optionsError}</p><button type="button" onClick={reloadOptions}>다시 조회하기</button></div>}
+              {options && <p>{options.eligibleProductCount < 8 ? `참가 가능한 버거가 ${options.eligibleProductCount}개입니다. 월드컵에는 최소 8개가 필요합니다.` : `참가 가능한 버거 ${options.eligibleProductCount}개`}</p>}
+            </div>
+            <button className="start-button" disabled={!isRoundAvailable(roundSize)} type="button" onClick={() => startGame()}>{roundSize}강 월드컵 시작하기<span aria-hidden="true">→</span></button>
             <Link className="ranking-link-button" href="/ranking">랭킹 확인하기 <span aria-hidden="true">→</span></Link>
           </div>
           <BurgerArtwork />

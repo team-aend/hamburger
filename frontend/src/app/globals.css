@@ -201,3 +201,10 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
   .ranking-burger small { font-size:8px; }
   .ranking-shell .site-footer { gap:12px; font-size:8px; }
 }
+
+.worldcup-options-status { margin-top:16px; max-width:420px; color:#655e55; font-size:13px; line-height:1.7; }
+.worldcup-options-status button { margin-top:8px; padding:8px 14px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); cursor:pointer; }
+.round-option:disabled,.start-button:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; transform:none; }
+.round-option:disabled:hover { border-color:var(--line); }
+.start-button:disabled:hover { background:var(--red); }
+.worldcup-options-status button:focus-visible { outline:3px solid var(--red); outline-offset:3px; }
