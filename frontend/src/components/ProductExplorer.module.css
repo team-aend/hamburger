@@ -1,68 +1,74 @@
-.page {
-  display: flex;
-  flex-direction: column;
-  min-height: 100vh;
-}
-
-.main {
-  flex: 1;
-  width: 100%;
-  max-width: 1200px;
-  margin: 0 auto;
-  padding: 1.25rem 1rem 2.5rem;
-}
-
-/* Sticky Compare Bar 에 목록 하단이 가리지 않도록 여백을 준다 */
-.mainWithBar {
-  padding-bottom: 7rem;
-}
-
 .filters {
   display: flex;
   flex-direction: column;
-  gap: 0.75rem;
+  gap: 12px;
 }
 
 .listHeader {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  gap: 1rem;
-  margin: 1.5rem 0 0.875rem;
+  gap: 16px;
+  margin: 28px 0 16px;
 }
 
 .count {
-  font-size: 0.9rem;
-  color: var(--muted);
+  font-size: 13px;
+  color: #655e55;
 }
 
 .count strong {
-  color: var(--foreground);
-  font-weight: 700;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.withBar {
+  padding-bottom: 132px;
 }
 
 .comparison {
-  margin-top: 2.5rem;
-  scroll-margin-top: 4rem;
+  margin-top: 48px;
+  /* 우측 상단 고정 메뉴 버튼(.menu-toggle) 아래로 내려오도록 여유를 준다 */
+  scroll-margin-top: 88px;
 }
 
 .comparisonHeader {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  justify-content: space-between;
-  margin-bottom: 0.75rem;
+  gap: 12px;
+  margin-bottom: 16px;
+  /* 고정 메뉴 버튼과 '닫기' 가 겹치지 않도록 */
+  padding-right: 56px;
 }
 
 .comparisonTitle {
-  font-size: 1.2rem;
-  font-weight: 700;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.comparisonTitle small {
+  margin-left: 10px;
+  color: #655e55;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
 }
 
 .closeButton {
-  padding: 0.375rem 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 0.8rem;
-  color: var(--muted-strong);
+  margin-left: auto;
+  padding: 10px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.closeButton:hover {
+  background: var(--mustard);
 }

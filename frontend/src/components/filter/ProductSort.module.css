@@ -1,12 +1,12 @@
 .select {
-  padding: 0.5rem 0.75rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 0.875rem;
-}
-
-.select:focus {
-  outline: none;
-  border-color: var(--muted-strong);
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid #827a6d;
+  border-radius: 6px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
 }

@@ -1,15 +1,17 @@
 .scroller {
   overflow-x: auto;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  box-shadow: 4px 4px 0 var(--ink);
 }
 
 .table {
   width: 100%;
-  min-width: 480px;
+  min-width: 520px;
   border-collapse: collapse;
   text-align: left;
+  font-size: 14px;
 }
 
 .caption {
@@ -22,9 +24,8 @@
 
 .table th,
 .table td {
-  padding: 0.75rem 1rem;
-  border-bottom: 1px solid var(--border-color);
-  font-size: 0.9rem;
+  padding: 16px;
+  border-bottom: 1px solid var(--line);
   vertical-align: middle;
 }
 
@@ -33,24 +34,37 @@
   border-bottom: 0;
 }
 
+.table thead th {
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 12px;
+}
+
 .rowHeader {
   position: sticky;
   left: 0;
   z-index: 1;
-  min-width: 96px;
-  background: var(--surface-muted);
-  border-right: 1px solid var(--border-color);
-  font-size: 0.8rem;
-  font-weight: 600;
-  color: var(--muted);
+  width: 104px;
+  background: var(--cream);
+  border-right: 1px solid var(--line);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.06em;
+  color: #655e55;
   white-space: nowrap;
 }
 
+.table thead .rowHeader {
+  background: var(--ink);
+  color: var(--paper);
+}
+
 .productHeader {
-  min-width: 140px;
-  background: var(--surface-muted);
-  font-size: 0.95rem;
-  font-weight: 700;
+  min-width: 150px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
 }
 
 .priceRow td {
@@ -58,30 +72,31 @@
 }
 
 .price {
-  font-size: 1.05rem;
-  font-weight: 700;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
 }
 
 .badge {
-  margin-left: 0.375rem;
-  padding: 0.125rem 0.375rem;
+  margin-left: 8px;
+  padding: 3px 8px;
   border-radius: 999px;
-  background: var(--selected);
-  color: var(--selected-foreground);
-  font-size: 0.7rem;
-  font-weight: 600;
+  background: var(--red);
+  color: #ffffff;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
   vertical-align: middle;
 }
 
 .thumb {
   width: 84px;
   height: 64px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface-muted);
+  display: grid;
+  place-items: center;
+  border: 1px solid var(--line);
+  border-radius: 6px;
+  background: var(--cream);
   overflow: hidden;
 }
 
@@ -92,5 +107,17 @@
 }
 
 .placeholder {
-  font-size: 1.5rem;
+  font-size: 30px;
+}
+
+@media (max-width: 700px) {
+  .table th,
+  .table td {
+    padding: 12px 10px;
+    font-size: 13px;
+  }
+
+  .rowHeader {
+    width: 76px;
+  }
 }
