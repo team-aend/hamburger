@@ -1,10 +1,10 @@
 .grid {
   display: grid;
-  gap: 1rem;
+  gap: 18px;
   grid-template-columns: repeat(2, minmax(0, 1fr));
 }
 
-@media (min-width: 640px) {
+@media (min-width: 700px) {
   .grid {
     grid-template-columns: repeat(3, minmax(0, 1fr));
   }
@@ -17,34 +17,30 @@
 }
 
 .empty {
-  padding: 4rem 1rem;
+  padding: 48px 16px;
   text-align: center;
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  background: var(--surface);
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
 }
 
 .emptyTitle {
-  font-size: 1rem;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 800;
 }
 
 .emptyText {
-  margin-top: 0.25rem;
-  font-size: 0.875rem;
-  color: var(--muted);
+  margin: 12px 0 20px;
+  color: #655e55;
+  font-size: 13px;
 }
 
 .resetButton {
-  margin-top: 1.25rem;
-  padding: 0.5rem 1rem;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 0.875rem;
-  font-weight: 600;
-}
-
-.resetButton:hover {
-  border-color: var(--muted);
+  padding: 12px 20px;
+  border: 1px solid var(--ink);
+  border-radius: 6px;
+  background: var(--mustard);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
 }

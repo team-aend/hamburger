@@ -44,6 +44,11 @@ export default function CompareBar({
             <span className={styles.count}>
               {selectedProducts.length} / {MAX_COMPARE_COUNT}
             </span>
+            {!canCompare && (
+              <span className={styles.requirement}>
+                {MIN_COMPARE_COUNT}개 이상 선택하면 비교할 수 있어요
+              </span>
+            )}
           </div>
 
           <div className={styles.actions}>
@@ -55,17 +60,17 @@ export default function CompareBar({
               className={styles.compareButton}
               onClick={onCompare}
               disabled={!canCompare}
+              title={
+                canCompare
+                  ? undefined
+                  : `메뉴를 ${MIN_COMPARE_COUNT}개 이상 선택해주세요`
+              }
             >
-              비교하기
+              비교하기 <span aria-hidden>→</span>
             </button>
           </div>
         </div>
 
-        {!canCompare && (
-          <p className={styles.hint}>
-            비교하려면 메뉴를 {MIN_COMPARE_COUNT}개 이상 선택해주세요.
-          </p>
-        )}
       </div>
     </div>
   );

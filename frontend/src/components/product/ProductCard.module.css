@@ -1,128 +1,155 @@
 .card {
+  position: relative;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
-  border: 1px solid var(--border-color);
-  border-radius: var(--radius);
-  overflow: hidden;
+  min-width: 0;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.card:hover {
+  transform: translate(-2px, -3px);
+  box-shadow: 7px 8px 0 var(--ink);
 }
 
 .cardSelected {
-  border-color: var(--selected);
-  box-shadow: 0 0 0 1px var(--selected);
+  background: #fff0be;
+  box-shadow: 4px 4px 0 var(--red);
 }
 
 .thumb {
-  aspect-ratio: 4 / 3;
-  background: var(--surface-muted);
-  border-bottom: 1px solid var(--border-color);
+  position: relative;
+  height: 150px;
+  margin: 14px 14px 0;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--cream);
 }
 
 .image {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  display: block;
 }
 
 .placeholder {
-  height: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  gap: 0.25rem;
+  display: grid;
+  place-items: center;
+  gap: 2px;
 }
 
 .placeholderIcon {
-  font-size: 2rem;
+  font-size: 56px;
+  line-height: 1;
 }
 
 .placeholderText {
-  font-size: 0.75rem;
-  color: var(--muted);
+  font-size: 10px;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  color: #827a6d;
 }
 
 .body {
   flex: 1;
-  padding: 0.875rem 1rem 1rem;
+  padding: 14px 16px 0;
 }
 
 .brand {
-  font-size: 0.8rem;
-  color: var(--muted);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+  color: var(--red-dark);
 }
 
 .name {
-  font-size: 1.05rem;
-  font-weight: 700;
-  letter-spacing: -0.01em;
-  margin-top: 0.125rem;
+  margin-top: 4px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+  letter-spacing: -0.8px;
+  line-height: 1.2;
 }
 
 .patty {
   display: inline-block;
-  margin-top: 0.5rem;
-  padding: 0.125rem 0.5rem;
-  border: 1px solid var(--border-color);
+  margin-top: 8px;
+  padding: 3px 9px;
+  border: 1px solid var(--line);
   border-radius: 999px;
-  background: var(--surface-muted);
-  font-size: 0.75rem;
-  color: var(--muted-strong);
+  background: var(--cream);
+  font-size: 11px;
+  font-weight: 700;
 }
 
 .prices {
-  margin-top: 0.75rem;
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
   display: flex;
   flex-direction: column;
-  gap: 0.125rem;
+  gap: 2px;
 }
 
 .priceRow {
   display: flex;
   align-items: baseline;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 8px;
 }
 
 .priceRow dt {
-  font-size: 0.8rem;
-  color: var(--muted);
+  font-size: 11px;
+  font-weight: 700;
+  color: #827a6d;
 }
 
 .singlePrice {
-  font-size: 1.15rem;
-  font-weight: 700;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.1;
 }
 
 .setPrice {
-  font-size: 0.9rem;
-  color: var(--muted-strong);
+  font-size: 13px;
+  font-weight: 700;
+  color: #655e55;
 }
 
 .nutrition {
-  margin-top: 0.625rem;
-  font-size: 0.8rem;
-  color: var(--muted);
+  margin-top: 10px;
+  font-size: 12px;
+  color: #655e55;
 }
 
 .compareButton {
-  margin: 0 1rem 1rem;
-  padding: 0.625rem 0;
-  border: 1px solid var(--border-color);
-  border-radius: 8px;
-  background: var(--surface);
-  font-size: 0.875rem;
-  font-weight: 600;
-  color: var(--muted-strong);
+  margin: 14px 16px 16px;
+  padding: 12px 0;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: background 0.15s ease;
 }
 
 .compareButton:hover {
-  border-color: var(--muted);
+  background: var(--mustard);
 }
 
 .compareButtonSelected {
-  background: var(--selected);
-  border-color: var(--selected);
-  color: var(--selected-foreground);
+  background: var(--red);
+  border-color: var(--ink);
+  color: #ffffff;
+}
+
+.compareButtonSelected:hover {
+  background: var(--red-dark);
 }
