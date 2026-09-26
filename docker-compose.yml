@@ -1,0 +1,57 @@
+# 로컬 개발용 구성
+#   docker compose up --build                     backend + frontend (팀 공용 Supabase 사용)
+#   docker compose --profile local-db up --build  위 + 로컬 Postgres (오프라인/스키마 실험용)
+#
+# DATABASE_URL 등 값은 저장소 루트의 .env 에 둔다 (.env.example 참고, .env 는 커밋 금지).
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - '4000:4000'
+    environment:
+      PORT: 4000
+      CORS_ORIGIN: ${CORS_ORIGIN:-http://localhost:3000}
+      DATABASE_URL: ${DATABASE_URL:?루트 .env 에 DATABASE_URL 을 설정하세요 (.env.example 참고)}
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        # 브라우저가 아니라 Next 서버가 프록시할 주소라서 compose 서비스명을 쓴다.
+        # 빌드 시점에 이미지에 고정되므로 값을 바꾸면 재빌드가 필요하다.
+        NEXT_PUBLIC_API_URL: http://backend:4000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    restart: unless-stopped
+
+  # 평소에는 뜨지 않는다. --profile local-db 를 줄 때만 실행된다.
+  db:
+    profiles: ['local-db']
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hamburger
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # 최초 기동 시 파일명 순서대로 자동 적용 (상품 시드는 npm run db:init 로)
+      - ./backend/src/db/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro
+      - ./backend/src/db/indexes.sql:/docker-entrypoint-initdb.d/02-indexes.sql:ro
+      - ./backend/src/db/seed_brands.sql:/docker-entrypoint-initdb.d/03-seed-brands.sql:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:
