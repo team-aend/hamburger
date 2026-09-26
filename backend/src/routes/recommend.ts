@@ -26,48 +26,27 @@ import {
 const router = Router();
 
 /**
- * Supabase DB에서 브랜드(brands) 테이블은 항상 최우선으로 직접 조회하고,
- * 나머지 상품/영양성분 테이블도 DB에 데이터가 있으면 DB 값을, 비어있으면 시드 데이터를 사용
+ * Supabase DB에서 데이터를 조회하며, DATABASE_URL 환경변수가 없으면 getDbPool()에서 에러를 발생시킴
  */
 async function loadDataset() {
-  if (!isDbConfigured()) {
-    return {
-      source: 'memory' as const,
-      brands: seedBrands,
-      categories: seedCategories,
-      ingredients: seedIngredients,
-      tags: seedTags,
-      products: seedProducts,
-      productVariants: seedProductVariants,
-      productPrices: seedProductPrices,
-      nutritions: seedNutritions,
-      productIngredients: seedProductIngredients,
-      productTags: seedProductTags,
-    };
-  }
-
   const pool = getDbPool();
 
-  // 1. brands 테이블은 사용자가 직접 넣은 Supabase DB 데이터를 단독으로 먼저 가져옴
+  // 1. brands 테이블 조회
   let dbBrands: Brand[] = [];
-  try {
-    const brandsRes = await pool.query(
-      `SELECT id, name, slug, logo_url, homepage_url, is_active
-       FROM brands
-       ORDER BY id ASC`
-    );
-    if (brandsRes.rows.length > 0) {
-      dbBrands = brandsRes.rows.map((r) => ({
-        id: Number(r.id),
-        name: r.name,
-        slug: r.slug,
-        logoUrl: r.logo_url ?? undefined,
-        homepageUrl: r.homepage_url ?? undefined,
-        isActive: r.is_active !== false,
-      }));
-    }
-  } catch (err) {
-    console.warn('⚠️ Supabase brands 테이블 단독 조회 오류:', err);
+  const brandsRes = await pool.query(
+    `SELECT id, name, slug, logo_url, homepage_url, is_active
+     FROM brands
+     ORDER BY id ASC`
+  );
+  if (brandsRes.rows.length > 0) {
+    dbBrands = brandsRes.rows.map((r) => ({
+      id: Number(r.id),
+      name: r.name,
+      slug: r.slug,
+      logoUrl: r.logo_url ?? undefined,
+      homepageUrl: r.homepage_url ?? undefined,
+      isActive: r.is_active !== false,
+    }));
   }
 
   try {
@@ -499,75 +478,95 @@ async function getFilteredProducts(query: Request['query']) {
 }
 
 router.get('/filters', async (_req: Request, res: Response) => {
-  const { source, brands, ingredients, tags } = await loadDataset();
-  res.status(200).json({
-    dataSource: source,
-    brands: brands.filter((b) => b.isActive),
-    allBrands: brands,
-    ingredients,
-    tags,
-    calorieRange: {
-      min: 350,
-      max: 1200,
-      step: 50,
-    },
-    priceRange: {
-      min: 4000,
-      max: 12000,
-      step: 500,
-    },
-  });
+  try {
+    const { source, brands, ingredients, tags } = await loadDataset();
+    res.status(200).json({
+      dataSource: source,
+      brands: brands.filter((b) => b.isActive),
+      allBrands: brands,
+      ingredients,
+      tags,
+      calorieRange: {
+        min: 350,
+        max: 1200,
+        step: 50,
+      },
+      priceRange: {
+        min: 4000,
+        max: 12000,
+        step: 500,
+      },
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'DB 조회 오류가 발생했습니다.',
+    });
+  }
 });
 
 router.get('/random', async (req: Request, res: Response) => {
-  const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
-    req.query
-  );
-  const excludeProductId =
-    typeof req.query.excludeProductId === 'string'
-      ? Number(req.query.excludeProductId)
-      : null;
+  try {
+    const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
+      req.query
+    );
+    const excludeProductId =
+      typeof req.query.excludeProductId === 'string'
+        ? Number(req.query.excludeProductId)
+        : null;
 
-  if (filtered.length === 0) {
+    if (filtered.length === 0) {
+      res.status(200).json({
+        dataSource,
+        totalCandidates: 0,
+        picked: null,
+        appliedFilters,
+      });
+      return;
+    }
+
+    let candidatePool = filtered;
+    if (excludeProductId !== null && filtered.length > 1) {
+      const withoutPrev = filtered.filter(
+        (item) => item.id !== excludeProductId
+      );
+      if (withoutPrev.length > 0) {
+        candidatePool = withoutPrev;
+      }
+    }
+
+    const randomIndex = Math.floor(Math.random() * candidatePool.length);
+    const picked = candidatePool[randomIndex];
+
     res.status(200).json({
       dataSource,
-      totalCandidates: 0,
-      picked: null,
+      totalCandidates: filtered.length,
+      picked,
       appliedFilters,
     });
-    return;
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'DB 조회 오류가 발생했습니다.',
+    });
   }
-
-  let candidatePool = filtered;
-  if (excludeProductId !== null && filtered.length > 1) {
-    const withoutPrev = filtered.filter((item) => item.id !== excludeProductId);
-    if (withoutPrev.length > 0) {
-      candidatePool = withoutPrev;
-    }
-  }
-
-  const randomIndex = Math.floor(Math.random() * candidatePool.length);
-  const picked = candidatePool[randomIndex];
-
-  res.status(200).json({
-    dataSource,
-    totalCandidates: filtered.length,
-    picked,
-    appliedFilters,
-  });
 });
 
 router.get('/', async (req: Request, res: Response) => {
-  const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
-    req.query
-  );
+  try {
+    const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
+      req.query
+    );
 
-  res.status(200).json({
-    dataSource,
-    totalCount: filtered.length,
-    appliedFilters,
-    items: filtered,
-  });
+    res.status(200).json({
+      dataSource,
+      totalCount: filtered.length,
+      appliedFilters,
+      items: filtered,
+    });
+  } catch (error) {
+    res.status(500).json({
+      message: error instanceof Error ? error.message : 'DB 조회 오류가 발생했습니다.',
+    });
+  }
 });
 
 export default router;

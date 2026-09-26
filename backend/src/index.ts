@@ -2,7 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/index.js';
-import { isDbConfigured } from './db/pool.js';
+import { getDatabaseUrl, isDbConfigured } from './db/pool.js';
 
 dotenv.config();
 
@@ -26,11 +26,12 @@ app.use('/api', apiRouter);
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
-  console.log(
-    `📦 Database Mode: ${
-      isDbConfigured()
-        ? 'Supabase PostgreSQL Connected (db.lyjsyiguasujjdsltjem.supabase.co)'
-        : 'In-Memory Seed Fallback'
-    }`
-  );
+  if (isDbConfigured()) {
+    const hostPart = getDatabaseUrl().split('@')[1] || 'PostgreSQL';
+    console.log(`📦 Database Mode: Supabase PostgreSQL Connected (${hostPart})`);
+  } else {
+    console.warn(
+      '⚠️ 경고: backend/.env 에 DATABASE_URL이 설정되지 않았습니다. DB 연결을 위해 .env 파일을 설정해 주세요.'
+    );
+  }
 });
