@@ -20,6 +20,7 @@ const router = Router();
  */
 function getFilteredProducts(query: Request['query']) {
   const {
+    keyword: keywordParam,
     brands: brandParam,
     includeIngredients: includeParam,
     excludeIngredients: excludeParam,
@@ -30,6 +31,9 @@ function getFilteredProducts(query: Request['query']) {
     variantType: variantTypeParam,
     sortBy: sortByParam,
   } = query;
+
+  const keyword =
+    typeof keywordParam === 'string' ? keywordParam.trim().toLowerCase() : '';
 
   const selectedBrandSlugs =
     typeof brandParam === 'string' && brandParam.trim().length > 0
@@ -137,6 +141,15 @@ function getFilteredProducts(query: Request['query']) {
 
   // 필터링 적용
   const filtered = enrichedProducts.filter((item) => {
+    // 0. 키워드(메뉴명/브랜드명) 검색 필터
+    if (keyword.length > 0) {
+      const matchedName = item.name.toLowerCase().includes(keyword);
+      const matchedBrand = item.brand.name.toLowerCase().includes(keyword);
+      if (!matchedName && !matchedBrand) {
+        return false;
+      }
+    }
+
     // 1. 브랜드 필터
     if (
       selectedBrandSlugs.length > 0 &&

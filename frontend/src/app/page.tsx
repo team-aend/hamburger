@@ -75,6 +75,7 @@ export default function HomePage() {
   const [metadata, setMetadata] = useState<FilterMetadata | null>(null);
 
   // 사용자 선택 조건 상태
+  const [keyword, setKeyword] = useState<string>('');
   const [selectedBrands, setSelectedBrands] = useState<string[]>([]);
   const [includeIngredients, setIncludeIngredients] = useState<string[]>([
     'chicken-patty',
@@ -112,6 +113,9 @@ export default function HomePage() {
   const buildFilterParams = useCallback(
     (excludeProductId?: number) => {
       const params = new URLSearchParams();
+      if (keyword.trim().length > 0) {
+        params.set('keyword', keyword.trim());
+      }
       if (selectedBrands.length > 0) {
         params.set('brands', selectedBrands.join(','));
       }
@@ -139,6 +143,7 @@ export default function HomePage() {
       return params;
     },
     [
+      keyword,
       selectedBrands,
       includeIngredients,
       excludeIngredients,
@@ -276,6 +281,7 @@ export default function HomePage() {
     maxCal: number | null;
     variant?: 'SINGLE' | 'SET';
   }) => {
+    setKeyword('');
     setSelectedBrands(preset.brands || []);
     setIncludeIngredients(preset.include);
     setExcludeIngredients(preset.exclude);
@@ -287,6 +293,7 @@ export default function HomePage() {
 
   // 조건 전체 초기화
   const resetAllFilters = () => {
+    setKeyword('');
     setSelectedBrands([]);
     setIncludeIngredients([]);
     setExcludeIngredients([]);
@@ -306,6 +313,7 @@ export default function HomePage() {
 
   // 현재 설정된 필터가 하나라도 있는지 여부
   const hasAnyActiveFilter =
+    keyword.trim().length > 0 ||
     selectedBrands.length > 0 ||
     includeIngredients.length > 0 ||
     excludeIngredients.length > 0 ||
@@ -481,6 +489,36 @@ export default function HomePage() {
             >
               초기화
             </button>
+          </div>
+
+          {/* 0. 키워드(버거명/브랜드) 검색 */}
+          <div style={{ marginBottom: '1.4rem' }}>
+            <label
+              style={{
+                display: 'block',
+                fontSize: '0.9rem',
+                fontWeight: 700,
+                marginBottom: '0.45rem',
+              }}
+            >
+              🔍 메뉴명·브랜드 직접 검색
+            </label>
+            <input
+              type="text"
+              placeholder="예: 와퍼, 싸이버거, 치즈, 새우..."
+              value={keyword}
+              onChange={(e) => setKeyword(e.target.value)}
+              style={{
+                width: '100%',
+                padding: '0.58rem 0.8rem',
+                borderRadius: '10px',
+                border: '1px solid var(--border-color)',
+                backgroundColor: 'var(--background)',
+                color: 'var(--foreground)',
+                fontSize: '0.88rem',
+                fontWeight: 500,
+              }}
+            />
           </div>
 
           {/* 1. 기준 판매 형태 (ProductVariant: 단품 vs 세트) */}
@@ -886,16 +924,34 @@ export default function HomePage() {
             </div>
           </div>
 
-          {/* 좌측 패널 하단에도 랜덤 뽑기 버튼 배치 */}
-          <button
-            type="button"
-            disabled={items.length === 0 || loading}
-            onClick={() => handleRandomDraw()}
-            className="btn-random"
-            style={{ width: '100%' }}
-          >
-            🎲 이 조건으로 1개 랜덤 뽑기 ({items.length}개 후보)
-          </button>
+          {/* 좌측 패널 하단: 1) 조건에 맞는 전체 메뉴 검색 버튼 + 2) 랜덤 1개 뽑기 버튼 */}
+          <div style={{ display: 'flex', flexDirection: 'column', gap: '0.55rem' }}>
+            <button
+              type="button"
+              onClick={() => fetchRecommendations()}
+              style={{
+                width: '100%',
+                padding: '0.72rem 1rem',
+                borderRadius: '12px',
+                border: '1px solid var(--foreground)',
+                backgroundColor: 'var(--foreground)',
+                color: 'var(--background)',
+                fontSize: '0.92rem',
+                fontWeight: 700,
+              }}
+            >
+              🔍 조건에 맞는 전체 메뉴 조회 ({items.length}개)
+            </button>
+            <button
+              type="button"
+              disabled={items.length === 0 || loading}
+              onClick={() => handleRandomDraw()}
+              className="btn-random"
+              style={{ width: '100%' }}
+            >
+              🎲 이 조건 중 1개만 랜덤 뽑기 ({items.length}개 후보)
+            </button>
+          </div>
         </aside>
 
         {/* 우측: 현재 선택된 조건 요약 바 + 추천 메뉴 리스트 */}
