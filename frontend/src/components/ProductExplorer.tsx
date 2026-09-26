@@ -8,6 +8,7 @@ import PattyFilter from '@/components/filter/PattyFilter';
 import ProductSort from '@/components/filter/ProductSort';
 import SearchBar from '@/components/filter/SearchBar';
 import ProductGrid from '@/components/product/ProductGrid';
+import SiteHeader from '@/components/SiteHeader';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import {
   MAX_COMPARE_COUNT,
@@ -89,7 +90,10 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
   const selectedIds = selectedProducts.map((product) => product.id);
 
   return (
-    <div className={styles.page}>
+    // compare-shell: globals.css 에서 이 화면에만 중립 배경/토큰을 적용하기 위한 스코프
+    <div className={`compare-shell ${styles.page}`}>
+      <SiteHeader activeMenu="compare" />
+
       <main
         className={`${styles.main} ${
           selectedProducts.length > 0 ? styles.mainWithBar : ''
