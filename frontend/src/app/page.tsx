@@ -1,7 +1,6 @@
 'use client';
 
 import Link from 'next/link';
-import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SiteHeader from '@/components/SiteHeader';
 import { Burger, burgers } from '@/data/burgers';
@@ -21,7 +20,6 @@ const shuffle = <T,>(items: T[]) => {
 const roundLabel = (count: number) => count === 2 ? '결승' : `${count}강`;
 
 export default function HomePage() {
-  const router = useRouter();
   const [roundSize, setRoundSize] = useState<RoundSize>(8);
   const [phase, setPhase] = useState<Phase>('setup');
   const [contestants, setContestants] = useState<Burger[]>([]);
@@ -69,10 +67,7 @@ export default function HomePage() {
 
   return (
     <main className="worldcup-shell">
-      <SiteHeader activeMenu="worldcup" onSelectMenu={(menu) => {
-        if (menu === 'worldcup') resetToSetup();
-        else if (phase !== 'playing' || window.confirm('진행 중인 월드컵을 종료하고 랭킹으로 이동할까요?')) router.push('/ranking');
-      }} />
+      <SiteHeader activeMenu="worldcup" onSelectMenu={resetToSetup} />
 
       {phase === 'setup' && (
         <section className="start-screen" aria-labelledby="start-title">
@@ -91,6 +86,7 @@ export default function HomePage() {
               </div>
             </div>
             <button className="start-button" type="button" onClick={() => startGame()}>{roundSize}강 월드컵 시작하기<span aria-hidden="true">→</span></button>
+            <Link className="ranking-link-button" href="/ranking">랭킹 확인하기 <span aria-hidden="true">→</span></Link>
           </div>
           <BurgerArtwork />
         </section>
@@ -164,7 +160,7 @@ function ResultScreen({ winner, roundSize, onReplay, onReset }: { winner: Burger
         <span className="winner-label">TOURNAMENT WINNER</span>
         <h1 id="result-title">당신의<br /><strong>최애 버거</strong>는</h1>
         <div className="winner-name"><small>{winner.brand}</small><h2>{winner.name}</h2><p>{winner.description}</p></div>
-        <Link className="ranking-result-link" href="/ranking">랭킹 보기 →</Link>
+        <Link className="ranking-link-button" href="/ranking">랭킹 확인하기 <span aria-hidden="true">→</span></Link>
         <div className="result-actions">
           <button className="replay-button" type="button" onClick={onReplay}><span>{roundSize}강 다시 하기</span><b>↻</b></button>
           <button className="reset-button" type="button" onClick={onReset}>다른 강수 선택하기</button>

@@ -14,7 +14,7 @@ export default function RankingPage() {
 
   return (
     <main className="worldcup-shell ranking-shell">
-      <SiteHeader activeMenu="ranking" />
+      <SiteHeader />
       <section className="ranking-content" aria-labelledby="ranking-title">
         <div className="ranking-heading">
           <span className="eyebrow">BURGER PICK · HALL OF FAME</span>
