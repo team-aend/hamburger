@@ -1,7 +1,7 @@
 import pg from 'pg';
-import dotenv from 'dotenv';
+import { loadBackendEnvironment } from './environment.js';
 
-dotenv.config();
+loadBackendEnvironment();
 
 export function getDatabaseUrl(): string {
   const url = process.env.DATABASE_URL?.trim();

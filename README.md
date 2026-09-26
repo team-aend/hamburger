@@ -68,7 +68,7 @@ npm run build
 {"eligibleProductCount":18,"roundOptions":[{"roundSize":8,"available":true},{"roundSize":16,"available":true}]}
 ```
 
-`backend/.env`에 `DATABASE_URL`을 설정해야 합니다. 연결은 인증서를 검증하는 TLS를 사용하며, 별도 CA가 필요하면 `DATABASE_SSL_CA`에 PEM 인증서를 설정합니다. URL의 SSL 옵션으로 인증서 검증을 비활성화하지 마세요. 설정이 없으면 HTTP 503 `DATABASE_NOT_CONFIGURED`, 조회 실패 시 HTTP 503 `DATABASE_UNAVAILABLE`을 반환합니다. DB 오류를 목업 데이터로 대체하지 않습니다.
+`DATABASE_URL`은 서버 환경변수 → `backend/.env` → `backend/.env.example` 순서로 우선 적용합니다. `.env`가 없어도 `.env.example`의 설정으로 연결합니다. 파일 경로는 실행 디렉터리와 무관하게 backend 폴더를 기준으로 찾습니다. 연결은 인증서를 검증하는 TLS를 사용하며, 별도 CA가 필요하면 `DATABASE_SSL_CA`에 PEM 인증서를 설정합니다. URL의 SSL 옵션으로 인증서 검증을 비활성화하지 마세요. 설정이 없으면 HTTP 503 `DATABASE_NOT_CONFIGURED`, 조회 실패 시 HTTP 503 `DATABASE_UNAVAILABLE`을 반환합니다. DB 오류를 목업 데이터로 대체하지 않습니다.
 
 테스트: `npm run test --workspace=backend`. SQL 통합 테스트는 격리된 테스트 PostgreSQL의 `TEST_DATABASE_URL`을 설정하면 실행되며, 미설정 시 해당 테스트만 건너뜁니다. 테스트는 연결별 임시 테이블만 생성합니다.
 
