@@ -186,64 +186,87 @@ export default function RecommendPage() {
     ]
   );
 
-  // 1. 초기 필터 메타데이터 및 Supabase brands 테이블 데이터 로드
+  const metadataLoadedRef = useRef<boolean>(false);
+  const abortControllerRef = useRef<AbortController | null>(null);
+
+  // 1. 수동 DB/캐시 강제 동기화 버튼 핸들러 (?refresh=true로 Node.js 인메모리 캐시 갱신)
   const fetchFiltersAndBrands = useCallback(async () => {
-    try {
-      const [filtersRes, brandsRes] = await Promise.all([
-        fetch('/api/recommend/filters'),
-        fetch('/api/brands'),
-      ]);
-
-      if (!filtersRes.ok) {
-        throw new Error('필터 데이터를 불러오지 못했습니다.');
-      }
-
-      const filterData: FilterMetadata = await filtersRes.json();
-
-      if (brandsRes.ok) {
-        const brandsData = await brandsRes.json();
-        if (Array.isArray(brandsData.brands) && brandsData.brands.length > 0) {
-          filterData.brands = brandsData.brands;
-        }
-      }
-
-      setMetadata(filterData);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : '백엔드 서버(Port 4000) 연결을 확인해 주세요.'
-      );
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchFiltersAndBrands();
-  }, [fetchFiltersAndBrands]);
-
-  // 2. 조건 변경 시 맞춤 추천 메뉴 조회
-  const fetchRecommendations = useCallback(async () => {
     setLoading(true);
     try {
       const params = buildFilterParams();
+      params.set('includeFilters', 'true');
+      params.set('refresh', 'true');
+
       const res = await fetch(`/api/recommend?${params.toString()}`);
-      if (!res.ok) throw new Error('추천 메뉴 조회에 실패했습니다.');
+      if (!res.ok) {
+        throw new Error('Supabase DB 동기화에 실패했습니다.');
+      }
       const data = await res.json();
+      if (data.filters) {
+        setMetadata(data.filters);
+        metadataLoadedRef.current = true;
+      }
       setItems(data.items || []);
       setError(null);
     } catch (err) {
       setError(
         err instanceof Error
           ? err.message
-          : '추천 결과를 불러오는 중 오류가 발생했습니다.'
+          : '백엔드 서버(Port 4000) 연결을 확인해 주세요.'
       );
     } finally {
       setLoading(false);
     }
   }, [buildFilterParams]);
 
+  // 2. 초기 진입(필터 메타데이터 + 추천 결과 1회 통합 호출) 및 조건 변경 시 맞춤 추천 메뉴 조회
+  const fetchRecommendations = useCallback(async () => {
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
+    const controller = new AbortController();
+    abortControllerRef.current = controller;
+
+    setLoading(true);
+    try {
+      const params = buildFilterParams();
+      if (!metadataLoadedRef.current) {
+        params.set('includeFilters', 'true');
+      }
+
+      const res = await fetch(`/api/recommend?${params.toString()}`, {
+        signal: controller.signal,
+      });
+      if (!res.ok) throw new Error('추천 메뉴 조회에 실패했습니다.');
+      const data = await res.json();
+
+      if (data.filters) {
+        setMetadata(data.filters);
+        metadataLoadedRef.current = true;
+      }
+      setItems(data.items || []);
+      setError(null);
+    } catch (err) {
+      if (err instanceof DOMException && err.name === 'AbortError') {
+        return;
+      }
+      setError(
+        err instanceof Error
+          ? err.message
+          : '추천 결과를 불러오는 중 오류가 발생했습니다.'
+      );
+    } finally {
+      if (abortControllerRef.current === controller) {
+        setLoading(false);
+      }
+    }
+  }, [buildFilterParams]);
+
   useEffect(() => {
     fetchRecommendations();
+    return () => {
+      abortControllerRef.current?.abort();
+    };
   }, [fetchRecommendations]);
 
   // 3. 현재 조건(또는 전체)에서 랜덤 1개 뽑기 실행
