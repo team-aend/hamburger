@@ -99,7 +99,7 @@ export default function HomePage() {
       )}
 
       {phase === 'finished' && winner && (
-        <section className="result-placeholder" aria-live="polite"><span>WINNER</span><h1>{winner.name}</h1></section>
+        <ResultScreen winner={winner} roundSize={roundSize} onReplay={() => startGame(roundSize)} onReset={resetToSetup} />
       )}
 
       <footer className="site-footer"><span>© 2026 BURGER PICK</span><span>취향에는 정답이 없습니다.</span></footer>
@@ -140,6 +140,34 @@ function BurgerCard({ burger, side, onSelect }: { burger: Burger; side: 'A' | 'B
       <span className="burger-photo" aria-hidden="true"><i>{burger.emoji}</i><b>🍔</b></span>
       <span className="card-copy"><small>{burger.brand}</small><strong>{burger.name}</strong><em>{burger.description}</em><span>이 버거 선택하기 <b>→</b></span></span>
     </button>
+  );
+}
+
+function ResultScreen({ winner, roundSize, onReplay, onReset }: { winner: Burger; roundSize: RoundSize; onReplay: () => void; onReset: () => void }) {
+  return (
+    <section className="result-screen" aria-labelledby="result-title" aria-live="polite">
+      <div className="confetti" aria-hidden="true">
+        {Array.from({ length: 18 }, (_, index) => <i key={index} />)}
+      </div>
+
+      <div className="winner-visual" style={{ '--accent': winner.accent } as React.CSSProperties}>
+        <span className="winner-ring ring-one" /><span className="winner-ring ring-two" />
+        <span className="crown" aria-hidden="true">♛</span>
+        <span className="winner-burger" aria-hidden="true">🍔</span>
+        <span className="winner-flavor" aria-hidden="true">{winner.emoji}</span>
+        <span className="winner-seal">MY<br />NO.1</span>
+      </div>
+
+      <div className="winner-copy">
+        <span className="winner-label">TOURNAMENT WINNER</span>
+        <h1 id="result-title">당신의<br /><strong>최애 버거</strong>는</h1>
+        <div className="winner-name"><small>{winner.brand}</small><h2>{winner.name}</h2><p>{winner.description}</p></div>
+        <div className="result-actions">
+          <button className="replay-button" type="button" onClick={onReplay}><span>{roundSize}강 다시 하기</span><b>↻</b></button>
+          <button className="reset-button" type="button" onClick={onReset}>다른 강수 선택하기</button>
+        </div>
+      </div>
+    </section>
   );
 }
 
