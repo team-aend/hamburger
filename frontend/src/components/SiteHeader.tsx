@@ -3,7 +3,7 @@
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-type MenuKey = 'worldcup';
+type MenuKey = 'worldcup' | 'recommend';
 
 type SiteHeaderProps = {
   activeMenu?: MenuKey;
@@ -12,13 +12,14 @@ type SiteHeaderProps = {
 
 const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
   { key: 'worldcup', label: '햄버거 월드컵', badge: 'PLAY' },
+  { key: 'recommend', label: '버거 검색 · 추천' },
 ];
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
   const router = useRouter();
   const selectMenu = (menu: MenuKey) => {
     if (onSelectMenu) onSelectMenu(menu);
-    else router.push('/');
+    else router.push(menu === 'recommend' ? '/recommend' : '/');
   };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);

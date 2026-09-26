@@ -1,4 +1,5 @@
 import { Router, Request, Response } from 'express';
+import recommendRouter from './recommend.js';
 
 const router = Router();
 
@@ -15,5 +16,7 @@ router.get('/hello', (_req: Request, res: Response) => {
     message: '안녕하세요! Node.js(Express) + TypeScript 백엔드 서버가 정상 동작 중입니다. 🍔',
   });
 });
+
+router.use('/recommend', recommendRouter);
 
 export default router;

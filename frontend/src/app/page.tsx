@@ -1,6 +1,7 @@
 'use client';
 
 import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 import { useState } from 'react';
 import SiteHeader from '@/components/SiteHeader';
 import { Burger, burgers } from '@/data/burgers';
@@ -20,6 +21,7 @@ const shuffle = <T,>(items: T[]) => {
 const roundLabel = (count: number) => count === 2 ? '결승' : `${count}강`;
 
 export default function HomePage() {
+  const router = useRouter();
   const [roundSize, setRoundSize] = useState<RoundSize>(8);
   const [phase, setPhase] = useState<Phase>('setup');
   const [contestants, setContestants] = useState<Burger[]>([]);
@@ -67,7 +69,10 @@ export default function HomePage() {
 
   return (
     <main className="worldcup-shell">
-      <SiteHeader activeMenu="worldcup" onSelectMenu={resetToSetup} />
+      <SiteHeader activeMenu="worldcup" onSelectMenu={(menu) => {
+        if (menu === 'worldcup') resetToSetup();
+        else if (phase !== 'playing' || window.confirm('진행 중인 월드컵을 종료하고 버거 검색으로 이동할까요?')) router.push('/recommend');
+      }} />
 
       {phase === 'setup' && (
         <section className="start-screen" aria-labelledby="start-title">
