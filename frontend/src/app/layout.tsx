@@ -1,10 +1,9 @@
 import type { Metadata } from 'next';
-import Header from '@/components/Header';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: '햄버거 비교 | Hamburger',
-  description: '여러 브랜드의 햄버거 메뉴를 한 화면에서 찾고 비교하세요.',
+  title: 'Burger Pick | 햄버거 월드컵',
+  description: '두 버거 중 하나를 선택해 나만의 최애 버거를 찾아보세요.',
 };
 
 export default function RootLayout({
@@ -14,10 +13,7 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>
-        <Header />
-        {children}
-      </body>
+      <body>{children}</body>
     </html>
   );
 }

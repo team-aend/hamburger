@@ -1,0 +1,184 @@
+.recommend-shell {
+  --background: #f6f7f9;
+  --foreground: #181a20;
+  --card-bg: #ffffff;
+  --border-color: #e2e6ee;
+  --primary: #ff5c28;
+  --primary-soft: #fff1ec;
+  --include-color: #0ca678;
+  --include-soft: #e6fcf5;
+  --exclude-color: #e03131;
+  --exclude-soft: #fff5f5;
+  --muted: #646b78;
+}
+
+@media (prefers-color-scheme: dark) {
+  .recommend-shell {
+    --background: #0e1015;
+    --foreground: #f1f3f5;
+    --card-bg: #171a22;
+    --border-color: #292e3b;
+    --primary: #ff7448;
+    --primary-soft: rgba(255, 116, 72, 0.15);
+    --include-color: #20c997;
+    --include-soft: rgba(32, 201, 151, 0.15);
+    --exclude-color: #ff6b6b;
+    --exclude-soft: rgba(255, 107, 107, 0.15);
+    --muted: #9aa1b1;
+  }
+}
+
+
+
+
+
+.recommend-shell button {
+  font-family: inherit;
+  cursor: pointer;
+}
+
+.recommend-shell .container {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 2rem 1.25rem 4rem;
+}
+
+.recommend-shell .layout-grid {
+  display: grid;
+  grid-template-columns: 380px 1fr;
+  gap: 1.75rem;
+  align-items: start;
+}
+
+@media (max-width: 920px) {
+  .recommend-shell .layout-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.recommend-shell .card {
+  background: var(--card-bg);
+  border: 1px solid var(--border-color);
+  border-radius: 16px;
+  padding: 1.5rem;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+}
+
+.recommend-shell .chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+  padding: 0.42rem 0.78rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  border: 1px solid var(--border-color);
+  background: var(--card-bg);
+  color: var(--foreground);
+  transition: all 0.15s ease;
+}
+
+.recommend-shell .chip:hover {
+  border-color: var(--primary);
+}
+
+.recommend-shell .chip-active-brand {
+  background: var(--primary);
+  color: #ffffff;
+  border-color: var(--primary);
+  font-weight: 600;
+}
+
+.recommend-shell .chip-include {
+  background: var(--include-soft);
+  color: var(--include-color);
+  border-color: var(--include-color);
+  font-weight: 600;
+}
+
+.recommend-shell .chip-exclude {
+  background: var(--exclude-soft);
+  color: var(--exclude-color);
+  border-color: var(--exclude-color);
+  font-weight: 600;
+}
+
+.recommend-shell .results-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+  gap: 1.15rem;
+}
+
+.recommend-shell .btn-random {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  padding: 0.68rem 1.2rem;
+  border-radius: 12px;
+  border: none;
+  background: linear-gradient(135deg, #ff5c28 0%, #ff881b 100%);
+  color: #ffffff;
+  font-size: 0.92rem;
+  font-weight: 700;
+  box-shadow: 0 6px 18px rgba(255, 92, 40, 0.28);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+}
+
+.recommend-shell .btn-random:hover:not(:disabled) {
+  transform: translateY(-1px);
+  box-shadow: 0 8px 22px rgba(255, 92, 40, 0.38);
+}
+
+.recommend-shell .btn-random:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  box-shadow: none;
+}
+
+.recommend-shell .modal-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(10, 12, 18, 0.65);
+  backdrop-filter: blur(4px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 1.25rem;
+  z-index: 1000;
+}
+
+.recommend-shell .modal-card {
+  width: 100%;
+  max-width: 520px;
+  background: var(--card-bg);
+  border: 2px solid var(--primary);
+  border-radius: 20px;
+  padding: 1.75rem;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.25);
+  animation: popIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@keyframes popIn {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+html:has(.recommend-shell), body:has(.recommend-shell) { min-width:320px; }
+.recommend-shell { min-height:100vh; background:var(--background); color:var(--foreground); font-family:-apple-system,BlinkMacSystemFont,"Pretendard","Segoe UI",sans-serif; line-height:1.5; }
+.recommend-header { padding:0 64px; }
+.recommend-shell .main-navigation { line-height:normal; }
+.recommend-shell .modal-card { max-height:calc(100dvh - 40px); overflow-y:auto; }
+@media (max-width:600px) {
+  .recommend-header { padding:0 20px; }
+  .recommend-shell .main-navigation { width:min(340px,100vw); }
+  .recommend-shell .results-grid { grid-template-columns:minmax(0,1fr); }
+  .recommend-shell .layout-grid { min-width:0; }
+  .recommend-shell .layout-grid > * { min-width:0; }
+}
