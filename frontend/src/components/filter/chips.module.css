@@ -1,0 +1,27 @@
+.group {
+  display: flex;
+  gap: 0.5rem;
+  padding-bottom: 0.25rem;
+}
+
+.chip {
+  flex: 0 0 auto;
+  padding: 0.5rem 0.875rem;
+  border: 1px solid var(--border-color);
+  border-radius: 999px;
+  background: var(--surface);
+  font-size: 0.875rem;
+  color: var(--muted-strong);
+  white-space: nowrap;
+}
+
+.chip:hover {
+  border-color: var(--muted);
+}
+
+.chipSelected {
+  background: var(--selected);
+  border-color: var(--selected);
+  color: var(--selected-foreground);
+  font-weight: 600;
+}

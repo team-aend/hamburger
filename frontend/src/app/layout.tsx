@@ -1,9 +1,10 @@
 import type { Metadata } from 'next';
+import Header from '@/components/Header';
 import './globals.css';
 
 export const metadata: Metadata = {
-  title: 'Hamburger Project',
-  description: 'Next.js Frontend + Node.js (Express) Backend with TypeScript',
+  title: '햄버거 비교 | Hamburger',
+  description: '여러 브랜드의 햄버거 메뉴를 한 화면에서 찾고 비교하세요.',
 };
 
 export default function RootLayout({
@@ -13,7 +14,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="ko">
-      <body>{children}</body>
+      <body>
+        <Header />
+        {children}
+      </body>
     </html>
   );
 }

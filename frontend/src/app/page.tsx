@@ -1,105 +1,20 @@
-'use client';
+import ProductExplorer from '@/components/ProductExplorer';
+import { PRODUCTS } from '@/data/products';
 
-import { useEffect, useState } from 'react';
-
-interface HealthResponse {
-  status: string;
-  service: string;
-  timestamp: string;
-}
-
+/**
+ * Server Component.
+ *
+ * 현재는 하드코딩된 Mock Data(data/products.ts)를 그대로 내려준다.
+ * Backend API 가 준비되면 Mock Data 교체는 이 함수 한 곳에서만 하면 되고,
+ * ProductExplorer 이하 컴포넌트는 수정할 필요가 없다.
+ *
+ * TODO(API):
+ *   export default async function HomePage() {
+ *     const res = await fetch('http://localhost:4000/api/products', { cache: 'no-store' });
+ *     const products: Product[] = await res.json();
+ *     return <ProductExplorer products={products} />;
+ *   }
+ */
 export default function HomePage() {
-  const [message, setMessage] = useState<string>('백엔드 연결 확인 중...');
-  const [health, setHealth] = useState<HealthResponse | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  useEffect(() => {
-    const fetchBackendData = async () => {
-      try {
-        const [helloRes, healthRes] = await Promise.all([
-          fetch('/api/hello'),
-          fetch('/api/health'),
-        ]);
-
-        if (!helloRes.ok || !healthRes.ok) {
-          throw new Error('백엔드 응답 실패');
-        }
-
-        const helloData = await helloRes.json();
-        const healthData = await healthRes.json();
-
-        setMessage(helloData.message);
-        setHealth(healthData);
-        setError(null);
-      } catch (err) {
-        setError(
-          err instanceof Error
-            ? err.message
-            : '백엔드 서버(Port 4000)와 연결할 수 없습니다.'
-        );
-      }
-    };
-
-    fetchBackendData();
-  }, []);
-
-  return (
-    <main
-      style={{
-        minHeight: '100vh',
-        display: 'flex',
-        flexDirection: 'column',
-        alignItems: 'center',
-        justifyContent: 'center',
-        padding: '2rem',
-      }}
-    >
-      <div
-        style={{
-          maxWidth: '600px',
-          width: '100%',
-          backgroundColor: 'var(--card-bg)',
-          border: '1px solid var(--border-color)',
-          borderRadius: '16px',
-          padding: '2.5rem',
-          boxShadow: '0 4px 20px rgba(0, 0, 0, 0.08)',
-        }}
-      >
-        <h1 style={{ fontSize: '2rem', marginBottom: '0.5rem' }}>
-          🍔 Hamburger Project
-        </h1>
-        <p style={{ opacity: 0.75, marginBottom: '2rem' }}>
-          Next.js (TypeScript) + Node.js Express (TypeScript) 기본 세팅
-        </p>
-
-        <section
-          style={{
-            padding: '1.25rem',
-            borderRadius: '12px',
-            border: '1px solid var(--border-color)',
-            backgroundColor: 'var(--background)',
-          }}
-        >
-          <h2 style={{ fontSize: '1.1rem', marginBottom: '0.75rem' }}>
-            백엔드 API 연동 상태
-          </h2>
-          {error ? (
-            <p style={{ color: '#e03131', fontWeight: 500 }}>⚠️ {error}</p>
-          ) : (
-            <>
-              <p style={{ fontWeight: 500, marginBottom: '0.5rem' }}>
-                {message}
-              </p>
-              {health && (
-                <p style={{ fontSize: '0.85rem', opacity: 0.65 }}>
-                  Service: {health.service} | Status: {health.status} | Time:{' '}
-                  {new Date(health.timestamp).toLocaleTimeString('ko-KR')}
-                </p>
-              )}
-            </>
-          )}
-        </section>
-      </div>
-    </main>
-  );
+  return <ProductExplorer products={PRODUCTS} />;
 }
