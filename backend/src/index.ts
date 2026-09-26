@@ -2,6 +2,7 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/index.js';
+import { isDbConfigured } from './db/pool.js';
 
 dotenv.config();
 
@@ -25,4 +26,11 @@ app.use('/api', apiRouter);
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+  console.log(
+    `📦 Database Mode: ${
+      isDbConfigured()
+        ? 'Supabase PostgreSQL Connected (db.lyjsyiguasujjdsltjem.supabase.co)'
+        : 'In-Memory Seed Fallback'
+    }`
+  );
 });

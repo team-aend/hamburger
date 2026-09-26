@@ -1,24 +1,213 @@
 import { Router, Request, Response } from 'express';
+import { getDbPool, isDbConfigured } from '../db/pool.js';
 import {
-  brands,
-  categories,
-  ingredients,
-  nutritions,
-  productIngredients,
-  productPrices,
-  products,
-  productTags,
-  productVariants,
-  tags,
+  brands as seedBrands,
+  categories as seedCategories,
+  ingredients as seedIngredients,
+  nutritions as seedNutritions,
+  productIngredients as seedProductIngredients,
+  productPrices as seedProductPrices,
+  products as seedProducts,
+  productTags as seedProductTags,
+  productVariants as seedProductVariants,
+  tags as seedTags,
+  type Brand,
+  type Category,
+  type Ingredient,
+  type Nutrition,
+  type Product,
+  type ProductIngredient,
+  type ProductPrice,
+  type ProductTag,
+  type ProductVariant,
+  type Tag,
 } from '../data/database.js';
 
 const router = Router();
 
 /**
- * 공통 필터링 헬퍼 함수
- * GET /api/recommend 및 GET /api/recommend/random 에서 동일하게 사용
+ * DATABASE_URL 설정 시 Supabase PostgreSQL에서 실시간 데이터를 조회하고,
+ * 미설정 시(또는 연결 실패 시) 로컬 시드 데이터로 자동 폴백
  */
-function getFilteredProducts(query: Request['query']) {
+async function loadDataset() {
+  if (!isDbConfigured()) {
+    return {
+      source: 'memory' as const,
+      brands: seedBrands,
+      categories: seedCategories,
+      ingredients: seedIngredients,
+      tags: seedTags,
+      products: seedProducts,
+      productVariants: seedProductVariants,
+      productPrices: seedProductPrices,
+      nutritions: seedNutritions,
+      productIngredients: seedProductIngredients,
+      productTags: seedProductTags,
+    };
+  }
+
+  try {
+    const pool = getDbPool();
+    const [
+      brandsRes,
+      categoriesRes,
+      ingredientsRes,
+      tagsRes,
+      productsRes,
+      variantsRes,
+      pricesRes,
+      nutritionRes,
+      prodIngRes,
+      prodTagsRes,
+    ] = await Promise.all([
+      pool.query('SELECT id, name, slug, is_active FROM brands ORDER BY id'),
+      pool.query('SELECT id, name, slug FROM categories ORDER BY id'),
+      pool.query('SELECT id, name, slug, ingredient_group FROM ingredients ORDER BY id'),
+      pool.query('SELECT id, name, slug FROM tags ORDER BY id'),
+      pool.query(
+        'SELECT id, brand_id, category_id, name, slug, description, status, is_limited FROM products ORDER BY id'
+      ),
+      pool.query(
+        'SELECT id, product_id, name, variant_type, is_default, is_active FROM product_variants ORDER BY id'
+      ),
+      pool.query(
+        'SELECT id, product_variant_id, price, channel, started_at, ended_at FROM product_prices WHERE ended_at IS NULL ORDER BY id'
+      ),
+      pool.query(
+        'SELECT id, product_variant_id, serving_size_g, calories_kcal, protein_g, sugar_g, saturated_fat_g, sodium_mg FROM nutrition ORDER BY id'
+      ),
+      pool.query(
+        'SELECT product_id, ingredient_id, sort_order FROM product_ingredients ORDER BY product_id, sort_order'
+      ),
+      pool.query('SELECT product_id, tag_id FROM product_tags'),
+    ]);
+
+    const brands: Brand[] = brandsRes.rows.map((r) => ({
+      id: Number(r.id),
+      name: r.name,
+      slug: r.slug,
+      isActive: Boolean(r.is_active),
+    }));
+
+    const categories: Category[] = categoriesRes.rows.map((r) => ({
+      id: Number(r.id),
+      name: r.name,
+      slug: r.slug,
+    }));
+
+    const ingredients: Ingredient[] = ingredientsRes.rows.map((r) => ({
+      id: Number(r.id),
+      name: r.name,
+      slug: r.slug,
+      group: r.ingredient_group,
+    }));
+
+    const tags: Tag[] = tagsRes.rows.map((r) => ({
+      id: Number(r.id),
+      name: r.name,
+      slug: r.slug,
+    }));
+
+    const products: Product[] = productsRes.rows.map((r) => ({
+      id: Number(r.id),
+      brandId: Number(r.brand_id),
+      categoryId: Number(r.category_id),
+      name: r.name,
+      slug: r.slug,
+      description: r.description ?? '',
+      status: r.status,
+      isLimited: Boolean(r.is_limited),
+    }));
+
+    const productVariants: ProductVariant[] = variantsRes.rows.map((r) => ({
+      id: Number(r.id),
+      productId: Number(r.product_id),
+      name: r.name,
+      variantType: r.variant_type,
+      isDefault: Boolean(r.is_default),
+      isActive: Boolean(r.is_active),
+    }));
+
+    const productPrices: ProductPrice[] = pricesRes.rows.map((r) => ({
+      id: Number(r.id),
+      productVariantId: Number(r.product_variant_id),
+      price: Number(r.price),
+      channel: r.channel,
+      startedAt: String(r.started_at),
+      endedAt: r.ended_at ? String(r.ended_at) : null,
+    }));
+
+    const nutritions: Nutrition[] = nutritionRes.rows.map((r) => ({
+      id: Number(r.id),
+      productVariantId: Number(r.product_variant_id),
+      servingSizeG: Number(r.serving_size_g ?? 0),
+      caloriesKcal: Number(r.calories_kcal ?? 0),
+      proteinG: Number(r.protein_g ?? 0),
+      sugarG: Number(r.sugar_g ?? 0),
+      saturatedFatG: Number(r.saturated_fat_g ?? 0),
+      sodiumMg: Number(r.sodium_mg ?? 0),
+    }));
+
+    const productIngredients: ProductIngredient[] = prodIngRes.rows.map((r) => ({
+      productId: Number(r.product_id),
+      ingredientId: Number(r.ingredient_id),
+      sortOrder: Number(r.sort_order ?? 0),
+    }));
+
+    const productTags: ProductTag[] = prodTagsRes.rows.map((r) => ({
+      productId: Number(r.product_id),
+      tagId: Number(r.tag_id),
+    }));
+
+    return {
+      source: 'supabase' as const,
+      brands,
+      categories,
+      ingredients,
+      tags,
+      products,
+      productVariants,
+      productPrices,
+      nutritions,
+      productIngredients,
+      productTags,
+    };
+  } catch (err) {
+    console.warn('⚠️ Supabase DB 조회 실패로 인메모리 시드 데이터를 사용합니다:', err);
+    return {
+      source: 'memory' as const,
+      brands: seedBrands,
+      categories: seedCategories,
+      ingredients: seedIngredients,
+      tags: seedTags,
+      products: seedProducts,
+      productVariants: seedProductVariants,
+      productPrices: seedProductPrices,
+      nutritions: seedNutritions,
+      productIngredients: seedProductIngredients,
+      productTags: seedProductTags,
+    };
+  }
+}
+
+/**
+ * 공통 필터링 헬퍼 함수
+ */
+async function getFilteredProducts(query: Request['query']) {
+  const {
+    source,
+    brands,
+    categories,
+    ingredients,
+    tags,
+    products,
+    productVariants,
+    productPrices,
+    nutritions,
+    productIngredients,
+    productTags,
+  } = await loadDataset();
+
   const {
     keyword: keywordParam,
     brands: brandParam,
@@ -74,14 +263,12 @@ function getFilteredProducts(query: Request['query']) {
   const sortBy =
     typeof sortByParam === 'string' ? sortByParam : 'calories_asc';
 
-  // Product -> Brand, Category, Ingredients, Variants(SINGLE/SET) -> Prices, Nutrition 조인
   const enrichedProducts = products
     .filter((p) => p.status === 'ACTIVE')
     .map((product) => {
       const brand = brands.find((b) => b.id === product.brandId)!;
       const category = categories.find((c) => c.id === product.categoryId)!;
 
-      // 상품의 재료 목록
       const prodIngRows = productIngredients
         .filter((pi) => pi.productId === product.id)
         .sort((a, b) => a.sortOrder - b.sortOrder);
@@ -89,13 +276,11 @@ function getFilteredProducts(query: Request['query']) {
         .map((pi) => ingredients.find((i) => i.id === pi.ingredientId))
         .filter((i): i is NonNullable<typeof i> => Boolean(i));
 
-      // 상품의 태그 목록
       const prodTagRows = productTags.filter((pt) => pt.productId === product.id);
       const prodTags = prodTagRows
         .map((pt) => tags.find((t) => t.id === pt.tagId))
         .filter((t): t is NonNullable<typeof t> => Boolean(t));
 
-      // 상품의 Variant(단품/세트) 및 가격/영양성분
       const variants = productVariants
         .filter((v) => v.productId === product.id && v.isActive)
         .map((v) => {
@@ -139,9 +324,7 @@ function getFilteredProducts(query: Request['query']) {
       };
     });
 
-  // 필터링 적용
   const filtered = enrichedProducts.filter((item) => {
-    // 0. 키워드(메뉴명/브랜드명) 검색 필터
     if (keyword.length > 0) {
       const matchedName = item.name.toLowerCase().includes(keyword);
       const matchedBrand = item.brand.name.toLowerCase().includes(keyword);
@@ -150,7 +333,6 @@ function getFilteredProducts(query: Request['query']) {
       }
     }
 
-    // 1. 브랜드 필터
     if (
       selectedBrandSlugs.length > 0 &&
       !selectedBrandSlugs.includes(item.brand.slug)
@@ -160,7 +342,6 @@ function getFilteredProducts(query: Request['query']) {
 
     const itemIngredientSlugs = item.ingredients.map((i) => i.slug);
 
-    // 2. 포함할 재료(Include) 필터 — 선택한 포함 재료가 모두 들어있는지 확인
     if (includeSlugs.length > 0) {
       const hasAllIncluded = includeSlugs.every((slug) =>
         itemIngredientSlugs.includes(slug)
@@ -170,7 +351,6 @@ function getFilteredProducts(query: Request['query']) {
       }
     }
 
-    // 3. 제외할 재료(Exclude, "OO 빼고") 필터 — 선택한 제외 재료가 하나라도 들어있으면 제외
     if (excludeSlugs.length > 0) {
       const hasAnyExcluded = excludeSlugs.some((slug) =>
         itemIngredientSlugs.includes(slug)
@@ -180,7 +360,6 @@ function getFilteredProducts(query: Request['query']) {
       }
     }
 
-    // 4. 금액(minPrice ~ maxPrice) 범위 필터 — 선택된 판매형태(단품/세트) 및 채널(매장/배달) 기준
     const itemPrice =
       targetPriceChannel === 'DELIVERY'
         ? item.activeVariant.prices.delivery
@@ -202,7 +381,6 @@ function getFilteredProducts(query: Request['query']) {
       return false;
     }
 
-    // 5. 칼로리(Calories) 필터 — 선택된 판매형태(단품/세트)의 칼로리 기준
     if (
       maxCalories !== null &&
       !Number.isNaN(maxCalories) &&
@@ -214,7 +392,6 @@ function getFilteredProducts(query: Request['query']) {
     return true;
   });
 
-  // 정렬 적용
   filtered.sort((a, b) => {
     const getPrice = (entry: (typeof filtered)[number]) =>
       targetPriceChannel === 'DELIVERY'
@@ -238,7 +415,6 @@ function getFilteredProducts(query: Request['query']) {
         b.activeVariant.nutrition.proteinG - a.activeVariant.nutrition.proteinG
       );
     }
-    // 기본: 칼로리 낮은 순 (calories_asc)
     return (
       a.activeVariant.nutrition.caloriesKcal -
       b.activeVariant.nutrition.caloriesKcal
@@ -246,6 +422,7 @@ function getFilteredProducts(query: Request['query']) {
   });
 
   return {
+    dataSource: source,
     filtered,
     appliedFilters: {
       brands: selectedBrandSlugs,
@@ -261,12 +438,10 @@ function getFilteredProducts(query: Request['query']) {
   };
 }
 
-/**
- * GET /api/recommend/filters
- * 추천 조건 선택에 필요한 브랜드, 재료(패티/토핑/치즈·소스), 태그, 칼로리/가격 범위 메타데이터 반환
- */
-router.get('/filters', (_req: Request, res: Response) => {
+router.get('/filters', async (_req: Request, res: Response) => {
+  const { source, brands, ingredients, tags } = await loadDataset();
   res.status(200).json({
+    dataSource: source,
     brands: brands.filter((b) => b.isActive),
     ingredients,
     tags,
@@ -283,13 +458,10 @@ router.get('/filters', (_req: Request, res: Response) => {
   });
 });
 
-/**
- * GET /api/recommend/random
- * 현재 선택된 조건(조건이 없으면 전체 메뉴)에 해당하는 후보 중에서 랜덤으로 1개 추출
- * excludeProductId가 전달되고 후보가 2개 이상이면 직전 당첨 메뉴를 제외하고 새로운 메뉴를 뽑음
- */
-router.get('/random', (req: Request, res: Response) => {
-  const { filtered, appliedFilters } = getFilteredProducts(req.query);
+router.get('/random', async (req: Request, res: Response) => {
+  const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
+    req.query
+  );
   const excludeProductId =
     typeof req.query.excludeProductId === 'string'
       ? Number(req.query.excludeProductId)
@@ -297,6 +469,7 @@ router.get('/random', (req: Request, res: Response) => {
 
   if (filtered.length === 0) {
     res.status(200).json({
+      dataSource,
       totalCandidates: 0,
       picked: null,
       appliedFilters,
@@ -316,20 +489,20 @@ router.get('/random', (req: Request, res: Response) => {
   const picked = candidatePool[randomIndex];
 
   res.status(200).json({
+    dataSource,
     totalCandidates: filtered.length,
     picked,
     appliedFilters,
   });
 });
 
-/**
- * GET /api/recommend
- * 조건(브랜드, 포함할 재료, 제외할 재료, 최소~최대 금액, 최대 칼로리, 단품/세트 기준, 정렬)에 맞는 햄버거 목록 조회
- */
-router.get('/', (req: Request, res: Response) => {
-  const { filtered, appliedFilters } = getFilteredProducts(req.query);
+router.get('/', async (req: Request, res: Response) => {
+  const { dataSource, filtered, appliedFilters } = await getFilteredProducts(
+    req.query
+  );
 
   res.status(200).json({
+    dataSource,
     totalCount: filtered.length,
     appliedFilters,
     items: filtered,

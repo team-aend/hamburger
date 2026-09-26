@@ -1,10 +1,10 @@
 -- ============================================================================
--- Hamburger Service Database Schema (PostgreSQL)
+-- Hamburger Service Database Schema (Supabase / PostgreSQL)
 -- Core Hierarchy: Category -> Brand -> Product -> ProductVariant -> Price / Nutrition
 -- Recommendation Support: Product <-> Ingredients (Include / Exclude filtering)
 -- ============================================================================
 
-CREATE TABLE categories (
+CREATE TABLE IF NOT EXISTS categories (
     id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(50) NOT NULL,
     slug            VARCHAR(50) NOT NULL UNIQUE,
@@ -12,7 +12,7 @@ CREATE TABLE categories (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE brands (
+CREATE TABLE IF NOT EXISTS brands (
     id              BIGSERIAL PRIMARY KEY,
     name            VARCHAR(100) NOT NULL,
     slug            VARCHAR(100) NOT NULL UNIQUE,
@@ -23,7 +23,7 @@ CREATE TABLE brands (
     updated_at      TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE products (
+CREATE TABLE IF NOT EXISTS products (
     id                  BIGSERIAL PRIMARY KEY,
     brand_id            BIGINT NOT NULL REFERENCES brands(id),
     category_id         BIGINT NOT NULL REFERENCES categories(id),
@@ -40,7 +40,7 @@ CREATE TABLE products (
     UNIQUE (brand_id, slug)
 );
 
-CREATE TABLE product_variants (
+CREATE TABLE IF NOT EXISTS product_variants (
     id                  BIGSERIAL PRIMARY KEY,
     product_id          BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     name                VARCHAR(100) NOT NULL,                 -- 단품, 세트, 라지세트
@@ -53,11 +53,11 @@ CREATE TABLE product_variants (
 );
 
 -- 한 상품당 기본 Variant(is_default = true)는 1개만 허용
-CREATE UNIQUE INDEX uq_product_default_variant
+CREATE UNIQUE INDEX IF NOT EXISTS uq_product_default_variant
     ON product_variants (product_id)
     WHERE is_default = TRUE;
 
-CREATE TABLE product_prices (
+CREATE TABLE IF NOT EXISTS product_prices (
     id                  BIGSERIAL PRIMARY KEY,
     product_variant_id  BIGINT NOT NULL REFERENCES product_variants(id) ON DELETE CASCADE,
     price               INTEGER NOT NULL,
@@ -68,11 +68,11 @@ CREATE TABLE product_prices (
 );
 
 -- 한 Variant + 채널당 현재 유효 가격(ended_at IS NULL)은 1개만 허용
-CREATE UNIQUE INDEX uq_variant_active_price
+CREATE UNIQUE INDEX IF NOT EXISTS uq_variant_active_price
     ON product_prices (product_variant_id, channel)
     WHERE ended_at IS NULL;
 
-CREATE TABLE nutrition (
+CREATE TABLE IF NOT EXISTS nutrition (
     id                  BIGSERIAL PRIMARY KEY,
     product_variant_id  BIGINT NOT NULL UNIQUE REFERENCES product_variants(id) ON DELETE CASCADE,
     serving_size_g      DECIMAL(6, 1),
@@ -88,27 +88,27 @@ CREATE TABLE nutrition (
     updated_at          TIMESTAMPTZ NOT NULL DEFAULT NOW()
 );
 
-CREATE TABLE ingredients (
+CREATE TABLE IF NOT EXISTS ingredients (
     id                  BIGSERIAL PRIMARY KEY,
     name                VARCHAR(100) NOT NULL,
     slug                VARCHAR(100) NOT NULL UNIQUE,
     ingredient_group    VARCHAR(50) NOT NULL                   -- PATTY, TOPPING, CHEESE_SAUCE
 );
 
-CREATE TABLE product_ingredients (
+CREATE TABLE IF NOT EXISTS product_ingredients (
     product_id          BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     ingredient_id       BIGINT NOT NULL REFERENCES ingredients(id) ON DELETE CASCADE,
     sort_order          INTEGER NOT NULL DEFAULT 0,
     PRIMARY KEY (product_id, ingredient_id)
 );
 
-CREATE TABLE tags (
+CREATE TABLE IF NOT EXISTS tags (
     id                  BIGSERIAL PRIMARY KEY,
     name                VARCHAR(50) NOT NULL,
     slug                VARCHAR(50) NOT NULL UNIQUE
 );
 
-CREATE TABLE product_tags (
+CREATE TABLE IF NOT EXISTS product_tags (
     product_id          BIGINT NOT NULL REFERENCES products(id) ON DELETE CASCADE,
     tag_id              BIGINT NOT NULL REFERENCES tags(id) ON DELETE CASCADE,
     PRIMARY KEY (product_id, tag_id)
