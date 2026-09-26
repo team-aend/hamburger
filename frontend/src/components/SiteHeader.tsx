@@ -1,19 +1,26 @@
 'use client';
 
+import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 
-type MenuKey = 'worldcup';
+type MenuKey = 'worldcup' | 'ranking';
 
 type SiteHeaderProps = {
   activeMenu: MenuKey;
-  onSelectMenu: (menu: MenuKey) => void;
+  onSelectMenu?: (menu: MenuKey) => void;
 };
 
 const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
   { key: 'worldcup', label: '햄버거 월드컵', badge: 'PLAY' },
+  { key: 'ranking', label: '월드컵 랭킹' },
 ];
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
+  const router = useRouter();
+  const selectMenu = (menu: MenuKey) => {
+    if (onSelectMenu) onSelectMenu(menu);
+    else router.push(menu === 'ranking' ? '/ranking' : '/');
+  };
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
 
@@ -34,7 +41,7 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
       <button
         className="brand brand-button"
         type="button"
-        onClick={() => onSelectMenu('worldcup')}
+        onClick={() => selectMenu('worldcup')}
         aria-label="버거픽 홈"
       >
         <span className="brand-mark" aria-hidden="true">B</span>
@@ -55,7 +62,7 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
             type="button"
             aria-current={activeMenu === item.key ? 'page' : undefined}
             onClick={() => {
-              onSelectMenu(item.key);
+              selectMenu(item.key);
               setIsMenuOpen(false);
               toggleRef.current?.focus();
             }}
