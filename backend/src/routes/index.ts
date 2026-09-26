@@ -1,5 +1,6 @@
 import { Router, Request, Response } from 'express';
 import recommendRouter from './recommend.js';
+import worldcupRouter from './worldcup.js';
 
 const router = Router();
 
@@ -18,5 +19,6 @@ router.get('/hello', (_req: Request, res: Response) => {
 });
 
 router.use('/recommend', recommendRouter);
+router.use('/worldcup', worldcupRouter);
 
 export default router;

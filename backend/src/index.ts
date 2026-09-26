@@ -29,8 +29,8 @@ app.listen(PORT, () => {
   console.log(
     `📦 Database Mode: ${
       isDbConfigured()
-        ? 'Supabase PostgreSQL Connected (db.lyjsyiguasujjdsltjem.supabase.co)'
-        : 'In-Memory Seed Fallback'
+        ? 'PostgreSQL configured (connection not yet verified)'
+        : 'PostgreSQL not configured; worldcup options unavailable'
     }`
   );
 });

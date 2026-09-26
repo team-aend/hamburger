@@ -59,3 +59,17 @@ npm run build
 - `/recommend`: 브랜드·포함/제외 재료·가격·칼로리로 버거 검색 및 조건 내 랜덤 추천. 공통 메뉴의 **버거 검색 · 추천**으로 이동합니다.
 
 검색·추천은 백엔드의 `/api/recommend`, `/api/recommend/filters`, `/api/recommend/random`을 사용하므로 프론트와 백엔드를 함께 실행해야 합니다. 현재 검색 데이터는 `backend/src/data/database.ts`에 정의된 데이터이며, 랭킹은 별도의 화면용 샘플 데이터입니다.
+
+## 월드컵 참가 옵션 API
+
+`GET /api/worldcup/options`는 DB에서 활성 브랜드의 ACTIVE 햄버거 상품 수를 조회합니다. 8개 이상이면 8강, 16개 이상이면 16강이 가능합니다. 참가 수가 0이면 정상 응답으로 두 강수가 모두 비활성화됩니다.
+
+```json
+{"eligibleProductCount":18,"roundOptions":[{"roundSize":8,"available":true},{"roundSize":16,"available":true}]}
+```
+
+`backend/.env`에 `DATABASE_URL`을 설정해야 합니다. 연결은 인증서를 검증하는 TLS를 사용하며, 별도 CA가 필요하면 `DATABASE_SSL_CA`에 PEM 인증서를 설정합니다. URL의 SSL 옵션으로 인증서 검증을 비활성화하지 마세요. 설정이 없으면 HTTP 503 `DATABASE_NOT_CONFIGURED`, 조회 실패 시 HTTP 503 `DATABASE_UNAVAILABLE`을 반환합니다. DB 오류를 목업 데이터로 대체하지 않습니다.
+
+테스트: `npm run test --workspace=backend`. SQL 통합 테스트는 격리된 테스트 PostgreSQL의 `TEST_DATABASE_URL`을 설정하면 실행되며, 미설정 시 해당 테스트만 건너뜁니다. 테스트는 연결별 임시 테이블만 생성합니다.
+
+기존에 저장소에 포함됐던 DB 접속 비밀번호는 DB 관리자 측에서 교체해야 합니다. 코드에서 제거해도 과거 커밋에 남은 비밀번호는 무효화되지 않습니다.
