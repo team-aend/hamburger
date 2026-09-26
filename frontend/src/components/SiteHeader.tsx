@@ -1,6 +1,6 @@
 'use client';
 
-import { useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 type MenuKey = 'worldcup';
 
@@ -14,7 +14,20 @@ const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
 ];
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
-  const [isMenuOpen, setIsMenuOpen] = useState(true);
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const toggleRef = useRef<HTMLButtonElement>(null);
+
+  useEffect(() => {
+    if (!isMenuOpen) return;
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsMenuOpen(false);
+        toggleRef.current?.focus();
+      }
+    };
+    document.addEventListener('keydown', handleEscape);
+    return () => document.removeEventListener('keydown', handleEscape);
+  }, [isMenuOpen]);
 
   return (
     <header className="site-header">
@@ -34,13 +47,18 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
         aria-label="주요 메뉴"
         aria-hidden={!isMenuOpen}
       >
+        <div className="navigation-heading">MENU</div>
         {menuItems.map((item) => (
           <button
             className={activeMenu === item.key ? 'navigation-item active' : 'navigation-item'}
             key={item.key}
             type="button"
             aria-current={activeMenu === item.key ? 'page' : undefined}
-            onClick={() => onSelectMenu(item.key)}
+            onClick={() => {
+              onSelectMenu(item.key);
+              setIsMenuOpen(false);
+              toggleRef.current?.focus();
+            }}
             tabIndex={isMenuOpen ? 0 : -1}
           >
             <span>{item.label}</span>
@@ -50,6 +68,7 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
       </nav>
 
       <button
+        ref={toggleRef}
         className={isMenuOpen ? 'menu-toggle open' : 'menu-toggle'}
         type="button"
         aria-label={isMenuOpen ? '메뉴 숨기기' : '메뉴 보이기'}
