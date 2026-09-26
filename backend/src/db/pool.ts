@@ -5,28 +5,28 @@ dotenv.config();
 
 const { Pool } = pg;
 
-// 팀 공용 Supabase PostgreSQL 기본 접속 주소 (.env 미설정 시 기본값으로 사용)
-const DEFAULT_SUPABASE_URL =
-  'postgresql://postgres:Aend12%21%40team@db.lyjsyiguasujjdsltjem.supabase.co:5432/postgres';
-
 export function getDatabaseUrl(): string {
   const envUrl = process.env.DATABASE_URL?.trim();
-  if (envUrl && envUrl.length > 0 && !envUrl.includes('[YOUR-PASSWORD]')) {
-    return envUrl;
+  if (!envUrl || envUrl.length === 0 || envUrl.includes('[YOUR-PASSWORD]')) {
+    throw new Error(
+      'DATABASE_URL 환경변수가 설정되지 않았거나 유효하지 않습니다. backend/.env 파일에 실제 DB 접속 주소를 설정해 주세요.'
+    );
   }
-  return DEFAULT_SUPABASE_URL;
+  return envUrl;
 }
 
 export function isDbConfigured(): boolean {
-  return Boolean(getDatabaseUrl());
+  const envUrl = process.env.DATABASE_URL?.trim();
+  return Boolean(envUrl && envUrl.length > 0 && !envUrl.includes('[YOUR-PASSWORD]'));
 }
 
 let poolInstance: pg.Pool | null = null;
 
 export function getDbPool(): pg.Pool {
   if (!poolInstance) {
+    const connectionString = getDatabaseUrl();
     poolInstance = new Pool({
-      connectionString: getDatabaseUrl(),
+      connectionString,
       ssl: {
         rejectUnauthorized: false,
       },
