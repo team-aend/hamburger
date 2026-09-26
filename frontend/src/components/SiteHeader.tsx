@@ -1,3 +1,7 @@
+'use client';
+
+import { useState } from 'react';
+
 type MenuKey = 'worldcup';
 
 type SiteHeaderProps = {
@@ -10,6 +14,8 @@ const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
 ];
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
+  const [isMenuOpen, setIsMenuOpen] = useState(true);
+
   return (
     <header className="site-header">
       <button
@@ -22,7 +28,12 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
         <span>BURGER PICK</span>
       </button>
 
-      <nav className="main-navigation" aria-label="주요 메뉴">
+      <nav
+        id="main-navigation"
+        className={isMenuOpen ? 'main-navigation open' : 'main-navigation closed'}
+        aria-label="주요 메뉴"
+        aria-hidden={!isMenuOpen}
+      >
         {menuItems.map((item) => (
           <button
             className={activeMenu === item.key ? 'navigation-item active' : 'navigation-item'}
@@ -30,6 +41,7 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
             type="button"
             aria-current={activeMenu === item.key ? 'page' : undefined}
             onClick={() => onSelectMenu(item.key)}
+            tabIndex={isMenuOpen ? 0 : -1}
           >
             <span>{item.label}</span>
             {item.badge && <small>{item.badge}</small>}
@@ -37,7 +49,16 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
         ))}
       </nav>
 
-      <span className="header-slogan">PICK YOUR FAVORITE</span>
+      <button
+        className={isMenuOpen ? 'menu-toggle open' : 'menu-toggle'}
+        type="button"
+        aria-label={isMenuOpen ? '메뉴 숨기기' : '메뉴 보이기'}
+        aria-expanded={isMenuOpen}
+        aria-controls="main-navigation"
+        onClick={() => setIsMenuOpen((current) => !current)}
+      >
+        <span /><span /><span />
+      </button>
     </header>
   );
 }
