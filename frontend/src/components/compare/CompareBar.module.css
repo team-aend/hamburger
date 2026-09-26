@@ -1,0 +1,166 @@
+.bar {
+  position: sticky;
+  bottom: 0;
+  z-index: 30;
+  margin: 0 -64px;
+  padding: 0 64px;
+  background: var(--paper);
+  border-top: 2px solid var(--ink);
+  box-shadow: 0 -6px 0 rgba(27, 25, 22, 0.08);
+}
+
+.inner {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 14px 0 16px;
+}
+
+.notice {
+  margin-bottom: 10px;
+  padding: 8px 12px;
+  border: 1px dashed var(--red);
+  border-radius: 6px;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.content {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.selection {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.label {
+  flex: 0 0 auto;
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #827a6d;
+}
+
+.chips {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  gap: 6px;
+}
+
+.chip {
+  flex: 0 0 auto;
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+}
+
+.chipRemove {
+  border: 0;
+  background: transparent;
+  font-size: 15px;
+  line-height: 1;
+  color: var(--red-dark);
+  padding: 0 2px;
+  cursor: pointer;
+}
+
+.count {
+  flex: 0 0 auto;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 17px;
+  font-variant-numeric: tabular-nums;
+}
+
+.requirement {
+  flex: 0 0 auto;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.actions {
+  display: flex;
+  gap: 10px;
+}
+
+.resetButton,
+.compareButton {
+  padding: 13px 20px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.resetButton {
+  border: 1.5px solid var(--ink);
+  background: var(--paper);
+}
+
+.resetButton:hover {
+  background: var(--mustard);
+}
+
+.compareButton {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border: 2px solid var(--ink);
+  background: var(--red);
+  color: #ffffff;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease, background 0.15s ease;
+}
+
+.compareButton:hover:not(:disabled) {
+  background: var(--red-dark);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* 비활성 상태가 한눈에 보이도록 확실히 다르게 만든다 */
+.compareButton:disabled {
+  border-style: dashed;
+  border-color: #a79f93;
+  background: var(--cream);
+  color: #a79f93;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+@media (max-width: 700px) {
+  .bar {
+    margin: 0 -18px;
+    padding: 0 18px;
+  }
+
+  .requirement {
+    order: 3;
+    width: 100%;
+  }
+
+  .actions {
+    width: 100%;
+  }
+
+  .resetButton,
+  .compareButton {
+    flex: 1;
+    justify-content: center;
+  }
+}

@@ -50,10 +50,10 @@ test('database configuration has no hardcoded fallback', () => {
   const original = process.env.DATABASE_URL;
   try {
     delete process.env.DATABASE_URL;
-    assert.equal(getDatabaseUrl(), '');
+    assert.throws(() => getDatabaseUrl(), /DATABASE_URL/);
     assert.throws(() => getDbPool(), /DATABASE_URL/);
     process.env.DATABASE_URL = 'postgresql://user:[YOUR-PASSWORD]@localhost/db';
-    assert.equal(getDatabaseUrl(), '');
+    assert.throws(() => getDatabaseUrl(), /DATABASE_URL/);
     process.env.DATABASE_URL = '  postgresql://localhost/test  ';
     assert.equal(getDatabaseUrl(), 'postgresql://localhost/test');
   } finally {

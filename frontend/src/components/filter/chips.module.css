@@ -1,0 +1,35 @@
+.group {
+  display: flex;
+  gap: 8px;
+  padding: 2px 0 4px;
+}
+
+.chip {
+  flex: 0 0 auto;
+  padding: 10px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  white-space: nowrap;
+  cursor: pointer;
+  transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.chip:hover {
+  border-color: var(--red);
+  transform: translateY(-2px);
+}
+
+.chipSelected {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 3px 3px 0 var(--mustard);
+}
+
+.chipSelected:hover {
+  border-color: var(--ink);
+}

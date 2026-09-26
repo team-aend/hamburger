@@ -208,3 +208,112 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
 .round-option:disabled:hover { border-color:var(--line); }
 .start-button:disabled:hover { background:var(--red); }
 .worldcup-options-status button:focus-visible { outline:3px solid var(--red); outline-offset:3px; }
+/* ── 가격 비교 화면 (.compare-shell) ──────────────────────────────
+   랭킹 페이지와 동일하게 worldcup-shell 위에 얹고, 폭 제한만 모바일까지 푼다.
+   색/테두리/그림자/폰트는 전역 토큰(--paper, --ink, --red, --mustard)을 그대로 쓴다. */
+html:has(.compare-shell),
+body:has(.compare-shell) {
+  min-width: 320px;
+}
+
+.compare-content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 56px 0;
+}
+
+.compare-heading h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(38px, 5vw, 64px);
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -2px;
+}
+
+.compare-heading h1 strong {
+  color: var(--red);
+  font-weight: 400;
+}
+
+.compare-heading p {
+  margin-top: 18px;
+  color: #655e55;
+  line-height: 1.7;
+}
+
+.compare-notice {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  margin: 28px 0 32px;
+  padding: 16px 20px;
+  background: var(--paper);
+  border: 1px dashed #827a6d;
+  border-radius: 8px;
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.compare-notice strong {
+  flex-shrink: 0;
+  color: var(--red-dark);
+}
+
+.compare-shell :is(input, select):focus-visible,
+.compare-shell button:focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 4px;
+}
+
+/* 모바일 가로 스크롤 영역에서 스크롤바를 숨긴다 */
+.scroll-x {
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.scroll-x::-webkit-scrollbar {
+  display: none;
+}
+
+@media (max-width: 700px) {
+  .compare-shell {
+    padding: 0 18px;
+  }
+
+  .compare-shell .site-header {
+    height: 80px;
+  }
+
+  .compare-shell .brand {
+    font-size: 20px;
+  }
+
+  .compare-shell .menu-toggle {
+    top: 17px;
+    right: 18px;
+  }
+
+  .compare-content {
+    padding: 32px 0;
+  }
+
+  .compare-notice {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+  }
+}
+
+.compare-shell {
+  /* worldcup-shell 의 overflow:hidden 은 하단 Sticky Compare Bar 를 깨뜨린다.
+     비교 화면에는 넘칠 장식 요소가 없으므로 되돌린다. */
+  overflow: visible;
+  /* worldcup-shell 의 방사형 원 장식 제거.
+     위치가 요소 높이 비율(47%)로 잡혀 있어 필터로 목록 길이가 바뀔 때마다
+     원이 움직여 배경이 바뀌는 것처럼 보인다. 격자무늬와 크림 배경만 남긴다. */
+  background:
+    linear-gradient(rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    var(--cream);
+  background-size: 32px 32px, 32px 32px, auto;
+}

@@ -8,7 +8,6 @@ export function loadBackendEnvironment(
 ): void {
   const loaded: Record<string, string> = {};
   dotenv.config({ path: path.join(directory, '.env'), processEnv: loaded });
-  dotenv.config({ path: path.join(directory, '.env.example'), processEnv: loaded });
   for (const [key, value] of Object.entries(loaded)) {
     if (environment[key] === undefined) environment[key] = value;
   }

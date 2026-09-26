@@ -1,0 +1,74 @@
+.filters {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.listHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  margin: 28px 0 16px;
+}
+
+.count {
+  font-size: 13px;
+  color: #655e55;
+}
+
+.count strong {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+  color: var(--ink);
+}
+
+.withBar {
+  padding-bottom: 132px;
+}
+
+.comparison {
+  margin-top: 48px;
+  /* 우측 상단 고정 메뉴 버튼(.menu-toggle) 아래로 내려오도록 여유를 준다 */
+  scroll-margin-top: 88px;
+}
+
+.comparisonHeader {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  /* 고정 메뉴 버튼과 '닫기' 가 겹치지 않도록 */
+  padding-right: 56px;
+}
+
+.comparisonTitle {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.comparisonTitle small {
+  margin-left: 10px;
+  color: #655e55;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 500;
+}
+
+.closeButton {
+  margin-left: auto;
+  padding: 10px 16px;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.closeButton:hover {
+  background: var(--mustard);
+}

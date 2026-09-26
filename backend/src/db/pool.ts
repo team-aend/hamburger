@@ -4,12 +4,15 @@ import { loadBackendEnvironment } from './environment.js';
 loadBackendEnvironment();
 
 export function getDatabaseUrl(): string {
-  const url = process.env.DATABASE_URL?.trim();
-  return url && !url.includes('[YOUR-PASSWORD]') ? url : '';
+  if (!isDbConfigured()) {
+    throw new Error('DATABASE_URL 환경변수가 설정되지 않았거나 유효하지 않습니다. backend/.env 파일에 실제 DB 접속 주소를 설정해 주세요.');
+  }
+  return process.env.DATABASE_URL!.trim();
 }
 
 export function isDbConfigured(): boolean {
-  return Boolean(getDatabaseUrl());
+  const url = process.env.DATABASE_URL?.trim();
+  return Boolean(url && !url.includes('[YOUR-PASSWORD]'));
 }
 
 let poolInstance: pg.Pool | null = null;

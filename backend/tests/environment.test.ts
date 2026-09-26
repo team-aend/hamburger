@@ -5,13 +5,13 @@ import { tmpdir } from 'node:os';
 import path from 'node:path';
 import { loadBackendEnvironment } from '../src/db/environment.js';
 
-test('example works without .env, while .env and actual environment take priority', () => {
+test('example is not loaded; actual environment takes priority over .env', () => {
   const directory = mkdtempSync(path.join(tmpdir(), 'hamburger-env-'));
   try {
     writeFileSync(path.join(directory, '.env.example'), 'DATABASE_URL=postgresql://example/test\n');
     const fallback: NodeJS.ProcessEnv = {};
     loadBackendEnvironment(directory, fallback);
-    assert.equal(fallback.DATABASE_URL, 'postgresql://example/test');
+    assert.equal(fallback.DATABASE_URL, undefined);
     writeFileSync(path.join(directory, '.env'), 'DATABASE_URL=postgresql://local/test\n');
     const local: NodeJS.ProcessEnv = {};
     loadBackendEnvironment(directory, local);

@@ -130,7 +130,7 @@ export default function HomePage() {
     <main className="worldcup-shell">
       <SiteHeader activeMenu="worldcup" onSelectMenu={(menu) => {
         if (menu === 'worldcup') resetToSetup();
-        else if (phase !== 'playing' || window.confirm('진행 중인 월드컵을 종료하고 버거 검색으로 이동할까요?')) router.push('/recommend');
+        else if (phase !== 'playing' || window.confirm('진행 중인 월드컵을 종료하고 이동할까요?')) router.push(menu === 'compare' ? '/compare' : '/recommend');
       }} />
 
       {phase === 'setup' && (

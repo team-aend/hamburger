@@ -1,0 +1,12 @@
+.select {
+  min-height: 44px;
+  padding: 10px 14px;
+  border: 1.5px solid #827a6d;
+  border-radius: 6px;
+  background: var(--paper);
+  font-family: inherit;
+  font-size: 13px;
+  font-weight: 700;
+  color: var(--ink);
+  cursor: pointer;
+}
