@@ -4,7 +4,7 @@ import Link from 'next/link';
 import { useSearchParams } from 'next/navigation';
 import { Suspense } from 'react';
 import GoogleLogo from '@/components/auth/GoogleLogo';
-import { googleLoginHref, useAuth } from '@/components/auth/AuthProvider';
+import { devLoginHref, googleLoginHref, useAuth } from '@/components/auth/AuthProvider';
 import SiteHeader from '@/components/SiteHeader';
 import './login.css';
 
@@ -40,7 +40,7 @@ export default function LoginPage() {
 
 function LoginContent() {
   const searchParams = useSearchParams();
-  const { user, loading, googleEnabled, logout } = useAuth();
+  const { user, loading, googleEnabled, devLoginEnabled, logout } = useAuth();
   const returnTo = safeReturnTo(searchParams.get('returnTo'));
   const errorCode = searchParams.get('error');
   const errorMessage = errorCode ? ERROR_MESSAGES[errorCode] ?? ERROR_MESSAGES.failed : null;
@@ -103,10 +103,28 @@ function LoginContent() {
                   <GoogleLogo />
                   <span>Google로 로그인</span>
                 </button>
-                {!errorMessage && (
+                {!errorMessage && !devLoginEnabled && (
                   <p className="login-error">{ERROR_MESSAGES.not_configured}</p>
                 )}
               </>
+            )}
+
+            {/* 개발용 테스트 로그인 (backend/.env DEV_LOGIN=true 일 때만 보임) */}
+            {devLoginEnabled && (
+              <div className="dev-login">
+                <p>
+                  <b>개발용 테스트 로그인</b>
+                  <span>Google 설정 없이 바로 로그인합니다. 운영 환경에서는 보이지 않습니다.</span>
+                </p>
+                <div className="dev-login-accounts">
+                  {[1, 2, 3].map((account) => (
+                    // 세션 쿠키를 받아야 하므로 전체 페이지 이동(a 태그)으로 요청한다.
+                    <a key={account} href={devLoginHref(account, returnTo)}>
+                      테스트 사용자 {account}
+                    </a>
+                  ))}
+                </div>
+              </div>
             )}
 
             <p className="login-terms">

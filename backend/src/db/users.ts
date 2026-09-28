@@ -9,7 +9,8 @@ export interface User {
 }
 
 export interface SocialProfile {
-  provider: 'GOOGLE';
+  /** DEV: 개발용 테스트 로그인 (routes/auth.ts 의 /dev-login) */
+  provider: 'GOOGLE' | 'DEV';
   providerUserId: string;
   email: string | null;
   displayName: string;

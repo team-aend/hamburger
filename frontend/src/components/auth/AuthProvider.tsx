@@ -24,6 +24,8 @@ interface AuthContextValue {
   loading: boolean;
   /** 백엔드에 Google 로그인 설정(환경변수)이 되어 있는지 */
   googleEnabled: boolean;
+  /** 개발용 테스트 로그인이 켜져 있는지 (backend DEV_LOGIN=true) */
+  devLoginEnabled: boolean;
   /** 현재 화면(또는 returnTo)으로 돌아오도록 로그인 화면으로 이동 */
   goToLogin: (returnTo?: string) => void;
   logout: () => Promise<void>;
@@ -37,6 +39,11 @@ export function loginHref(returnTo = '/'): string {
   return `/login?${new URLSearchParams({ returnTo }).toString()}`;
 }
 
+/** 개발용 테스트 로그인 주소 (account: 1~3) */
+export function devLoginHref(account: number, returnTo = '/'): string {
+  return `/api/auth/dev-login?${new URLSearchParams({ account: String(account), returnTo }).toString()}`;
+}
+
 /** 실제 Google 로그인 시작 주소 (백엔드 → Google → 백엔드 콜백 → returnTo) */
 export function googleLoginHref(returnTo = '/'): string {
   return `/api/auth/google?${new URLSearchParams({ returnTo }).toString()}`;
@@ -47,6 +54,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const pathname = usePathname();
   const [user, setUser] = useState<AuthUser | null>(null);
   const [googleEnabled, setGoogleEnabled] = useState(false);
+  const [devLoginEnabled, setDevLoginEnabled] = useState(false);
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -56,6 +64,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       const data = await res.json();
       setUser(data.user ?? null);
       setGoogleEnabled(Boolean(data.providers?.google));
+      setDevLoginEnabled(Boolean(data.providers?.dev));
     } catch {
       // 백엔드가 꺼져 있어도 로그인은 선택 사항이므로 비로그인 상태로 둔다.
       setUser(null);
@@ -83,8 +92,8 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   }, [router]);
 
   const value = useMemo(
-    () => ({ user, loading, googleEnabled, goToLogin, logout, refresh }),
-    [user, loading, googleEnabled, goToLogin, logout, refresh]
+    () => ({ user, loading, googleEnabled, devLoginEnabled, goToLogin, logout, refresh }),
+    [user, loading, googleEnabled, devLoginEnabled, goToLogin, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

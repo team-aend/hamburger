@@ -54,7 +54,7 @@ interface WorldcupHistory {
 
 const burgerById = new Map(burgers.map((burger) => [burger.id, burger]));
 
-const PROVIDER_LABEL: Record<string, string> = { GOOGLE: 'Google' };
+const PROVIDER_LABEL: Record<string, string> = { GOOGLE: 'Google', DEV: '테스트 계정' };
 
 function formatDate(iso: string, withTime = false): string {
   return new Date(iso).toLocaleString('ko-KR', {
