@@ -41,6 +41,21 @@ export async function getLikeSummary(
   };
 }
 
+/** 사용자가 좋아요한 상품 id 와 좋아요한 시각 (최근 순) */
+export async function getUserLikes(
+  userId: number
+): Promise<{ productId: number; likedAt: string }[]> {
+  const { rows } = await getDbPool().query(
+    `SELECT product_id, created_at FROM product_likes
+      WHERE user_id = $1 ORDER BY created_at DESC`,
+    [userId]
+  );
+  return rows.map((row) => ({
+    productId: Number(row.product_id),
+    likedAt: new Date(row.created_at).toISOString(),
+  }));
+}
+
 /**
  * 좋아요 설정/해제. 같은 요청을 여러 번 보내도 결과가 같다(멱등).
  * 반환값은 변경 후 상태와 해당 상품의 전체 좋아요 수.

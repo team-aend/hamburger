@@ -95,6 +95,16 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
                   {user.email && <small>{user.email}</small>}
                 </div>
               </div>
+              <Link
+                className={`navigation-item account-mypage ${pathname === '/mypage' ? 'active' : ''}`}
+                href="/mypage"
+                aria-current={pathname === '/mypage' ? 'page' : undefined}
+                tabIndex={isMenuOpen ? 0 : -1}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>마이페이지</span>
+                <small>MY</small>
+              </Link>
               <button
                 className="account-logout"
                 type="button"
