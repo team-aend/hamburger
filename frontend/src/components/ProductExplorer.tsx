@@ -10,6 +10,7 @@ import SearchBar from '@/components/filter/SearchBar';
 import ProductGrid from '@/components/product/ProductGrid';
 import SiteHeader from '@/components/SiteHeader';
 import { useProductFilters } from '@/hooks/useProductFilters';
+import { useProductLikes } from '@/hooks/useProductLikes';
 import {
   MAX_COMPARE_COUNT,
   MIN_COMPARE_COUNT,
@@ -34,6 +35,14 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
     filteredProducts,
     resetFilters,
   } = useProductFilters(products);
+
+  const {
+    counts: likeCounts,
+    likedIds,
+    pendingIds: pendingLikeIds,
+    toggleLike,
+    error: likeError,
+  } = useProductLikes(products.map((product) => product.id));
 
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [showComparison, setShowComparison] = useState(false);
@@ -141,11 +150,21 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           <ProductSort value={sortType} onChange={setSortType} />
         </div>
 
+        {likeError && (
+          <p className={styles.likeError} role="alert">
+            {likeError}
+          </p>
+        )}
+
         <ProductGrid
           products={filteredProducts}
           selectedIds={selectedIds}
           onToggleCompare={toggleCompare}
           onResetFilters={resetFilters}
+          likeCounts={likeCounts}
+          likedIds={likedIds}
+          pendingLikeIds={pendingLikeIds}
+          onToggleLike={toggleLike}
         />
 
         {showComparison && selectedProducts.length >= MIN_COMPARE_COUNT && (

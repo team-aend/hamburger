@@ -7,6 +7,10 @@ interface ProductGridProps {
   selectedIds: number[];
   onToggleCompare: (product: Product) => void;
   onResetFilters: () => void;
+  likeCounts: Record<number, number>;
+  likedIds: Set<number>;
+  pendingLikeIds: Set<number>;
+  onToggleLike: (productId: number) => void;
 }
 
 export default function ProductGrid({
@@ -14,6 +18,10 @@ export default function ProductGrid({
   selectedIds,
   onToggleCompare,
   onResetFilters,
+  likeCounts,
+  likedIds,
+  pendingLikeIds,
+  onToggleLike,
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
@@ -35,6 +43,10 @@ export default function ProductGrid({
           product={product}
           selected={selectedIds.includes(product.id)}
           onToggleCompare={onToggleCompare}
+          liked={likedIds.has(product.id)}
+          likeCount={likeCounts[product.id] ?? 0}
+          likePending={pendingLikeIds.has(product.id)}
+          onToggleLike={onToggleLike}
         />
       ))}
     </div>

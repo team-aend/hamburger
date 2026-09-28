@@ -72,3 +72,14 @@
 .closeButton:hover {
   background: var(--mustard);
 }
+
+.likeError {
+  margin: -4px 0 14px;
+  padding: 10px 14px;
+  border: 1px dashed var(--red-dark);
+  border-radius: 8px;
+  background: #fbe4df;
+  color: var(--red-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
