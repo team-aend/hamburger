@@ -1,0 +1,83 @@
+.header {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.stat {
+  min-width: 0;
+  padding: 12px 18px;
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 8px;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.stat dt {
+  color: #71695f;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.stat dd {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 30px;
+  line-height: 1;
+  font-variant-numeric: tabular-nums;
+}
+
+.timer dd {
+  color: var(--ink);
+  transition: color 0.2s ease;
+}
+
+/* 화면에는 보이지 않고 화면 낭독기만 읽는다. */
+.srOnly {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* 10초 이하: 깜빡임 없이 색과 그림자만 바꾼다. */
+.urgent {
+  background: #fff0e8;
+  box-shadow: 4px 4px 0 var(--red);
+}
+
+.urgent dd {
+  color: var(--red);
+}
+
+@media (max-width: 700px) {
+  .header {
+    gap: 8px;
+  }
+
+  .stat {
+    padding: 6px 10px;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 4px;
+    box-shadow: 3px 3px 0 var(--ink);
+  }
+
+  .urgent {
+    box-shadow: 3px 3px 0 var(--red);
+  }
+
+  .stat dt {
+    font-size: 9px;
+  }
+
+  .stat dd {
+    font-size: 20px;
+  }
+}

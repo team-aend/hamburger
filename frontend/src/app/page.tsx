@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
-import SiteHeader from '@/components/SiteHeader';
+import SiteHeader, { menuRoutes, type MenuKey } from '@/components/SiteHeader';
 import WorldcupFinalRankings from '@/components/WorldcupFinalRankings';
 import { getWorldcupSession, startWorldcupSession, voteWorldcup, type WorldcupProduct, type WorldcupRoundSize, type WorldcupSession } from '@/lib/worldcupSession';
 
@@ -170,10 +170,10 @@ export default function HomePage() {
   };
   const abandonLocal = () => { remove(ACTIVE_KEY); remove(START_KEY); activeId.current = null; pendingStart.current = null; pendingVote.current = null; setSession(null); setError(null); setRetry(null); };
   const retryRequest = () => { if (retry === 'vote') submitVote(); else if (pendingStart.current) start(pendingStart.current.roundSize); else restore(); };
-  const navigate = (menu: 'worldcup' | 'recommend' | 'compare') => {
+  const navigate = (menu: MenuKey) => {
     if (busy) return;
     if (menu === 'worldcup') reset();
-    else if (session?.status !== 'IN_PROGRESS' || window.confirm('현재 진행 상황은 저장되어 있습니다. 다른 화면으로 이동할까요?')) router.push(menu === 'compare' ? '/compare' : '/recommend');
+    else if (session?.status !== 'IN_PROGRESS' || window.confirm('현재 진행 상황은 저장되어 있습니다. 다른 화면으로 이동할까요?')) router.push(menuRoutes[menu]);
   };
 
   return (

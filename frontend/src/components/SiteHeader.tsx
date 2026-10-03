@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { loginHref, useAuth, type AuthUser } from '@/components/auth/AuthProvider';
 
-type MenuKey = 'worldcup' | 'recommend' | 'compare';
+export type MenuKey = 'worldcup' | 'recommend' | 'compare' | 'game';
 
 type SiteHeaderProps = {
   activeMenu?: MenuKey;
@@ -16,12 +16,14 @@ const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
   { key: 'worldcup', label: '햄버거 월드컵', badge: 'PLAY' },
   { key: 'recommend', label: '버거 검색 · 추천' },
   { key: 'compare', label: '가격 비교' },
+  { key: 'game', label: '햄버거 쌓기', badge: 'GAME' },
 ];
 
-const menuRoutes: Record<MenuKey, string> = {
+export const menuRoutes: Record<MenuKey, string> = {
   worldcup: '/',
   recommend: '/recommend',
   compare: '/compare',
+  game: '/game',
 };
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
