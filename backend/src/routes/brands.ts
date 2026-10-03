@@ -1,42 +1,39 @@
 import { Router, Request, Response } from 'express';
-import { getDbPool } from '../db/pool.js';
+import { getCachedDataset } from '../db/datasetCache.js';
 
 const router = Router();
 
 /**
  * GET /api/brands
- * Supabase brands 테이블에서 브랜드 기본 데이터를 직접 조회하여 반환
- * ?includeInactive=true 전달 시 비활성(is_active=false) 브랜드까지 모두 조회
+ * Node.js 인메모리 캐시(Supabase 연동)에서 브랜드 기본 데이터를 반환
+ * - ?refresh=true 전달 시 캐시를 즉시 무효화하고 Supabase DB에서 새로 조회
+ * - ?includeInactive=true 전달 시 비활성(is_active=false) 브랜드까지 모두 반환
  */
 router.get('/', async (req: Request, res: Response) => {
   try {
     const includeInactive = req.query.includeInactive === 'true';
-    const pool = getDbPool();
+    const forceRefresh = req.query.refresh === 'true';
 
-    const queryText = includeInactive
-      ? `SELECT id, name, slug, logo_url, homepage_url, is_active, created_at, updated_at
-         FROM brands
-         ORDER BY id ASC`
-      : `SELECT id, name, slug, logo_url, homepage_url, is_active, created_at, updated_at
-         FROM brands
-         WHERE is_active = TRUE
-         ORDER BY id ASC`;
-
-    const result = await pool.query(queryText);
-
-    const items = result.rows.map((row) => ({
-      id: Number(row.id),
-      name: row.name,
-      slug: row.slug,
-      logoUrl: row.logo_url ?? null,
-      homepageUrl: row.homepage_url ?? null,
-      isActive: Boolean(row.is_active),
-      createdAt: row.created_at,
-      updatedAt: row.updated_at,
+    const { dataset, cacheHit } = await getCachedDataset({ forceRefresh });
+    const items = (
+      includeInactive
+        ? dataset.brands
+        : dataset.brands.filter((b) => b.isActive)
+    ).map((brand) => ({
+      id: brand.id,
+      name: brand.name,
+      slug: brand.slug,
+      logoUrl: brand.logoUrl ?? null,
+      homepageUrl: brand.homepageUrl ?? null,
+      isActive: brand.isActive,
     }));
 
     res.status(200).json({
-      source: 'supabase',
+      source: dataset.source,
+      cache: {
+        hit: cacheHit,
+        cachedAt: dataset.cachedAt,
+      },
       totalCount: items.length,
       brands: items,
     });

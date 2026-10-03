@@ -2,7 +2,8 @@ import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/index.js';
-import { getDatabaseUrl, isDbConfigured } from './db/pool.js';
+import { isDbConfigured } from './db/pool.js';
+import { prewarmDatasetCache } from './db/datasetCache.js';
 
 dotenv.config();
 
@@ -26,12 +27,14 @@ app.use('/api', apiRouter);
 // Start Server
 app.listen(PORT, () => {
   console.log(`🚀 Backend server is running on http://localhost:${PORT}`);
+  console.log(
+    `📦 Database Mode: ${
+      isDbConfigured()
+        ? 'PostgreSQL configured (connection not yet verified)'
+        : 'PostgreSQL not configured; worldcup options unavailable'
+    }`
+  );
   if (isDbConfigured()) {
-    const hostPart = getDatabaseUrl().split('@')[1] || 'PostgreSQL';
-    console.log(`📦 Database Mode: Supabase PostgreSQL Connected (${hostPart})`);
-  } else {
-    console.warn(
-      '⚠️ 경고: backend/.env 에 DATABASE_URL이 설정되지 않았습니다. DB 연결을 위해 .env 파일을 설정해 주세요.'
-    );
+    void prewarmDatasetCache();
   }
 });

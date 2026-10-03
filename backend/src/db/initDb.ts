@@ -28,7 +28,7 @@ async function findWorkingPool(): Promise<{ pool: pg.Pool; url: string }> {
 
   const pool = new Pool({
     connectionString: url,
-    ssl: { rejectUnauthorized: false },
+    ssl: { rejectUnauthorized: true, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
     connectionTimeoutMillis: 5000,
   });
 

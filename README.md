@@ -51,11 +51,3 @@ npm run dev:frontend
 ```bash
 npm run build
 ```
-
-## 화면 및 기능
-
-- `/`: 햄버거 월드컵 (8강/16강 선택, 우승 결과)
-- `/ranking`: 샘플 랭킹. 월드컵 시작·완료 화면의 **랭킹 확인하기** 버튼으로 이동합니다.
-- `/recommend`: 브랜드·포함/제외 재료·가격·칼로리로 버거 검색 및 조건 내 랜덤 추천. 공통 메뉴의 **버거 검색 · 추천**으로 이동합니다.
-
-검색·추천은 백엔드의 `/api/recommend`, `/api/recommend/filters`, `/api/recommend/random`을 사용하므로 프론트와 백엔드를 함께 실행해야 합니다. 현재 검색 데이터는 `backend/src/data/database.ts`에 정의된 데이터이며, 랭킹은 별도의 화면용 샘플 데이터입니다.

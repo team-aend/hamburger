@@ -90,6 +90,12 @@ button { color:inherit; }
 .burger-photo::after { content:''; position:absolute; width:270px; height:270px; border:45px solid rgba(255,255,255,.12); border-radius:50%; }
 .burger-photo b { position:relative; z-index:2; font-size:150px; line-height:1; filter:drop-shadow(0 20px 8px rgba(35,22,10,.25)); transition:transform .18s ease; }
 .burger-card:hover .burger-photo b { transform:scale(1.07) rotate(-2deg); }
+.burger-card:disabled { cursor:wait; opacity:.7; }
+.burger-card:disabled:hover { transform:none; box-shadow:8px 8px 0 var(--ink); }
+.burger-photo b img { display:block; width:280px; height:250px; object-fit:contain; }
+.winner-burger img { display:block; width:300px; height:260px; object-fit:contain; }
+.worldcup-request-status { margin:20px auto; max-width:900px; padding:16px 20px; border:2px solid var(--red-dark); border-radius:8px; background:var(--paper); }
+.worldcup-request-status button { margin:8px 12px 0 0; padding:8px 14px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); cursor:pointer; }
 .burger-photo i { position:absolute; right:28px; top:22px; z-index:2; font-size:44px; font-style:normal; transform:rotate(8deg); }
 .card-copy { display:block; padding:22px 26px; }
 .card-copy>small { display:block; color:var(--red); font-size:10px; font-weight:800; letter-spacing:.18em; }
@@ -202,6 +208,12 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
   .ranking-shell .site-footer { gap:12px; font-size:8px; }
 }
 
+.worldcup-options-status { margin-top:16px; max-width:420px; color:#655e55; font-size:13px; line-height:1.7; }
+.worldcup-options-status button { margin-top:8px; padding:8px 14px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); cursor:pointer; }
+.round-option:disabled,.start-button:disabled { opacity:.5; cursor:not-allowed; box-shadow:none; transform:none; }
+.round-option:disabled:hover { border-color:var(--line); }
+.start-button:disabled:hover { background:var(--red); }
+.worldcup-options-status button:focus-visible { outline:3px solid var(--red); outline-offset:3px; }
 /* ── 가격 비교 화면 (.compare-shell) ──────────────────────────────
    랭킹 페이지와 동일하게 worldcup-shell 위에 얹고, 폭 제한만 모바일까지 푼다.
    색/테두리/그림자/폰트는 전역 토큰(--paper, --ink, --red, --mustard)을 그대로 쓴다. */
@@ -310,4 +322,62 @@ body:has(.compare-shell) {
     linear-gradient(90deg, rgba(27, 25, 22, 0.035) 1px, transparent 1px),
     var(--cream);
   background-size: 32px 32px, 32px 32px, auto;
+}
+
+/* ── 헤더 계정 영역 (로그인은 선택 사항) ──────────────────────────
+   우측 상단 고정 메뉴 버튼(.menu-toggle)과 겹치지 않도록 오른쪽 여백을 둔다. */
+.header-account { margin-left:auto; margin-right:24px; display:flex; align-items:center; }
+.header-login { padding:10px 18px; border:1.5px solid var(--ink); border-radius:999px; background:var(--paper); color:var(--ink); font-size:13px; font-weight:800; text-decoration:none; transition:background .15s ease,transform .15s ease; }
+.header-login:hover { background:var(--mustard); transform:translateY(-1px); }
+.header-profile { display:flex; align-items:center; gap:9px; max-width:220px; padding:4px 14px 4px 4px; border:1.5px solid var(--ink); border-radius:999px; background:var(--paper); font-size:13px; font-weight:800; cursor:pointer; }
+.header-profile:hover { background:var(--mustard); }
+.header-profile span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.header-login:focus-visible,.header-profile:focus-visible,.account-login:focus-visible,.account-logout:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.account-avatar { flex-shrink:0; display:grid; place-items:center; border:1.5px solid var(--ink); border-radius:50%; background:var(--mustard); color:var(--ink); font-weight:800; object-fit:cover; }
+.navigation-account { margin-top:auto; padding-top:20px; display:flex; flex-direction:column; gap:14px; border-top:1px solid var(--line); }
+.account-profile { display:flex; align-items:center; gap:12px; min-width:0; }
+.account-profile div { min-width:0; }
+.account-profile strong { display:block; overflow:hidden; font-size:15px; text-overflow:ellipsis; white-space:nowrap; }
+.account-profile small { display:block; overflow:hidden; margin-top:2px; color:#71695f; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.account-login { display:flex; flex-direction:column; gap:3px; padding:16px 18px; border:2px solid var(--ink); border-radius:8px; background:var(--red); color:white; font-weight:800; text-decoration:none; box-shadow:4px 4px 0 var(--ink); transition:.15s ease; }
+.account-login small { color:rgba(255,255,255,.8); font-size:11px; font-weight:600; }
+.account-login:hover { background:var(--red-dark); transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
+.account-logout { padding:12px; border:1.5px solid var(--ink); border-radius:8px; background:var(--paper); font-size:13px; font-weight:800; cursor:pointer; }
+.account-logout:hover { background:var(--mustard); }
+@media (max-width:700px) {
+  .header-account { margin-right:56px; }
+  .header-login { padding:8px 14px; font-size:12px; }
+  .header-profile { max-width:150px; padding-right:10px; font-size:12px; }
+}
+
+/* 월드컵 결과 저장 상태 */
+.worldcup-save { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-top:18px; padding:12px 16px; border:1px dashed #827a6d; border-radius:8px; background:var(--paper); font-size:13px; font-weight:700; color:#655e55; }
+.worldcup-save.saved { border-style:solid; border-color:var(--green); color:var(--green); }
+.worldcup-save.error { border-color:var(--red-dark); color:var(--red-dark); }
+.worldcup-save a,.worldcup-save button { padding:0; border:0; border-bottom:1.5px solid currentColor; background:transparent; color:var(--ink); font-weight:800; text-decoration:none; cursor:pointer; }
+.worldcup-save a:hover,.worldcup-save button:hover { color:var(--red); }
+.ranking-empty .ranking-empty-start { max-width:100%; margin:0 auto; text-decoration:none; }
+.account-mypage { color:var(--ink); text-decoration:none; }
+.account-mypage:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+
+/* Completed tournament rankings */
+.final-rankings {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto 64px;
+  padding: 32px;
+  border: 1px solid #e4dfd5;
+  border-radius: 24px;
+  background: #fffdf7;
+}
+.final-rankings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.final-rankings-heading h2 { margin: 8px 0 16px; }
+.final-rankings-table { overflow-x: auto; }
+.final-rankings .my-worldcup-winner { background: #fff1ba; }
+.final-winner-label { color: #8b4a11; font-weight: 700; }
+.final-rankings-pagination { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 20px; }
+.final-rankings button:disabled { opacity: .45; cursor: default; }
+@media (max-width: 640px) {
+  .final-rankings { width: calc(100% - 24px); padding: 20px 12px; }
+  .final-rankings-heading { align-items: flex-start; flex-direction: column; gap: 0; }
+  .final-rankings .ranking-table { min-width: 560px; }
 }

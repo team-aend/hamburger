@@ -1,7 +1,9 @@
 'use client';
 
-import { useRouter } from 'next/navigation';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
+import { loginHref, useAuth, type AuthUser } from '@/components/auth/AuthProvider';
 
 type MenuKey = 'worldcup' | 'recommend' | 'compare';
 
@@ -24,6 +26,8 @@ const menuRoutes: Record<MenuKey, string> = {
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
   const router = useRouter();
+  const pathname = usePathname();
+  const { user, loading, logout } = useAuth();
   const selectMenu = (menu: MenuKey) => {
     if (onSelectMenu) onSelectMenu(menu);
     else router.push(menuRoutes[menu]);
@@ -79,7 +83,73 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
             {item.badge && <small>{item.badge}</small>}
           </button>
         ))}
+
+        <div className="navigation-account">
+          <div className="navigation-heading">ACCOUNT</div>
+          {user ? (
+            <>
+              <div className="account-profile">
+                <Avatar user={user} size={40} />
+                <div>
+                  <strong>{user.displayName}</strong>
+                  {user.email && <small>{user.email}</small>}
+                </div>
+              </div>
+              <Link
+                className={`navigation-item account-mypage ${pathname === '/mypage' ? 'active' : ''}`}
+                href="/mypage"
+                aria-current={pathname === '/mypage' ? 'page' : undefined}
+                tabIndex={isMenuOpen ? 0 : -1}
+                onClick={() => setIsMenuOpen(false)}
+              >
+                <span>마이페이지</span>
+                <small>MY</small>
+              </Link>
+              <button
+                className="account-logout"
+                type="button"
+                tabIndex={isMenuOpen ? 0 : -1}
+                onClick={async () => {
+                  setIsMenuOpen(false);
+                  toggleRef.current?.focus();
+                  await logout();
+                }}
+              >
+                로그아웃
+              </button>
+            </>
+          ) : (
+            <Link
+              className="account-login"
+              href={loginHref(pathname)}
+              tabIndex={isMenuOpen ? 0 : -1}
+              onClick={() => setIsMenuOpen(false)}
+            >
+              <span>로그인</span>
+              <small>Google 계정으로 간편하게</small>
+            </Link>
+          )}
+        </div>
       </nav>
+
+      {/* 로그인은 선택 사항: 비로그인이면 로그인 버튼, 로그인 상태면 프로필(누르면 메뉴 열림) */}
+      <div className="header-account">
+        {loading ? null : user ? (
+          <button
+            className="header-profile"
+            type="button"
+            aria-label={`${user.displayName} 계정 메뉴 열기`}
+            onClick={() => setIsMenuOpen(true)}
+          >
+            <Avatar user={user} size={30} />
+            <span>{user.displayName}</span>
+          </button>
+        ) : (
+          <Link className="header-login" href={loginHref(pathname)}>
+            로그인
+          </Link>
+        )}
+      </div>
 
       <button
         ref={toggleRef}
@@ -93,5 +163,27 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
         <span /><span /><span />
       </button>
     </header>
+  );
+}
+
+function Avatar({ user, size }: { user: AuthUser; size: number }) {
+  if (user.avatarUrl) {
+    return (
+      // Google 프로필 이미지는 외부 도메인이라 next/image 대신 img 를 쓴다.
+      // eslint-disable-next-line @next/next/no-img-element
+      <img
+        className="account-avatar"
+        src={user.avatarUrl}
+        alt=""
+        width={size}
+        height={size}
+        referrerPolicy="no-referrer"
+      />
+    );
+  }
+  return (
+    <span className="account-avatar" style={{ width: size, height: size }} aria-hidden="true">
+      {user.displayName.slice(0, 1)}
+    </span>
   );
 }
