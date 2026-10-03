@@ -3,29 +3,42 @@
 import { useEffect, useState } from 'react';
 import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
-import { ProductStat, getRankings, RankingSort } from '@/data/rankings';
+import { RankingsResponse, RankingSort } from '@/data/rankings';
 
 export default function RankingPage() {
   const [query, setQuery] = useState('');
   const [sort, setSort] = useState<RankingSort>('championships');
-  const [stats, setStats] = useState<ProductStat[]>([]);
-  const [totalResults, setTotalResults] = useState<number | null>(null);
+  const [data, setData] = useState<RankingsResponse | null>(null);
+  const [roundSize, setRoundSize] = useState('');
+  const [page, setPage] = useState(1);
+  const [retry, setRetry] = useState(0);
+  const [loading, setLoading] = useState(true);
   const [error, setError] = useState(false);
 
   useEffect(() => {
-    fetch('/api/worldcup/rankings', { cache: 'no-store' })
-      .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
-      .then((data: { totalResults: number; stats: ProductStat[] }) => {
-        setStats(data.stats);
-        setTotalResults(data.totalResults);
-      })
-      .catch(() => setError(true));
-  }, []);
+    const controller = new AbortController();
+    setLoading(true);
+    setError(false);
+    const timer = setTimeout(() => {
+      const params = new URLSearchParams({ sort, q: query.trim(), page: String(page), pageSize: '20' });
+      if (roundSize) params.set('roundSize', roundSize);
+      fetch(`/api/worldcup/rankings?${params}`, { cache: 'no-store', signal: controller.signal })
+        .then((res) => res.ok ? res.json() : Promise.reject(new Error()))
+        .then((result: RankingsResponse) => {
+          if (!controller.signal.aborted) { setData(result); setLoading(false); }
+        })
+        .catch(() => {
+          if (!controller.signal.aborted) { setError(true); setLoading(false); }
+        });
+    }, 250);
+    return () => { clearTimeout(timer); controller.abort(); };
+  }, [sort, query, roundSize, page, retry]);
 
-  const rankings = getRankings(stats, sort);
+  const totalResults = data?.completedSessionCount ?? null;
   const hasResults = (totalResults ?? 0) > 0;
-  const leaders = rankings.filter((entry) => entry.rank <= 3);
-  const filtered = rankings.filter((entry) => entry.name.includes(query.trim()));
+  const leaders = data?.leaders ?? [];
+  const filtered = data?.items ?? [];
+  const rate = (value: number | null) => value === null ? '—' : `${value.toFixed(1)}%`;
 
   return (
     <main className="worldcup-shell ranking-shell">
@@ -41,19 +54,26 @@ export default function RankingPage() {
           <span>
             {error
               ? '랭킹을 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.'
-              : totalResults === null
+              : loading || totalResults === null
                 ? '랭킹을 불러오는 중입니다...'
                 : `완료된 실제 상품 월드컵 ${totalResults.toLocaleString()}회의 결과로 집계합니다.`}
           </span>
         </aside>
+          <div className="ranking-controls">
+            <label>버거 이름 검색<input type="search" placeholder="어떤 버거가 궁금하세요?" maxLength={100} value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} /></label>
+            <label>정렬 기준<select value={sort} onChange={(event) => { setSort(event.target.value as RankingSort); setPage(1); }}><option value="championships">우승 횟수 높은 순</option><option value="winRate">대결 승률 높은 순</option></select></label>
+          </div>
 
-        {totalResults !== null && !hasResults ? (
+        {error && <button type="button" onClick={() => setRetry((value) => value + 1)}>다시 시도</button>}
+        <label>월드컵 범위 <select value={roundSize} onChange={(event) => { setRoundSize(event.target.value); setPage(1); }}><option value="">전체</option><option value="8">8강</option><option value="16">16강</option></select></label>
+
+        {!loading && !error && totalResults !== null && !hasResults ? (
           <div className="ranking-empty">
             <h3>아직 집계된 결과가 없어요.</h3>
             <p>첫 번째 월드컵 기록을 남겨 랭킹을 시작해 보세요.</p>
             <Link className="start-button ranking-empty-start" href="/">월드컵 참여하기 <span aria-hidden="true">→</span></Link>
           </div>
-        ) : hasResults && (<>
+        ) : !loading && !error && hasResults && (<>
 
         <section aria-labelledby="leaders-title">
           <h2 id="leaders-title" className="ranking-section-title">TOP 3 <small>{sort === 'championships' ? '우승 횟수' : '대결 승률'} 기준 · 공동 순위 포함</small></h2>
@@ -63,28 +83,29 @@ export default function RankingPage() {
                 <span className="ranking-position">{entry.rank}위</span>
                 <div className="ranking-art" aria-hidden="true">🍔</div>
                 <small>{entry.brandName}</small><h3>{entry.name}</h3>
-                <p>우승 <strong>{entry.championships}회</strong><span>대결 승률 {entry.winRate.toFixed(1)}%</span></p>
+                <p>우승 <strong>{entry.championships}회</strong><span>대결 승률 {rate(entry.winRate)}</span></p>
               </article>
             ))}
           </div>
         </section>
 
         <section className="ranking-list-section" aria-labelledby="all-rankings-title">
-          <h2 id="all-rankings-title" className="ranking-section-title">전체 순위 <small>{rankings.length} BURGERS</small></h2>
-          <div className="ranking-controls">
-            <label>버거 이름 검색<input type="search" placeholder="어떤 버거가 궁금하세요?" value={query} onChange={(event) => setQuery(event.target.value)} /></label>
-            <label>정렬 기준<select value={sort} onChange={(event) => setSort(event.target.value as RankingSort)}><option value="championships">우승 횟수 높은 순</option><option value="winRate">대결 승률 높은 순</option></select></label>
-          </div>
-          <p className="ranking-count" aria-live="polite">{filtered.length}개의 버거 · 검색해도 전체 순위는 유지됩니다.</p>
+          <h2 id="all-rankings-title" className="ranking-section-title">전체 순위 <small>{data?.totalCount} BURGERS</small></h2>
+          <p className="ranking-count" aria-live="polite">{data?.totalCount}개의 버거 · 검색해도 전체 순위는 유지됩니다.</p>
           {filtered.length ? (
             <table className="ranking-table">
               <caption className="visually-hidden">햄버거 월드컵 랭킹, {sort === 'championships' ? '우승 횟수' : '대결 승률'} 내림차순</caption>
               <thead><tr><th scope="col">순위</th><th scope="col">버거</th><th scope="col">우승 횟수</th><th scope="col">대결 승률</th></tr></thead>
               <tbody>{filtered.map((entry) => (
-                <tr key={entry.productId}><td className="ranking-number">{entry.rank}</td><th scope="row"><div className="ranking-burger"><span aria-hidden="true">🍔</span><div><small>{entry.brandName}</small><strong>{entry.name}</strong></div></div></th><td>{entry.championships}회</td><td>{entry.winRate.toFixed(1)}%</td></tr>
+                <tr key={entry.productId}><td className="ranking-number">{entry.rank ?? '—'}</td><th scope="row"><div className="ranking-burger"><span aria-hidden="true">🍔</span><div><small>{entry.brandName}</small><strong>{entry.name}</strong>{entry.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th><td>{entry.championships}회</td><td>{rate(entry.winRate)}</td></tr>
               ))}</tbody>
             </table>
-          ) : <div className="ranking-empty"><h3>검색한 버거가 없습니다.</h3><p>다른 이름으로 검색해 보세요.</p><button type="button" onClick={() => setQuery('')}>검색 초기화</button></div>}
+          ) : <div className="ranking-empty"><h3>검색한 버거가 없습니다.</h3><p>다른 이름으로 검색해 보세요.</p><button type="button" onClick={() => { setQuery(''); setPage(1); }}>검색 초기화</button></div>}
+          <nav aria-label="랭킹 페이지">
+            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}>이전</button>
+            <span> {page} / {Math.max(1, Math.ceil((data?.totalCount ?? 0) / 20))} </span>
+            <button type="button" disabled={page * 20 >= (data?.totalCount ?? 0)} onClick={() => setPage(page + 1)}>다음</button>
+          </nav>
           <p className="ranking-definition">우승 횟수는 최종 우승 수, 대결 승률은 전체 대결 중 승리한 비율입니다. 같은 수치는 공동 순위로 표시합니다.</p>
         </section>
         </>)}

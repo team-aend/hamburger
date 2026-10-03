@@ -21,3 +21,20 @@ export function getRankings(stats: ProductStat[], sort: RankingSort) {
     return { ...entry, rank };
   });
 }
+
+export interface RankingItem extends ProductStat {
+  status: string;
+  rank: number | null;
+  appearances: number;
+  winRate: number | null;
+}
+export interface RankingsResponse {
+  sort: RankingSort;
+  roundSize: 8 | 16 | null;
+  page: number;
+  pageSize: number;
+  totalCount: number;
+  completedSessionCount: number;
+  leaders: RankingItem[];
+  items: RankingItem[];
+}

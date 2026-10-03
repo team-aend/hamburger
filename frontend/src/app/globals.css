@@ -359,3 +359,25 @@ body:has(.compare-shell) {
 .ranking-empty .ranking-empty-start { max-width:100%; margin:0 auto; text-decoration:none; }
 .account-mypage { color:var(--ink); text-decoration:none; }
 .account-mypage:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+
+/* Completed tournament rankings */
+.final-rankings {
+  width: min(1120px, calc(100% - 40px));
+  margin: 0 auto 64px;
+  padding: 32px;
+  border: 1px solid #e4dfd5;
+  border-radius: 24px;
+  background: #fffdf7;
+}
+.final-rankings-heading { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.final-rankings-heading h2 { margin: 8px 0 16px; }
+.final-rankings-table { overflow-x: auto; }
+.final-rankings .my-worldcup-winner { background: #fff1ba; }
+.final-winner-label { color: #8b4a11; font-weight: 700; }
+.final-rankings-pagination { display: flex; align-items: center; justify-content: center; gap: 24px; margin-top: 20px; }
+.final-rankings button:disabled { opacity: .45; cursor: default; }
+@media (max-width: 640px) {
+  .final-rankings { width: calc(100% - 24px); padding: 20px 12px; }
+  .final-rankings-heading { align-items: flex-start; flex-direction: column; gap: 0; }
+  .final-rankings .ranking-table { min-width: 560px; }
+}

@@ -1,3 +1,6 @@
+import { createGetRankings } from './application/getRankings.js';
+import { PgRankings } from './infrastructure/pgRankings.js';
+import { createRankingsHandler } from './presentation/rankingsHandler.js';
 import { optionalAuth } from '../auth/middleware.js';
 import { createGetRecords } from './application/getRecords.js';
 import { PgWorldcupRecords } from './infrastructure/pgRecords.js';
@@ -48,7 +51,9 @@ export function createWorldcupRouter() {
   });
   router.get('/sessions/:id', play.get);
   router.post('/sessions/:id/matches/:matchId/vote', play.vote);
-  router.get('/rankings', worldcupRecordsHandlers().rankings);
+  router.get('/rankings', createRankingsHandler(
+    createGetRankings({ read: (input) => new PgRankings(getDbPool()).read(input) }), isDbConfigured,
+  ));
   return router;
 }
 

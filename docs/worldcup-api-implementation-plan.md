@@ -402,6 +402,8 @@ API 2의 대진과 API 3의 상태 응답을 사용한다. 이 API 하나가 선
 
 ## API 6. 월드컵 랭킹 조회
 
+구현 상태: 서버 집계·공동 순위·강수 필터·검색·페이지네이션과 랭킹 화면 연동 구현 완료. 완료 화면에도 최신 최종 우승 랭킹 목록을 표시하며 이번 우승 상품을 강조한다. API는 익명 완료 세션도 포함한다. 상세 계약은 `application/getRankings.ts`, SQL은 `infrastructure/pgRankings.ts`, HTTP 검증은 `presentation/rankingsHandler.ts`에서 관리한다. 운영 DB 적용·실행 계획 측정은 별도 배포 검증으로 남긴다.
+
 ### 목적과 의존성
 
 `GET /api/worldcup/rankings`
