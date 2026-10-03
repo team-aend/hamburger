@@ -1,7 +1,7 @@
 import type pg from 'pg';
 import { getDbPool } from '../db/pool.js';
 
-// Keep eligibility in one query for options and the future session creation API.
+// Options and session creation use the same eligibility rules.
 export const eligibleProductsQuery = `
   SELECT p.id, p.name, p.description, p.image_url, b.name AS brand_name
   FROM products p
@@ -9,6 +9,27 @@ export const eligibleProductsQuery = `
   JOIN categories c ON c.id = p.category_id
   WHERE c.slug = $1 AND p.status = $2 AND b.is_active = TRUE
 `;
+
+export interface WorldcupProduct {
+  productId: string;
+  name: string;
+  brandName: string;
+  description: string | null;
+  imageUrl: string | null;
+}
+
+export async function listEligibleProducts(db: Pick<pg.Pool, 'query'>): Promise<WorldcupProduct[]> {
+  const result = await db.query<{
+    id: string; name: string; brand_name: string; description: string | null; image_url: string | null;
+  }>(eligibleProductsQuery, ['burger', 'ACTIVE']);
+  return result.rows.map((row) => ({
+    productId: row.id,
+    name: row.name,
+    brandName: row.brand_name,
+    description: row.description,
+    imageUrl: row.image_url,
+  }));
+}
 
 export async function countEligibleProducts(db: Pick<pg.Pool, 'query'> = getDbPool()): Promise<number> {
   const result = await db.query<{ count: string }>(

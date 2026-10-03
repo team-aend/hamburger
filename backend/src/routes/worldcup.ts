@@ -3,6 +3,7 @@ import { isDbConfigured } from '../db/pool.js';
 import { countEligibleProducts } from '../repositories/worldcupProducts.js';
 import { buildWorldcupOptions } from '../services/worldcupOptions.js';
 import { requireAuth } from '../auth/middleware.js';
+import { createStartSessionHandler } from './worldcupSessions.js';
 import {
   getWorldcupRankingStats,
   saveWorldcupResult,
@@ -40,6 +41,13 @@ export function createOptionsHandler(
 
 const router = Router();
 router.get('/options', createOptionsHandler());
+/**
+ * POST /api/worldcup/sessions (로그인 선택)
+ * body: { roundSize: 8 | 16 }, headers: Origin, Idempotency-Key(UUID).
+ * Without an owner cookie: 428 + Set-Cookie, retry once with the same key.
+ * A new session returns 201; the same owner's identical retry returns 200.
+ */
+router.post('/sessions', createStartSessionHandler());
 
 /**
  * POST /api/worldcup/results  (로그인 필수)
