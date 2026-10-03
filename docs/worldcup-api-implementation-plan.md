@@ -117,6 +117,8 @@
 
 ## API 2. 월드컵 시작
 
+구현 상태: 계획 작성 단계. 이번 단계는 시작 API와 관련 마이그레이션·테스트까지만 구현하며 실제 게임 화면 전환은 API 3·4·5가 준비된 후 수행한다.
+
 ### 목적과 의존성
 
 `POST /api/worldcup/sessions`
@@ -136,7 +138,7 @@ API 1의 참가 상품 조회 조건을 재사용한다. 이 단계에서 세션
 |---|---|
 | `worldcup_sessions` | UUID, 소유자 토큰 해시, 최초 강수, 상태, 최종 우승 상품, 생성·완료·중단·만료 시각 |
 | `worldcup_entries` | 세션 ID, 상품 ID, 최초 대진 위치, 이름·브랜드·설명·이미지 스냅샷. 세션 내 상품 및 위치 각각 UNIQUE |
-| `worldcup_matches` | UUID, 세션 ID, 라운드 강수, 0부터 시작하는 경기 순서, 양쪽 상품, 승자, 결정 시각. 세션·라운드·순서 UNIQUE |
+| `worldcup_session_matches` | UUID, 세션 ID, 라운드 강수, 0부터 시작하는 경기 순서, 양쪽 상품, 승자, 결정 시각. 세션·라운드·순서 UNIQUE |
 | `worldcup_creation_requests` | 요청 키, 요청 본문 해시, 소유자 해시, 세션 ID, 초기 응답, 제한된 재전송 기한. 요청 키 UNIQUE |
 
 양쪽 상품은 해당 세션의 참가자를 참조하도록 복합 FK를 둔다. 두 상품이 서로 달라야 하며 승자는 양쪽 중 하나여야 한다. 과거 기록이 참조하는 상품은 삭제를 제한하고 상태 변경으로 관리한다.
@@ -176,6 +178,83 @@ API 1의 참가 상품 조회 조건을 재사용한다. 이 단계에서 세션
 - 같은 키의 연속·동시 요청은 세션 한 개만 생성한다.
 - 중간 INSERT 실패 시 요청 기록·참가자·경기 모두 롤백된다.
 - 기존 프론트 게임은 유지한 채 API 테스트로 생성 응답까지 검증하고 커밋한다.
+
+### 현재 코드와의 호환성
+
+- `backend/src/repositories/worldcupProducts.ts`의 `eligibleProductsQuery`를 재사용해 옵션 조회와 시작 시 참가 조건을 일치시킨다. DB 오류나 상품 부족을 시드 데이터로 대체하지 않는다.
+- `003_mypage_worldcup.sql`에는 이미 결과 저장용 `worldcup_matches`가 있다. 해당 테이블은 `BIGSERIAL` ID와 `result_id`, 프론트 목업 버거 ID를 사용하므로 새 UUID 대진 테이블로 재사용할 수 없다. 기존 테이블은 유지하고 새 대진은 `worldcup_session_matches`에 저장한다. API 3·4·6도 새 세션 대진을 사용한다.
+- 기존 `POST /api/worldcup/results`, 회원 월드컵 기록과 랭킹 집계는 변경하지 않는다. 새 시작 요청으로 기존 결과 테이블에 기록하지 않으며 두 저장 모델의 통합은 완료·랭킹 API 단계에서 다룬다.
+- 로그인 쿠키 `bp_session`과 별개로 익명 소유권 쿠키 `bp_worldcup_owner`를 사용한다. 로그인 여부와 무관하게 같은 쿠키로 세션을 소유한다. 로그인·로그아웃 시 이 쿠키를 지우거나 다른 사용자 ID로 대체하지 않는다.
+- 현재 `frontend/src/app/page.tsx`는 정적 `burgers` 배열을 섞어 게임을 진행한다. 이 단계에서 시작 버튼만 새 API로 바꾸면 이후 선택·결과 저장의 상품 ID가 맞지 않으므로 프론트 연결은 보류한다.
+
+### 파일별 구현 순서
+
+| 순서 | 파일 | 구현 내용 |
+|---|---|---|
+| 1 | `backend/src/db/migrations/004_worldcup_sessions.sql` | 아래 네 테이블과 제약·인덱스 추가. 기존 테이블·데이터 보존 |
+| 2 | `backend/src/repositories/worldcupProducts.ts` | 트랜잭션 클라이언트를 받아 참가 상품 목록 조회. 상품 ID를 문자열로 유지 |
+| 3 | `backend/src/auth/worldcupOwner.ts` | 32바이트 난수 토큰 발급, 쿠키 읽기·형식 검사, SHA-256 소유자 해시 생성 |
+| 4 | `backend/src/services/worldcupSession.ts` | 입력 검증, Fisher–Yates 추첨, 최초 응답 구성. 난수·시각을 테스트에서 주입 가능하게 구성 |
+| 5 | `backend/src/repositories/worldcupSessions.ts` | 요청 키 선점, 세션·참가자·첫 대진 저장과 초기 응답 재사용을 단일 트랜잭션으로 처리 |
+| 6 | `backend/src/routes/worldcup.ts` | `/sessions` 핸들러 추가, 출처·소유권·오류 응답·캐시 금지 처리 |
+| 7 | `backend/tests/worldcup-sessions.test.ts` | HTTP 계약, 테스트 DB 저장·롤백·동시 요청 검증 |
+
+공통 응답 타입은 `backend/src/services/worldcupSession.ts`에서 정의하고 이후 조회·선택 API에서 재사용한다. 기존 옵션 API 테스트에서 라우터를 import해도 DB 연결이나 세션 생성이 실행되지 않도록 모듈 로딩과 요청 실행을 분리한다.
+
+### 마이그레이션 상세
+
+- `worldcup_sessions`: `id UUID PRIMARY KEY`, `owner_token_hash TEXT NOT NULL`, `round_size SMALLINT CHECK (round_size IN (8,16))`, 상태 CHECK, 생성·만료·완료·중단 시각, nullable 우승 상품 ID. 기본 상태는 `IN_PROGRESS`다. 소유자·생성 시각 인덱스를 추가한다.
+- `worldcup_entries`: `(session_id, product_id)`를 복합 PK로 두고 `(session_id, position)` UNIQUE와 `position >= 0` CHECK를 추가한다. 상품 FK는 `products(id)`를 참조하고 삭제를 제한한다. 이름·브랜드명은 필수 스냅샷, 설명·이미지는 nullable로 저장한다.
+- `worldcup_session_matches`: UUID PK, 세션 FK, `round_size IN (2,4,8,16)` CHECK, 음수가 아닌 경기 순서, 양쪽 참가 상품·nullable 승자·결정 시각. `(session_id, round_size, match_index)` UNIQUE를 둔다. 왼쪽·오른쪽·승자 모두 참가자 복합 FK로 연결한다. 좌우 중복 금지, 승자 범위, 승자와 결정 시각의 동시 존재 여부를 CHECK로 보장한다.
+- 우승 상품도 `(session_id, winner_product_id)`로 참가자 FK를 둔다. 세션과 참가자 간 순환 참조는 테이블 생성 후 FK 추가로 해결하고, 참가자 저장 전에는 우승 값을 null로 둔다. 재실행 가능한 FK 추가 방식을 사용한다.
+- `worldcup_creation_requests`: `request_key UUID PRIMARY KEY`, 소유자 해시, 요청 본문 해시, nullable 세션 FK·JSONB 초기 응답, 생성·재시도 만료 시각. 요청 키 선점 시 세션·응답은 null이며 같은 트랜잭션에서 함께 채운다. 두 값의 null 여부가 같도록 CHECK를 둔다. 세션 생성만 이 저장소를 쓰고 미완성 선점 행은 커밋하지 않는다.
+- 진행 만료 기본값은 24시간이며 양의 정수 환경 설정으로 관리한다. 요청 키 기록은 최소 24시간 유지하고 만료된 키 재사용은 409 `IDEMPOTENCY_KEY_EXPIRED`로 거절한다. 이 단계에서는 기록 자동 삭제를 구현하지 않는다. 이후 정리 정책에서도 재시도 보장 기간 내 기록을 삭제하지 않는다.
+- `db:migrate`가 마이그레이션 전체를 재실행하는 구조이므로 테스트 DB에서 두 번 실행해 중복 생성·FK 추가 오류가 없는지 확인한다. 실제 Supabase 적용은 구현 검증 후 별도 배포 단계에서 진행한다.
+
+### 동시 요청 처리의 구체적 절차
+
+1. 본문은 `roundSize`만 허용한다. `{ "roundSize": 8 }`처럼 정규화한 JSON을 SHA-256으로 해시해 공백·속성 순서가 다른 동일 요청도 같은 본문으로 판단한다.
+2. 풀에서 클라이언트 하나를 얻어 `BEGIN` 후 `INSERT ... ON CONFLICT (request_key) DO NOTHING RETURNING request_key`로 키를 선점한다. 이후 모든 SQL은 이 클라이언트에서 실행한다.
+3. 선점하지 못한 요청은 다음 SELECT로 커밋된 기존 기록을 읽는다. 기본 READ COMMITTED에서 충돌 INSERT는 경쟁 트랜잭션을 기다리며, 다음 문장은 새 스냅샷을 읽는다. 상대가 롤백하면 현재 요청이 선점해 생성을 수행한다.
+4. 기존 기록은 소유자 해시를 먼저 비교한다. 다른 소유자에는 세션 ID·응답을 노출하지 않고 409 `IDEMPOTENCY_KEY_REUSED`만 반환한다. 같은 소유자는 본문 해시·재시도 만료를 검사한 뒤 저장 응답을 반환한다.
+5. 새 키에만 생성 제한을 적용한다. 초기 정책은 소유자당 60초에 5개 새 세션이며, 트랜잭션 advisory lock으로 같은 소유자의 생성 카운트 검사와 저장을 직렬화한다. 정상 재전송은 생성 횟수에 포함하지 않는다. 쿠키 발급과 전체 요청 폭주 제한은 별도 HTTP 제한으로 보호한다.
+6. 참가 상품은 조건을 적용한 단일 SELECT 결과로 확보하고 그 결과를 그대로 추첨·스냅샷 저장에 사용한다. 조회 이후 판매 상태 변경은 이미 시작한 세션의 스냅샷을 바꾸지 않는다. 상품 삭제 경쟁으로 FK가 실패하면 전체 롤백한다.
+7. `crypto.randomInt`를 사용하는 Fisher–Yates로 중복 없는 순열을 만들고 앞의 8개 또는 16개를 선택한다. UUID는 `crypto.randomUUID()`로 생성한다.
+8. 세션 → 참가자 → 첫 라운드 경기 → 요청 기록의 세션 ID·응답 갱신 순으로 저장한다. `COMMIT` 성공 후에만 응답한다. 오류 시 `ROLLBACK`, `finally`에서 클라이언트를 반환한다.
+
+DB 커밋 후 응답 유실은 같은 키 재시도로 복구한다. 잠금·연결·쿼리 타임아웃은 503으로 처리하고 실패한 새 요청의 키 기록은 롤백한다. 응답에는 `Cache-Control: private, no-store`를 설정한다.
+
+### HTTP 오류 계약과 쿠키
+
+| HTTP | 오류 코드 | 상황 |
+|---|---|---|
+| 400 | `INVALID_ROUND_SIZE` | 강수 누락·문자열·8/16 외의 값 |
+| 400 | `INVALID_REQUEST_BODY` | null·배열·참가자 지정 등 허용하지 않은 본문 |
+| 400 | `INVALID_IDEMPOTENCY_KEY` | 요청 키 누락·UUID 형식 오류 |
+| 403 | `ORIGIN_NOT_ALLOWED` | 허용 출처와 다른 Origin 또는 Origin 누락 |
+| 428 | `ANONYMOUS_SESSION_REQUIRED` | 소유권 쿠키 없음·형식 오류. 새 쿠키만 발급 |
+| 409 | `INSUFFICIENT_PRODUCTS` | 시작 시점의 참가 상품 부족 |
+| 409 | `IDEMPOTENCY_KEY_REUSED` | 같은 키에 다른 소유자 또는 다른 본문 |
+| 409 | `IDEMPOTENCY_KEY_EXPIRED` | 보장 기간을 지난 키 재전송 |
+| 429 | `WORLD_CUP_RATE_LIMITED` | 새 세션 생성 제한 초과. `Retry-After` 포함 |
+| 503 | `DATABASE_NOT_CONFIGURED` / `DATABASE_UNAVAILABLE` | DB 설정 누락·연결/쿼리 장애 |
+| 500 | `INTERNAL_ERROR` | 그 외 예상하지 못한 오류 |
+
+Origin은 요청 Host를 신뢰해 만들지 않고 `CORS_ORIGIN`의 명시적 프론트 출처와 정확히 비교한다. 개발 환경도 같은 정책을 적용하며 HTTP 테스트·curl에 Origin을 지정한다. 형식·출처 검증은 쿠키 발급 전 수행한다.
+
+소유권 쿠키는 32바이트 base64url 토큰, `HttpOnly`, `SameSite=Lax`, `Path=/`, 운영 `Secure`, 유효기간 30일로 설정한다. 쿠키 형식을 검증하고 DB에는 토큰 원문 대신 SHA-256 해시만 저장한다. 토큰은 로그인 인증에 사용하지 않는다. 최초 428은 강수·헤더가 유효하고 출처가 허용된 요청에만 반환하며 DB 연결·쓰기 없이 쿠키만 발급한다.
+
+### 검증 시나리오와 구현 완료 체크리스트
+
+- 단위 테스트: 입력 오류, 토큰 형식, 해시 정규화, UUID·상품 ID 문자열, 응답 진행값(8강 7경기/첫 라운드 4경기, 16강 15경기/첫 라운드 8경기), 이미지 null을 확인한다. 난수를 고정해 추첨 결과를 검증하며 확률에 의존하는 테스트는 만들지 않는다.
+- HTTP 테스트: 최초 428에는 쿠키만 있고 DB 호출은 없으며 동일 키·쿠키의 두 번째 요청은 201이다. 정상 재전송은 200과 동일한 초기 응답을 반환한다. 잘못된 Origin, 다른 소유자의 키 재사용, 생성 제한, DB 장애 응답도 확인한다.
+- PostgreSQL 통합 테스트: 8·16강별 세션 1개, 참가자 8·16개, 경기 4·8개를 확인한다. 비활성 브랜드·중단 상품·다른 카테고리를 제외하고 참가자와 대진에 중복이 없는지 확인한다.
+- 참가 부족과 중간 INSERT 실패 후 네 테이블에 새 행이 남지 않아야 한다. 옵션 조회 후 참가 수 감소도 시작 단계에서 다시 거절해야 한다.
+- 동시성 테스트는 별도 연결에서 같은 키를 동시에 요청해 세션 하나와 동일 응답을 확인한다. 같은 소유자의 서로 다른 키 제한, 경쟁 트랜잭션 롤백 후 재시도도 검증한다. 같은 키에 다른 본문·소유자는 409여야 한다.
+- BIGINT ID가 `Number.MAX_SAFE_INTEGER`를 넘어도 원래 문자열로 응답하는지 확인한다. 기존 옵션·결과 저장·랭킹 라우트가 새 스키마 때문에 변경되지 않았는지 회귀 검증한다.
+- 테스트 DB는 `TEST_DATABASE_URL`로 분리한다. 고정 fixture와 독립 스키마를 사용하고 종료 시 정리한다. 동시성 테스트는 연결 하나의 TEMP 테이블에 의존하지 않는다. 테스트 DB가 없어 통합 테스트가 skip되면 구현 완료로 표시하지 않는다.
+- 검증 명령: `npm run test --workspace=backend`, `npm run build --workspace=backend`. 테스트 DB에서 마이그레이션 재실행과 HTTP 경유 시작·재전송 검증까지 통과하면 완료로 기록한다.
+- 구현 커밋 예시: `feat: 월드컵 시작 API와 세션 대진 생성 구현`. 이 문서 작성 단계에서는 API·DB·프론트 코드를 변경하지 않는다.
 
 ## API 3. 진행 상태 조회
 
