@@ -153,3 +153,63 @@
 .compareButtonSelected:hover {
   background: var(--red-dark);
 }
+
+/* 좋아요: 썸네일 우측 상단 */
+.likeButton {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 5px 11px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--paper);
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+  transition: transform 0.15s ease, background 0.15s ease;
+}
+
+.likeButton span:first-child {
+  color: var(--red);
+  font-size: 15px;
+  line-height: 1;
+}
+
+.likeButton:hover:not(:disabled) {
+  background: var(--mustard);
+  transform: translateY(-1px);
+}
+
+.likeButton:disabled {
+  cursor: progress;
+}
+
+.likeButtonActive {
+  background: var(--red);
+  color: white;
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.likeButtonActive span:first-child {
+  color: white;
+}
+
+.likeButtonActive:hover:not(:disabled) {
+  background: var(--red-dark);
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .likeButtonActive span:first-child {
+    animation: likePop 0.25s ease;
+  }
+}
+
+@keyframes likePop {
+  50% {
+    transform: scale(1.35);
+  }
+}

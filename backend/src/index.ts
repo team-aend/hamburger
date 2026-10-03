@@ -3,6 +3,7 @@ import cors from 'cors';
 import dotenv from 'dotenv';
 import apiRouter from './routes/index.js';
 import { isDbConfigured } from './db/pool.js';
+import { prewarmDatasetCache } from './db/datasetCache.js';
 
 dotenv.config();
 
@@ -33,4 +34,7 @@ app.listen(PORT, () => {
         : 'PostgreSQL not configured; worldcup options unavailable'
     }`
   );
+  if (isDbConfigured()) {
+    void prewarmDatasetCache();
+  }
 });

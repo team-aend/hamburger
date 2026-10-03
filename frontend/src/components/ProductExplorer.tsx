@@ -10,6 +10,7 @@ import SearchBar from '@/components/filter/SearchBar';
 import ProductGrid from '@/components/product/ProductGrid';
 import SiteHeader from '@/components/SiteHeader';
 import { useProductFilters } from '@/hooks/useProductFilters';
+import { useProductLikes } from '@/hooks/useProductLikes';
 import {
   MAX_COMPARE_COUNT,
   MIN_COMPARE_COUNT,
@@ -35,10 +36,35 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
     resetFilters,
   } = useProductFilters(products);
 
+  const {
+    counts: likeCounts,
+    likedIds,
+    pendingIds: pendingLikeIds,
+    toggleLike,
+    error: likeError,
+  } = useProductLikes(products.map((product) => product.id));
+
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [showComparison, setShowComparison] = useState(false);
   const [notice, setNotice] = useState<string | null>(null);
   const comparisonRef = useRef<HTMLElement>(null);
+
+  // 마이페이지 등에서 /compare?compare=1,2,3 으로 들어오면 해당 상품을 미리 담아 둔다.
+  useEffect(() => {
+    const ids = (new URLSearchParams(window.location.search).get('compare') ?? '')
+      .split(',')
+      .map(Number)
+      .filter((id) => Number.isSafeInteger(id) && id > 0);
+    if (ids.length === 0) return;
+
+    const initial = products
+      .filter((product) => ids.includes(product.id))
+      .slice(0, MAX_COMPARE_COUNT);
+    setSelectedProducts(initial);
+    if (initial.length >= MIN_COMPARE_COUNT) setShowComparison(true);
+    // 처음 진입할 때 한 번만 적용한다.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   // 안내 메시지는 잠시 후 자동으로 사라진다.
   useEffect(() => {
@@ -141,11 +167,21 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           <ProductSort value={sortType} onChange={setSortType} />
         </div>
 
+        {likeError && (
+          <p className={styles.likeError} role="alert">
+            {likeError}
+          </p>
+        )}
+
         <ProductGrid
           products={filteredProducts}
           selectedIds={selectedIds}
           onToggleCompare={toggleCompare}
           onResetFilters={resetFilters}
+          likeCounts={likeCounts}
+          likedIds={likedIds}
+          pendingLikeIds={pendingLikeIds}
+          onToggleLike={toggleLike}
         />
 
         {showComparison && selectedProducts.length >= MIN_COMPARE_COUNT && (

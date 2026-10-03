@@ -6,12 +6,20 @@ interface ProductCardProps {
   product: Product;
   selected: boolean;
   onToggleCompare: (product: Product) => void;
+  liked: boolean;
+  likeCount: number;
+  likePending: boolean;
+  onToggleLike: (productId: number) => void;
 }
 
 export default function ProductCard({
   product,
   selected,
   onToggleCompare,
+  liked,
+  likeCount,
+  likePending,
+  onToggleLike,
 }: ProductCardProps) {
   return (
     <article className={`${styles.card} ${selected ? styles.cardSelected : ''}`}>
@@ -28,6 +36,19 @@ export default function ProductCard({
             <span className={styles.placeholderText}>이미지 준비중</span>
           </div>
         )}
+
+        {/* 좋아요 (로그인 필수: 비로그인이면 로그인 화면으로 이동) */}
+        <button
+          type="button"
+          aria-pressed={liked}
+          aria-label={`${product.name} 좋아요${liked ? ' 취소' : ''}, 현재 ${likeCount}개`}
+          className={`${styles.likeButton} ${liked ? styles.likeButtonActive : ''}`}
+          disabled={likePending}
+          onClick={() => onToggleLike(product.id)}
+        >
+          <span aria-hidden="true">{liked ? '♥' : '♡'}</span>
+          <span>{likeCount}</span>
+        </button>
       </div>
 
       <div className={styles.body}>

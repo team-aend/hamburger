@@ -317,3 +317,39 @@ body:has(.compare-shell) {
     var(--cream);
   background-size: 32px 32px, 32px 32px, auto;
 }
+
+/* ── 헤더 계정 영역 (로그인은 선택 사항) ──────────────────────────
+   우측 상단 고정 메뉴 버튼(.menu-toggle)과 겹치지 않도록 오른쪽 여백을 둔다. */
+.header-account { margin-left:auto; margin-right:24px; display:flex; align-items:center; }
+.header-login { padding:10px 18px; border:1.5px solid var(--ink); border-radius:999px; background:var(--paper); color:var(--ink); font-size:13px; font-weight:800; text-decoration:none; transition:background .15s ease,transform .15s ease; }
+.header-login:hover { background:var(--mustard); transform:translateY(-1px); }
+.header-profile { display:flex; align-items:center; gap:9px; max-width:220px; padding:4px 14px 4px 4px; border:1.5px solid var(--ink); border-radius:999px; background:var(--paper); font-size:13px; font-weight:800; cursor:pointer; }
+.header-profile:hover { background:var(--mustard); }
+.header-profile span { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.header-login:focus-visible,.header-profile:focus-visible,.account-login:focus-visible,.account-logout:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.account-avatar { flex-shrink:0; display:grid; place-items:center; border:1.5px solid var(--ink); border-radius:50%; background:var(--mustard); color:var(--ink); font-weight:800; object-fit:cover; }
+.navigation-account { margin-top:auto; padding-top:20px; display:flex; flex-direction:column; gap:14px; border-top:1px solid var(--line); }
+.account-profile { display:flex; align-items:center; gap:12px; min-width:0; }
+.account-profile div { min-width:0; }
+.account-profile strong { display:block; overflow:hidden; font-size:15px; text-overflow:ellipsis; white-space:nowrap; }
+.account-profile small { display:block; overflow:hidden; margin-top:2px; color:#71695f; font-size:12px; text-overflow:ellipsis; white-space:nowrap; }
+.account-login { display:flex; flex-direction:column; gap:3px; padding:16px 18px; border:2px solid var(--ink); border-radius:8px; background:var(--red); color:white; font-weight:800; text-decoration:none; box-shadow:4px 4px 0 var(--ink); transition:.15s ease; }
+.account-login small { color:rgba(255,255,255,.8); font-size:11px; font-weight:600; }
+.account-login:hover { background:var(--red-dark); transform:translate(2px,2px); box-shadow:2px 2px 0 var(--ink); }
+.account-logout { padding:12px; border:1.5px solid var(--ink); border-radius:8px; background:var(--paper); font-size:13px; font-weight:800; cursor:pointer; }
+.account-logout:hover { background:var(--mustard); }
+@media (max-width:700px) {
+  .header-account { margin-right:56px; }
+  .header-login { padding:8px 14px; font-size:12px; }
+  .header-profile { max-width:150px; padding-right:10px; font-size:12px; }
+}
+
+/* 월드컵 결과 저장 상태 */
+.worldcup-save { display:flex; flex-wrap:wrap; align-items:center; gap:8px 14px; margin-top:18px; padding:12px 16px; border:1px dashed #827a6d; border-radius:8px; background:var(--paper); font-size:13px; font-weight:700; color:#655e55; }
+.worldcup-save.saved { border-style:solid; border-color:var(--green); color:var(--green); }
+.worldcup-save.error { border-color:var(--red-dark); color:var(--red-dark); }
+.worldcup-save a,.worldcup-save button { padding:0; border:0; border-bottom:1.5px solid currentColor; background:transparent; color:var(--ink); font-weight:800; text-decoration:none; cursor:pointer; }
+.worldcup-save a:hover,.worldcup-save button:hover { color:var(--red); }
+.ranking-empty .ranking-empty-start { max-width:100%; margin:0 auto; text-decoration:none; }
+.account-mypage { color:var(--ink); text-decoration:none; }
+.account-mypage:focus-visible { outline:3px solid var(--red); outline-offset:4px; }

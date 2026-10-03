@@ -2,6 +2,9 @@ import { Router, Request, Response } from 'express';
 import recommendRouter from './recommend.js';
 import worldcupRouter from './worldcup.js';
 import brandsRouter from './brands.js';
+import authRouter from './auth.js';
+import likesRouter from './likes.js';
+import meRouter from './me.js';
 
 const router = Router();
 
@@ -19,8 +22,11 @@ router.get('/hello', (_req: Request, res: Response) => {
   });
 });
 
+router.use('/auth', authRouter);
 router.use('/brands', brandsRouter);
-router.use('/recommend', recommendRouter);
+router.use('/likes', likesRouter);
+router.use('/me', meRouter);
 router.use('/worldcup', worldcupRouter);
+router.use('/recommend', recommendRouter);
 
 export default router;

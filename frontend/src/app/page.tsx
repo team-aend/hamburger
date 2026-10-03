@@ -3,8 +3,15 @@
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useState } from 'react';
+import { loginHref, useAuth } from '@/components/auth/AuthProvider';
 import SiteHeader from '@/components/SiteHeader';
 import { Burger, burgers } from '@/data/burgers';
+import {
+  savePendingWorldcupResult,
+  submitWorldcupResult,
+  type WorldcupMatch,
+  type WorldcupResultPayload,
+} from '@/lib/worldcupResult';
 
 type RoundSize = 8 | 16;
 type Phase = 'setup' | 'playing' | 'finished';
@@ -24,6 +31,8 @@ function parseOptions(value: unknown): WorldcupOptions {
   }
   return data;
 }
+/** 결과 저장 상태. guest: 비로그인이라 로그인 후 저장하도록 보관만 함 */
+type SaveStatus = 'idle' | 'saving' | 'saved' | 'error' | 'guest';
 
 const shuffle = <T,>(items: T[]) => {
   const result = [...items];
@@ -85,6 +94,27 @@ export default function HomePage() {
 
   const isRoundAvailable = (size: RoundSize) => !optionsLoading && !optionsError &&
     Boolean(options?.roundOptions.some((option) => option.roundSize === size && option.available));
+  const { user } = useAuth();
+  const [matchLog, setMatchLog] = useState<WorldcupMatch[]>([]);
+  const [saveStatus, setSaveStatus] = useState<SaveStatus>('idle');
+  const [lastPayload, setLastPayload] = useState<WorldcupResultPayload | null>(null);
+
+  // 로그인 회원은 바로 저장하고, 비로그인은 로그인하러 다녀오는 동안 보관한다.
+  const saveResult = async (payload: WorldcupResultPayload) => {
+    setLastPayload(payload);
+    if (!user) {
+      savePendingWorldcupResult(payload);
+      setSaveStatus('guest');
+      return;
+    }
+    setSaveStatus('saving');
+    try {
+      await submitWorldcupResult(payload);
+      setSaveStatus('saved');
+    } catch {
+      setSaveStatus('error');
+    }
+  };
 
   const startGame = (size = roundSize) => {
     if (!isRoundAvailable(size)) return;
@@ -92,10 +122,18 @@ export default function HomePage() {
     setMatchIndex(0);
     setRoundWinners([]);
     setWinner(null);
+    setMatchLog([]);
+    setSaveStatus('idle');
+    setLastPayload(null);
     setPhase('playing');
   };
 
   const selectBurger = (selected: Burger) => {
+    const left = contestants[matchIndex];
+    const opponent = left.id === selected.id ? contestants[matchIndex + 1] : left;
+    const log = [...matchLog, { round: contestants.length, winner: selected.id, loser: opponent.id }];
+    setMatchLog(log);
+
     const winners = [...roundWinners, selected];
     const isLastMatch = matchIndex + 2 >= contestants.length;
 
@@ -108,6 +146,7 @@ export default function HomePage() {
     if (winners.length === 1) {
       setWinner(selected);
       setPhase('finished');
+      void saveResult({ roundSize, winnerBurgerId: selected.id, matches: log });
       return;
     }
 
@@ -166,7 +205,7 @@ export default function HomePage() {
       )}
 
       {phase === 'finished' && winner && (
-        <ResultScreen winner={winner} roundSize={roundSize} onReplay={() => startGame(roundSize)} onReset={resetToSetup} />
+        <ResultScreen winner={winner} roundSize={roundSize} saveStatus={saveStatus} onRetrySave={() => lastPayload && void saveResult(lastPayload)} onReplay={() => startGame(roundSize)} onReset={resetToSetup} />
       )}
 
       <footer className="site-footer"><span>© 2026 BURGER PICK</span><span>취향에는 정답이 없습니다.</span></footer>
@@ -210,7 +249,7 @@ function BurgerCard({ burger, side, onSelect }: { burger: Burger; side: 'A' | 'B
   );
 }
 
-function ResultScreen({ winner, roundSize, onReplay, onReset }: { winner: Burger; roundSize: RoundSize; onReplay: () => void; onReset: () => void }) {
+function ResultScreen({ winner, roundSize, saveStatus, onRetrySave, onReplay, onReset }: { winner: Burger; roundSize: RoundSize; saveStatus: SaveStatus; onRetrySave: () => void; onReplay: () => void; onReset: () => void }) {
   return (
     <section className="result-screen" aria-labelledby="result-title" aria-live="polite">
       <div className="confetti" aria-hidden="true">
@@ -229,6 +268,7 @@ function ResultScreen({ winner, roundSize, onReplay, onReset }: { winner: Burger
         <span className="winner-label">TOURNAMENT WINNER</span>
         <h1 id="result-title">당신의<br /><strong>최애 버거</strong>는</h1>
         <div className="winner-name"><small>{winner.brand}</small><h2>{winner.name}</h2><p>{winner.description}</p></div>
+        <SaveStatusNotice status={saveStatus} onRetry={onRetrySave} />
         <Link className="ranking-link-button" href="/ranking">랭킹 확인하기 <span aria-hidden="true">→</span></Link>
         <div className="result-actions">
           <button className="replay-button" type="button" onClick={onReplay}><span>{roundSize}강 다시 하기</span><b>↻</b></button>
@@ -236,6 +276,18 @@ function ResultScreen({ winner, roundSize, onReplay, onReset }: { winner: Burger
         </div>
       </div>
     </section>
+  );
+}
+
+function SaveStatusNotice({ status, onRetry }: { status: SaveStatus; onRetry: () => void }) {
+  if (status === 'idle') return null;
+  return (
+    <p className={`worldcup-save ${status}`} aria-live="polite">
+      {status === 'saving' && <span>기록을 저장하는 중...</span>}
+      {status === 'saved' && <><span>기록이 저장되고 랭킹에 반영됐어요.</span><Link href="/mypage?tab=worldcup">마이페이지에서 보기 →</Link></>}
+      {status === 'error' && <><span>기록을 저장하지 못했어요.</span><button type="button" onClick={onRetry}>다시 시도</button></>}
+      {status === 'guest' && <><span>로그인하면 이 결과가 저장되고 랭킹에 반영돼요.</span><Link href={loginHref('/mypage?tab=worldcup')}>로그인하고 저장 →</Link></>}
+    </p>
   );
 }
 

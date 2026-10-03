@@ -24,11 +24,12 @@ export function getDbPool(): pg.Pool {
     poolInstance = new pg.Pool({
       connectionString,
       ssl: { rejectUnauthorized: true, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
-      max: 5,
+      max: 15,
       connectionTimeoutMillis: 5000,
-      idleTimeoutMillis: 30000,
+      idleTimeoutMillis: 60_000,
       query_timeout: 5000,
       statement_timeout: 5000,
+      keepAlive: true,
     });
     // Do not print database error objects: they can contain connection details.
     poolInstance.on('error', () => console.error('DATABASE_POOL_ERROR'));
