@@ -1,6 +1,6 @@
 import { createHash, randomBytes } from 'node:crypto';
 import type { Request, Response } from 'express';
-import { parseCookies } from './session.js';
+import { parseCookies } from '../../auth/session.js';
 
 export const WORLDCUP_OWNER_COOKIE = 'bp_worldcup_owner';
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
@@ -14,11 +14,11 @@ export function readWorldcupOwner(req: Request): string | null {
   return createHash('sha256').update(token).digest('hex');
 }
 
-export function setWorldcupOwner(res: Response): void {
+export function setWorldcupOwner(res: Response, secure: boolean): void {
   res.cookie(WORLDCUP_OWNER_COOKIE, randomBytes(32).toString('base64url'), {
     httpOnly: true,
     sameSite: 'lax',
-    secure: process.env.NODE_ENV === 'production',
+    secure,
     path: '/',
     maxAge: 30 * 24 * 60 * 60 * 1000,
   });

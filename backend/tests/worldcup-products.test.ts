@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import pg from 'pg';
-import { countEligibleProducts } from '../src/repositories/worldcupProducts.js';
+import { countEligibleProducts } from '../src/worldcup/infrastructure/pgProducts.js';
 
 // All fixture tables are TEMP tables on one connection; existing data is untouched.
 test('PostgreSQL eligibility excludes inactive brands, products and non-burgers', {

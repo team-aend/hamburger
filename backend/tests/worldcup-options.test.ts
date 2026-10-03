@@ -1,7 +1,8 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
 import type { Request, Response } from 'express';
-import { createOptionsHandler } from '../src/routes/worldcup.js';
+import { createOptionsHandler } from '../src/worldcup/presentation/optionsHandler.js';
+import { createGetWorldcupOptions } from '../src/worldcup/application/getOptions.js';
 import { getDatabaseUrl, getDbPool } from '../src/db/pool.js';
 
 async function invoke(count: () => Promise<number>, configured = true) {
@@ -13,7 +14,7 @@ async function invoke(count: () => Promise<number>, configured = true) {
     status(code: number) { status = code; return this; },
     json(value: unknown) { body = value; return this; },
   } as unknown as Response;
-  await createOptionsHandler(count, () => configured)({} as Request, res);
+  await createOptionsHandler(createGetWorldcupOptions(count), () => configured)({} as Request, res);
   return { status, body, headers };
 }
 

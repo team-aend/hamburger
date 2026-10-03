@@ -1,5 +1,6 @@
+import type { WorldcupProduct } from '../domain/session.js';
 import type pg from 'pg';
-import { getDbPool } from '../db/pool.js';
+import { getDbPool } from '../../db/pool.js';
 
 // Options and session creation use the same eligibility rules.
 export const eligibleProductsQuery = `
@@ -9,14 +10,6 @@ export const eligibleProductsQuery = `
   JOIN categories c ON c.id = p.category_id
   WHERE c.slug = $1 AND p.status = $2 AND b.is_active = TRUE
 `;
-
-export interface WorldcupProduct {
-  productId: string;
-  name: string;
-  brandName: string;
-  description: string | null;
-  imageUrl: string | null;
-}
 
 export async function listEligibleProducts(db: Pick<pg.Pool, 'query'>): Promise<WorldcupProduct[]> {
   const result = await db.query<{

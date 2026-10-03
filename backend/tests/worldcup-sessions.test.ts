@@ -1,13 +1,17 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { randomBytes, randomUUID } from 'node:crypto';
+import { randomBytes, randomInt, randomUUID } from 'node:crypto';
 import { readFileSync } from 'node:fs';
 import path from 'node:path';
 import express from 'express';
 import pg from 'pg';
-import { createStartSessionHandler } from '../src/routes/worldcupSessions.js';
-import { createWorldcupSession } from '../src/repositories/worldcupSessions.js';
-import { hashStartBody, prepareWorldcup, validateStartWorldcup, WorldcupSessionError } from '../src/services/worldcupSession.js';
+import { createStartSessionHandler } from '../src/worldcup/presentation/startSessionHandler.js';
+import { createWorldcupSession } from '../src/worldcup/composition.js';
+import { hashStartBody } from '../src/worldcup/infrastructure/runtime.js';
+import { createInitialSession } from '../src/worldcup/domain/session.js';
+import { validateStartWorldcup } from '../src/worldcup/presentation/startRequest.js';
+import { StartWorldcupError } from '../src/worldcup/application/startWorldcup.js';
+import { WorldcupStorageUnavailable } from '../src/worldcup/application/ports.js';
 
 const products = Array.from({ length: 18 }, (_, i) => ({
   productId: String(9007199254740993n + BigInt(i)),
@@ -34,14 +38,14 @@ test('start accepts only numeric 8/16 and a UUID key', () => {
 
 for (const size of [8, 16] as const) {
   test(`${size}-entry draw preserves BIGINT strings and produces only the first round`, () => {
-    const result = prepareWorldcup(products, size, '2026-10-04T00:00:00.000Z', () => 0);
+    const result = createInitialSession(products, size, '2026-10-04T00:00:00.000Z', () => 0, randomUUID);
     assert.equal(result.entries.length, size);
     assert.equal(new Set(result.entries.map((p) => p.productId)).size, size);
     assert.equal(result.matches.length, size / 2);
-    assert.equal(result.response.progress.totalMatches, size - 1);
-    assert.equal(result.response.progress.completedMatches, 0);
-    assert.equal(result.response.currentMatch.left.productId, '9007199254740994');
-    assert.equal(result.response.currentMatch.left.imageUrl, null);
+    assert.equal(result.state.progress.totalMatches, size - 1);
+    assert.equal(result.state.progress.completedMatches, 0);
+    assert.equal(result.state.currentMatch.left.productId, '9007199254740994');
+    assert.equal(result.state.currentMatch.left.imageUrl, null);
     assert.deepEqual(products[0].productId, '9007199254740993');
     for (const [i, match] of result.matches.entries()) {
       assert.equal(match.left, result.entries[i * 2]);
@@ -60,12 +64,13 @@ test('HTTP bootstrap, origin, validation, errors, replay and traffic limits', as
   app.use(express.json());
   app.post('/api/worldcup/sessions', createStartSessionHandler({
     configured: () => configured,
+    allowedOrigin: () => origin,
     now: () => time,
     create: async (input) => {
       calls++;
       assert.match(input.ownerHash, /^[a-f0-9]{64}$/);
       if (failure) throw failure;
-      return { replayed, response: prepareWorldcup(products, input.roundSize, '2026-10-04T00:00:00Z').response };
+      return { replayed, response: createInitialSession(products, input.roundSize, '2026-10-04T00:00:00Z', randomInt, randomUUID).state };
     },
   }));
   const server = app.listen(0, '127.0.0.1');
@@ -99,11 +104,11 @@ test('HTTP bootstrap, origin, validation, errors, replay and traffic limits', as
     assert.equal(noDb.status, 503);
     assert.equal((await noDb.json()).error.code, 'DATABASE_NOT_CONFIGURED');
     configured = true;
-    failure = new WorldcupSessionError(429, 'WORLD_CUP_RATE_LIMITED', 'wait', 30);
+    failure = new StartWorldcupError('WORLD_CUP_RATE_LIMITED', 'wait', 30);
     const limited = await request({ Cookie: receivedCookie });
     assert.equal(limited.status, 429);
     assert.equal(limited.headers.get('retry-after'), '30');
-    failure = Object.assign(new Error('private connection details'), { code: 'ECONNREFUSED' });
+    failure = new WorldcupStorageUnavailable();
     const dbFailure = await request({ Cookie: receivedCookie });
     assert.equal(dbFailure.status, 503);
     assert.ok(!(await dbFailure.text()).includes('private'));
