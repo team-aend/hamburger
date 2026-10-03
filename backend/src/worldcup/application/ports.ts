@@ -8,6 +8,7 @@ export interface StartWorldcupInput {
   roundSize: RoundSize;
   requestKey: string;
   ownerHash: string;
+  userId?: number | null;
 }
 
 export interface StartWorldcupResult {
@@ -29,7 +30,7 @@ export interface WorldcupTransaction {
   recentCreationCount(ownerHash: string, windowSeconds: number): Promise<{ count: number; retryAfter: number }>;
   listProducts(): Promise<WorldcupProduct[]>;
   expiration(ttl: number): Promise<string>;
-  saveSession(ownerHash: string, session: ReturnType<typeof createInitialSession>): Promise<void>;
+  saveSession(ownerHash: string, session: ReturnType<typeof createInitialSession>, userId?: number | null): Promise<void>;
   finishCreation(requestKey: string, state: WorldcupSessionState): Promise<void>;
 }
 

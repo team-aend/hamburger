@@ -227,6 +227,6 @@ function BurgerCard({ burger, side, disabled, onSelect }: { burger: WorldcupProd
 
 function BurgerArtwork() {
   return (
-    <div className="hero-visual" aria-hidden="true"><div className="stamp">BEST<br />BURGER</div><div className="burger-halo" /><div className="burger-illustration"><span className="bun bun-top"><i /><i /><i /></span><span className="lettuce" /><span className="cheese" /><span className="patty" /><span className="tomato" /><span className="bun bun-bottom" /></div><span className="versus-badge">VS</span><p>16 BURGERS · ONE WINNER</p></div>
+    <div className="hero-visual" aria-hidden="true"><div className="stamp">BEST<br />BURGER</div><div className="burger-halo" /><div className="burger-illustration"><span className="bun bun-top"><i /><i /><i /></span><span className="lettuce" /><span className="cheese" /><span className="patty" /><span className="tomato" /><span className="bun bun-bottom" /></div><span className="versus-badge">VS</span><p>BURGER WORLD CUP · ONE WINNER</p></div>
   );
 }

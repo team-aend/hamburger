@@ -1,3 +1,7 @@
+import { optionalAuth } from '../auth/middleware.js';
+import { createGetRecords } from './application/getRecords.js';
+import { PgWorldcupRecords } from './infrastructure/pgRecords.js';
+import { createRecordsHandlers } from './presentation/recordsHandlers.js';
 import { Router } from 'express';
 import type pg from 'pg';
 import { getDbPool, isDbConfigured } from '../db/pool.js';
@@ -30,7 +34,7 @@ export function createWorldcupRouter() {
    * Without an owner cookie: 428 + Set-Cookie; retry once with the same key.
    * Creation returns 201; an identical retry by the same owner returns 200.
    */
-  router.post('/sessions', createStartSessionHandler({
+  router.post('/sessions', optionalAuth, createStartSessionHandler({
     create: (input) => createWorldcupSession(input),
     configured: isDbConfigured,
     allowedOrigin: () => process.env.CORS_ORIGIN || 'http://localhost:3000',
@@ -44,5 +48,14 @@ export function createWorldcupRouter() {
   });
   router.get('/sessions/:id', play.get);
   router.post('/sessions/:id/matches/:matchId/vote', play.vote);
+  router.get('/rankings', worldcupRecordsHandlers().rankings);
   return router;
+}
+
+export function worldcupRecordsHandlers() {
+  const records = createGetRecords({
+    rankings: () => new PgWorldcupRecords(getDbPool()).rankings(),
+    history: (userId) => new PgWorldcupRecords(getDbPool()).history(userId),
+  });
+  return createRecordsHandlers(records);
 }

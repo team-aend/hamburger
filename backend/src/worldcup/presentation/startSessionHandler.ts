@@ -39,7 +39,7 @@ export function createStartSessionHandler(dependencies: {
       if (!configured()) {
         throw new WorldcupHttpError(503, 'DATABASE_NOT_CONFIGURED', '데이터베이스 연결 설정이 필요합니다.');
       }
-      const result = await create({ ...input, ownerHash });
+      const result = await create({ ...input, ownerHash, userId: req.user?.id ?? null });
       res.status(result.replayed ? 200 : 201).json(result.response);
     } catch (error) {
       if (error instanceof StartWorldcupError) {

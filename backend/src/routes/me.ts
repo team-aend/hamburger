@@ -4,7 +4,7 @@ import { clearSessionCookie } from '../auth/session.js';
 import { getCachedDataset } from '../db/datasetCache.js';
 import { getUserLikes } from '../db/likes.js';
 import { deleteUser, getUserProfile, updateNickname } from '../db/users.js';
-import { getUserWorldcupHistory } from '../db/worldcup.js';
+import { worldcupRecordsHandlers } from '../worldcup/composition.js';
 
 /**
  * 마이페이지 API. 모두 로그인 필수.
@@ -118,13 +118,6 @@ router.get('/likes', async (req: Request, res: Response) => {
   }
 });
 
-router.get('/worldcup', async (req: Request, res: Response) => {
-  try {
-    res.set('Cache-Control', 'no-store');
-    res.status(200).json(await getUserWorldcupHistory(req.user!.id));
-  } catch (error) {
-    serverError(res, '월드컵 기록 조회', error);
-  }
-});
+router.get('/worldcup', worldcupRecordsHandlers().history);
 
 export default router;

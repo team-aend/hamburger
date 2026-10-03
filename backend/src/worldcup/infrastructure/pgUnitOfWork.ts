@@ -92,13 +92,13 @@ class PgWorldcupTransaction implements WorldcupTransaction, PlayTransaction {
     return result.rows[0].expires_at.toISOString();
   }
 
-  async saveSession(ownerHash: string, session: ReturnType<typeof createInitialSession>): Promise<void> {
+  async saveSession(ownerHash: string, session: ReturnType<typeof createInitialSession>, userId: number | null = null): Promise<void> {
     const { state, entries, matches } = session;
     await this.client.query(
       `INSERT INTO worldcup_sessions
-        (id, owner_token_hash, round_size, status, created_at, expires_at)
-       VALUES ($1, $2, $3, 'IN_PROGRESS', clock_timestamp(), $4)`,
-      [state.sessionId, ownerHash, state.roundSize, state.expiresAt],
+        (id, owner_token_hash, round_size, status, created_at, expires_at, user_id)
+       VALUES ($1, $2, $3, 'IN_PROGRESS', clock_timestamp(), $4, $5)`,
+      [state.sessionId, ownerHash, state.roundSize, state.expiresAt, userId],
     );
     for (const [position, entry] of entries.entries()) {
       await this.client.query(

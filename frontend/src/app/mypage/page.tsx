@@ -5,9 +5,8 @@ import { usePathname, useRouter, useSearchParams } from 'next/navigation';
 import { FormEvent, Suspense, useCallback, useEffect, useRef, useState } from 'react';
 import { loginHref, useAuth } from '@/components/auth/AuthProvider';
 import SiteHeader from '@/components/SiteHeader';
-import { burgers } from '@/data/burgers';
 import { formatCalories, formatPrice, formatProtein } from '@/lib/format';
-import { flushPendingWorldcupResult } from '@/lib/worldcupResult';
+import type { WorldcupProduct } from '@/lib/worldcupSession';
 import { MAX_COMPARE_COUNT } from '@/types/product';
 import './mypage.css';
 
@@ -48,11 +47,9 @@ interface LikedItem {
 
 interface WorldcupHistory {
   total: number;
-  championships: { burgerId: string; count: number }[];
-  results: { id: number; roundSize: number; winnerBurgerId: string; createdAt: string }[];
+  championships: { product: WorldcupProduct; count: number }[];
+  results: { sessionId: string; roundSize: number; winner: WorldcupProduct; createdAt: string }[];
 }
-
-const burgerById = new Map(burgers.map((burger) => [burger.id, burger]));
 
 const PROVIDER_LABEL: Record<string, string> = { GOOGLE: 'Google', DEV: '테스트 계정' };
 
@@ -93,8 +90,6 @@ function MyPageContent() {
 
   const [profile, setProfile] = useState<Profile | null>(null);
   const [profileError, setProfileError] = useState(false);
-  const [notice, setNotice] = useState<string | null>(null);
-  const [worldcupVersion, setWorldcupVersion] = useState(0);
   // 로그아웃/탈퇴로 화면을 떠나는 중에는 로그인 화면으로 보내지 않는다.
   const leavingRef = useRef(false);
 
@@ -116,23 +111,9 @@ function MyPageContent() {
     }
   }, []);
 
-  // 비로그인 상태에서 끝낸 월드컵 결과가 있으면 로그인 직후 저장한다.
   useEffect(() => {
-    if (!user) return;
-    void (async () => {
-      if (await flushPendingWorldcupResult()) {
-        setNotice('로그인 전에 완주한 월드컵 결과를 저장했어요.');
-        setWorldcupVersion((v) => v + 1);
-      }
-      await loadProfile();
-    })();
+    if (user) void loadProfile();
   }, [user, loadProfile]);
-
-  useEffect(() => {
-    if (!notice) return;
-    const timer = setTimeout(() => setNotice(null), 4000);
-    return () => clearTimeout(timer);
-  }, [notice]);
 
   const leaveToHome = async (action: () => Promise<void>) => {
     leavingRef.current = true;
@@ -183,7 +164,6 @@ function MyPageContent() {
         </dl>
       </div>
 
-      {notice && <p className="mp-notice" role="status">{notice}</p>}
       {profileError && (
         <p className="mp-error" role="alert">회원 정보를 불러오지 못했습니다. 잠시 후 다시 시도해 주세요.</p>
       )}
@@ -207,7 +187,7 @@ function MyPageContent() {
 
       <div id={`mp-panel-${tab}`} role="tabpanel" aria-labelledby={`mp-tab-${tab}`} className="mp-panel">
         {tab === 'likes' && <LikesTab onChanged={loadProfile} />}
-        {tab === 'worldcup' && <WorldcupTab key={worldcupVersion} />}
+        {tab === 'worldcup' && <WorldcupTab />}
         {tab === 'account' && profile && (
           <AccountTab
             profile={profile}
@@ -380,25 +360,25 @@ function WorldcupTab() {
     return (
       <div className="mp-empty">
         <h3>아직 완주한 월드컵이 없어요.</h3>
-        <p>월드컵을 끝까지 진행하면 우승 버거가 여기에 기록되고 랭킹에도 반영돼요.</p>
+        <p>로그인한 상태에서 시작한 월드컵을 완주하면 여기에 기록돼요.</p>
         <Link href="/">월드컵 하러 가기</Link>
       </div>
     );
   }
 
   const favorite = history.championships[0];
-  const favoriteBurger = burgerById.get(favorite.burgerId);
+  const favoriteBurger = favorite.product;
 
   return (
     <>
       <div className="mp-worldcup-top">
-        <article className="mp-favorite" style={{ '--accent': favoriteBurger?.accent ?? 'var(--mustard)' } as React.CSSProperties}>
+        <article className="mp-favorite">
           <span className="winner-label">MY NO.1</span>
           <div className="mp-favorite-art" aria-hidden="true">
-            🍔<span>{favoriteBurger?.emoji}</span>
+            🍔
           </div>
-          <small>{favoriteBurger?.brand ?? ''}</small>
-          <h3>{favoriteBurger?.name ?? favorite.burgerId}</h3>
+          <small>{favoriteBurger.brandName}</small>
+          <h3>{favoriteBurger.name}</h3>
           <p>
             <strong>{favorite.count}회</strong> 우승시킨 최애 버거
           </p>
@@ -409,14 +389,13 @@ function WorldcupTab() {
             우승 횟수 <small>총 {history.total}회 완주</small>
           </h3>
           <ol>
-            {history.championships.slice(0, 5).map(({ burgerId, count }) => {
-              const burger = burgerById.get(burgerId);
+            {history.championships.slice(0, 5).map(({ product: burger, count }) => {
               return (
-                <li key={burgerId}>
-                  <span className="mp-burger-icon" style={{ backgroundColor: burger?.accent }} aria-hidden="true">
-                    {burger?.emoji ?? '🍔'}
+                <li key={burger.productId}>
+                  <span className="mp-burger-icon" aria-hidden="true">
+                    🍔
                   </span>
-                  <span className="mp-champion-name">{burger?.name ?? burgerId}</span>
+                  <span className="mp-champion-name">{burger.name}</span>
                   <span className="mp-champion-bar" aria-hidden="true">
                     <i style={{ width: `${(count / favorite.count) * 100}%` }} />
                   </span>
@@ -442,18 +421,18 @@ function WorldcupTab() {
         </thead>
         <tbody>
           {history.results.map((result) => {
-            const burger = burgerById.get(result.winnerBurgerId);
+            const burger = result.winner;
             return (
-              <tr key={result.id}>
+              <tr key={result.sessionId}>
                 <td className="mp-history-date">{formatDate(result.createdAt, true)}</td>
                 <th scope="row">
                   <div className="ranking-burger">
-                    <span aria-hidden="true" style={{ backgroundColor: burger?.accent }}>
-                      {burger?.emoji ?? '🍔'}
+                    <span aria-hidden="true">
+                      🍔
                     </span>
                     <div>
-                      <small>{burger?.brand}</small>
-                      <strong>{burger?.name ?? result.winnerBurgerId}</strong>
+                      <small>{burger.brandName}</small>
+                      <strong>{burger.name}</strong>
                     </div>
                   </div>
                 </th>

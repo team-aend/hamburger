@@ -13,6 +13,7 @@ import { validateStartWorldcup } from '../src/worldcup/presentation/startRequest
 import { StartWorldcupError } from '../src/worldcup/application/startWorldcup.js';
 import { WorldcupStorageUnavailable } from '../src/worldcup/application/ports.js';
 import { createGetSession, createVote } from '../src/worldcup/application/playWorldcup.js';
+import { PgWorldcupRecords } from '../src/worldcup/infrastructure/pgRecords.js';
 import { PgWorldcupUnitOfWork } from '../src/worldcup/infrastructure/pgUnitOfWork.js';
 
 const products = Array.from({ length: 18 }, (_, i) => ({
@@ -137,6 +138,8 @@ test('PostgreSQL creation, constraints, idempotency, concurrency and rollback', 
   try {
     await admin.query(`CREATE SCHEMA ${schema}`);
     await pool.query(`
+      CREATE TABLE users (id bigint PRIMARY KEY);
+      INSERT INTO users VALUES (1),(2);
       CREATE TABLE categories (id bigint PRIMARY KEY, slug text);
       CREATE TABLE brands (id bigint PRIMARY KEY, name text, is_active boolean);
       CREATE TABLE products (id bigint PRIMARY KEY, category_id bigint, brand_id bigint, name text, description text, image_url text, status text);
@@ -148,14 +151,20 @@ test('PostgreSQL creation, constraints, idempotency, concurrency and rollback', 
     const migration = readFileSync(path.resolve(__dirname, '../src/db/migrations/004_worldcup_sessions.sql'), 'utf8');
     await pool.query(migration);
     await pool.query(migration);
+    const memberMigration = readFileSync(path.resolve(__dirname, '../src/db/migrations/005_worldcup_session_users.sql'), 'utf8');
+    await pool.query(memberMigration);
+    await pool.query(memberMigration);
     const counts = async () => (await pool.query(`SELECT
       (SELECT count(*)::int FROM worldcup_sessions) AS sessions,
       (SELECT count(*)::int FROM worldcup_entries) AS entries,
       (SELECT count(*)::int FROM worldcup_session_matches) AS matches,
       (SELECT count(*)::int FROM worldcup_creation_requests) AS requests`)).rows[0];
-    const input = { roundSize: 8 as const, requestKey: randomUUID(), ownerHash: owner() };
+    const input = { roundSize: 8 as const, requestKey: randomUUID(), ownerHash: owner(), userId: 1 };
     const started = await createWorldcupSession(input, pool);
     assert.equal(started.replayed, false);
+    assert.equal((await pool.query('SELECT user_id FROM worldcup_sessions WHERE id=$1', [started.response.sessionId])).rows[0].user_id, '1');
+    await createWorldcupSession({ ...input, userId: 2 }, pool);
+    assert.equal((await pool.query('SELECT user_id FROM worldcup_sessions WHERE id=$1', [started.response.sessionId])).rows[0].user_id, '1');
     assert.deepEqual(await counts(), { sessions: 1, entries: 8, matches: 4, requests: 1 });
     assert.deepEqual(await createWorldcupSession(input, pool), { replayed: true, response: started.response });
     for (const change of [{ roundSize: 16 as const }, { ownerHash: owner() }]) {
@@ -234,6 +243,13 @@ test('PostgreSQL creation, constraints, idempotency, concurrency and rollback', 
       delete expected.replayed;
       assert.deepEqual(await get(id, hash), expected);
     }
+    const records = new PgWorldcupRecords(pool);
+    assert.equal((await records.rankings()).totalResults, 2);
+    assert.equal((await records.history(1)).total, 1);
+    assert.equal((await records.history(2)).total, 0);
+    await pool.query('DELETE FROM users WHERE id=1');
+    assert.equal((await records.history(1)).total, 0);
+    assert.equal((await records.rankings()).totalResults, 2);
     // GET reports expiry without writing; votes are rejected on the same expired session.
     await pool.query("UPDATE worldcup_sessions SET created_at=NOW()-INTERVAL '2 days', expires_at=NOW()-INTERVAL '1 day' WHERE id=$1", [results[0].response.sessionId]);
     const expired = await get(results[0].response.sessionId, concurrent.ownerHash);

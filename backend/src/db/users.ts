@@ -121,7 +121,7 @@ export async function getUserProfile(userId: number): Promise<UserProfile | null
     pool.query(
       `SELECT
          (SELECT COUNT(*)::int FROM product_likes WHERE user_id = $1) AS likes,
-         (SELECT COUNT(*)::int FROM worldcup_results WHERE user_id = $1) AS worldcups`,
+         (SELECT COUNT(*)::int FROM worldcup_sessions WHERE user_id = $1 AND status = 'COMPLETED') AS worldcups`,
       [userId]
     ),
   ]);
@@ -153,7 +153,7 @@ export async function updateNickname(userId: number, nickname: string | null): P
 /**
  * 회원 탈퇴. users 행을 지우면
  * - user_identities, product_likes 는 함께 삭제 (ON DELETE CASCADE)
- * - worldcup_results 는 user_id 만 NULL 이 되어 랭킹 통계로만 남는다 (ON DELETE SET NULL)
+ * - worldcup_sessions 는 user_id 만 NULL 이 되어 랭킹 통계로만 남는다 (ON DELETE SET NULL)
  */
 export async function deleteUser(userId: number): Promise<void> {
   await getDbPool().query('DELETE FROM users WHERE id = $1', [userId]);

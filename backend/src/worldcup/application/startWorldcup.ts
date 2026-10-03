@@ -34,7 +34,7 @@ export function createStartWorldcup(unitOfWork: WorldcupUnitOfWork, runtime: Wor
       const products = await tx.listProducts();
       const expiresAt = await tx.expiration(ttl);
       const session = createInitialSession(products, input.roundSize, expiresAt, runtime.random, runtime.uuid);
-      await tx.saveSession(input.ownerHash, session);
+      await tx.saveSession(input.ownerHash, session, input.userId);
       await tx.finishCreation(input.requestKey, session.state);
       return { replayed: false, response: session.state };
     });

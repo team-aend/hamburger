@@ -18,6 +18,7 @@ const state = createInitialSession(products, 8, '2026-10-04T00:00:00Z', runtime.
 
 function fixture(options: { replay?: CreationRecord; rate?: number; failSave?: boolean } = {}) {
   const effects: string[] = [];
+  const members: (number | null | undefined)[] = [];
   const tx: WorldcupTransaction = {
     reserveCreation: async () => !options.replay,
     findCreation: async () => options.replay,
@@ -25,7 +26,8 @@ function fixture(options: { replay?: CreationRecord; rate?: number; failSave?: b
     recentCreationCount: async () => ({ count: options.rate ?? 0, retryAfter: 30 }),
     listProducts: async () => { effects.push('products'); return products; },
     expiration: async () => state.expiresAt,
-    saveSession: async (_owner, session) => {
+    saveSession: async (_owner, session, userId) => {
+      members.push(userId);
       effects.push('save');
       assert.equal(session.entries.length, 8);
       assert.equal(session.matches.length, 4);
@@ -46,7 +48,7 @@ function fixture(options: { replay?: CreationRecord; rate?: number; failSave?: b
       }
     },
   };
-  return { start: createStartWorldcup(uow, runtime), effects };
+  return { start: createStartWorldcup(uow, runtime), effects, members };
 }
 
 test('application creates a session without an HTTP server or PostgreSQL', async () => {
@@ -80,4 +82,16 @@ test('creation limit prevents drawing and a save failure prevents request finali
   const failed = fixture({ failSave: true });
   await assert.rejects(failed.start(input), /save failed/);
   assert.deepEqual(failed.effects, ['begin', 'lock', 'products', 'save', 'rollback']);
+});
+
+test('member association is saved at creation and cannot be changed by a replay', async () => {
+  const member = fixture();
+  await member.start({ ...input, userId: 42 });
+  assert.deepEqual(member.members, [42]);
+  const anonymous = fixture();
+  await anonymous.start({ ...input, userId: null });
+  assert.deepEqual(anonymous.members, [null]);
+  const replay = fixture({ replay: { ownerHash: 'owner', bodyHash: 'hash-8', state, expired: false } });
+  await replay.start({ ...input, userId: 99 });
+  assert.deepEqual(replay.members, []);
 });
