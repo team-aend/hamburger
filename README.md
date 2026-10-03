@@ -53,22 +53,10 @@ npm run build
 ```
 ## 🐳 Docker로 실행하기 (로컬 개발용)
 
-Node 버전 등 실행 환경을 팀원 모두 똑같이 맞추기 위한 구성입니다. Docker Desktop만 있으면 됩니다.
-빌드된 결과물을 실행하므로 코드 수정이 바로 반영되지 않습니다 (수정 후 `--build` 로 재빌드). 코드를 고치며 개발할 때는 `npm run dev` 를 쓰세요.
-
-환경변수는 `npm run dev` 와 같은 `backend/.env` 를 사용합니다 (`backend/.env.example` 참고).
+Docker Desktop 만 있으면 팀원 모두 같은 환경에서 앱을 띄울 수 있습니다. `backend/.env` 를 준비한 뒤:
 
 ```bash
-# backend + frontend (팀 공용 Supabase 사용) → http://localhost:3000
-docker compose up --build
-
-# 위 + 로컬 Postgres (Supabase 대신 내 컴퓨터의 DB 사용)
-docker compose -f docker-compose.yml -f docker-compose.local-db.yml up --build
-# 최초 1회 상품 시드 (스키마·브랜드·마이그레이션은 DB 컨테이너가 자동 적용)
-DATABASE_URL="postgresql://postgres:postgres@localhost:5432/hamburger?sslmode=disable" npm run db:init
-
-# 종료 (로컬 DB 데이터까지 지우려면 -v 추가)
-docker compose down
+docker compose up --build   # → http://localhost:3000
 ```
 
-로컬 DB의 자동 초기화는 **DB 볼륨이 비어 있을 때 한 번만** 실행됩니다. 새 마이그레이션이 추가되었거나 테이블이 없다는 오류가 나면 `-v` 로 볼륨을 지우고 다시 띄우거나, `npm run db:migrate` 를 위와 같은 `DATABASE_URL` 로 실행하세요.
+로컬 DB 사용법, 명령어, 문제 해결은 **[docker/README.md](docker/README.md)** 를 참고하세요.
