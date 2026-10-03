@@ -12,6 +12,8 @@ import { createInitialSession } from '../src/worldcup/domain/session.js';
 import { validateStartWorldcup } from '../src/worldcup/presentation/startRequest.js';
 import { StartWorldcupError } from '../src/worldcup/application/startWorldcup.js';
 import { WorldcupStorageUnavailable } from '../src/worldcup/application/ports.js';
+import { createGetSession, createVote } from '../src/worldcup/application/playWorldcup.js';
+import { PgWorldcupUnitOfWork } from '../src/worldcup/infrastructure/pgUnitOfWork.js';
 
 const products = Array.from({ length: 18 }, (_, i) => ({
   productId: String(9007199254740993n + BigInt(i)),
@@ -193,6 +195,52 @@ test('PostgreSQL creation, constraints, idempotency, concurrency and rollback', 
     await assert.rejects(pool.query('UPDATE worldcup_session_matches SET winner_product_id=1, decided_at=NOW() WHERE id=$1', [started.response.currentMatch.id]));
     await assert.rejects(pool.query('DELETE FROM products WHERE id=$1', [started.response.currentMatch.left.productId]));
     await assert.rejects(pool.query("UPDATE worldcup_sessions SET status='COMPLETED', completed_at=NOW(), winner_product_id=1 WHERE id=$1", [started.response.sessionId]));
+
+    const uow = new PgWorldcupUnitOfWork(pool);
+    const get = createGetSession(uow);
+    const vote = createVote(uow, randomUUID);
+    await assert.rejects(get(input.requestKey, input.ownerHash));
+    await assert.rejects(get(started.response.sessionId, owner()), { name: 'Error', message: '월드컵을 찾을 수 없습니다.' });
+    // A failed next-round INSERT must roll back the last decision in the current round.
+    let view = await get(started.response.sessionId, input.ownerHash);
+    for (let i = 0; i < 3; i++) view = await vote(view.sessionId, input.ownerHash, view.currentMatch!.id, view.currentMatch!.left.productId);
+    const lastEight = view.currentMatch!;
+    await pool.query(`CREATE TRIGGER fail_match BEFORE INSERT ON worldcup_session_matches FOR EACH ROW EXECUTE FUNCTION fail_match()`);
+    await assert.rejects(vote(view.sessionId, input.ownerHash, lastEight.id, lastEight.left.productId));
+    assert.equal((await get(view.sessionId, input.ownerHash)).progress.completedMatches, 3);
+    await pool.query('DROP TRIGGER fail_match ON worldcup_session_matches');
+    const duplicateVotes = await Promise.all(Array.from({ length: 4 }, () => vote(view.sessionId, input.ownerHash, lastEight.id, lastEight.left.productId)));
+    assert.equal(duplicateVotes.filter((result) => !result.replayed).length, 1);
+    assert.ok(duplicateVotes.every((result) => result.progress.currentRoundSize === 4));
+    await assert.rejects(vote(view.sessionId, input.ownerHash, lastEight.id, lastEight.right.productId), { code: 'MATCH_ALREADY_DECIDED' });
+    // Complete 8 and 16 entries using server state; inspect persisted winners and match count.
+    const largerOwner = (await pool.query('SELECT owner_token_hash FROM worldcup_sessions WHERE id=$1', [larger.response.sessionId])).rows[0].owner_token_hash;
+    for (const [id, hash, size] of [[started.response.sessionId, input.ownerHash, 8], [larger.response.sessionId, largerOwner, 16]] as const) {
+      let current = await get(id, hash);
+      while (current.status === 'IN_PROGRESS') {
+        const match = current.currentMatch!;
+        current = await vote(id, hash, match.id, match.left.productId);
+      }
+      assert.equal(current.status, 'COMPLETED');
+      assert.equal(current.progress.completedMatches, size - 1);
+      assert.equal(current.currentMatch, null);
+      assert.ok(current.winner);
+      const stored = (await pool.query('SELECT status, winner_product_id, completed_at FROM worldcup_sessions WHERE id=$1', [id])).rows[0];
+      assert.equal(stored.status, 'COMPLETED');
+      assert.equal(stored.winner_product_id, current.winner!.productId);
+      assert.ok(stored.completed_at);
+      assert.equal((await pool.query('SELECT count(*)::int AS count FROM worldcup_session_matches WHERE session_id=$1', [id])).rows[0].count, size - 1);
+      const expected = { ...current } as typeof current & { replayed?: boolean };
+      delete expected.replayed;
+      assert.deepEqual(await get(id, hash), expected);
+    }
+    // GET reports expiry without writing; votes are rejected on the same expired session.
+    await pool.query("UPDATE worldcup_sessions SET created_at=NOW()-INTERVAL '2 days', expires_at=NOW()-INTERVAL '1 day' WHERE id=$1", [results[0].response.sessionId]);
+    const expired = await get(results[0].response.sessionId, concurrent.ownerHash);
+    assert.equal(expired.status, 'EXPIRED');
+    assert.equal(expired.currentMatch, null);
+    assert.equal((await pool.query('SELECT status FROM worldcup_sessions WHERE id=$1', [expired.sessionId])).rows[0].status, 'IN_PROGRESS');
+    await assert.rejects(vote(expired.sessionId, concurrent.ownerHash, results[0].response.currentMatch.id, results[0].response.currentMatch.left.productId), { code: 'SESSION_EXPIRED' });
   } finally {
     await pool.end();
     await admin.query(`DROP SCHEMA IF EXISTS ${schema} CASCADE`);

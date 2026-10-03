@@ -90,6 +90,12 @@ button { color:inherit; }
 .burger-photo::after { content:''; position:absolute; width:270px; height:270px; border:45px solid rgba(255,255,255,.12); border-radius:50%; }
 .burger-photo b { position:relative; z-index:2; font-size:150px; line-height:1; filter:drop-shadow(0 20px 8px rgba(35,22,10,.25)); transition:transform .18s ease; }
 .burger-card:hover .burger-photo b { transform:scale(1.07) rotate(-2deg); }
+.burger-card:disabled { cursor:wait; opacity:.7; }
+.burger-card:disabled:hover { transform:none; box-shadow:8px 8px 0 var(--ink); }
+.burger-photo b img { display:block; width:280px; height:250px; object-fit:contain; }
+.winner-burger img { display:block; width:300px; height:260px; object-fit:contain; }
+.worldcup-request-status { margin:20px auto; max-width:900px; padding:16px 20px; border:2px solid var(--red-dark); border-radius:8px; background:var(--paper); }
+.worldcup-request-status button { margin:8px 12px 0 0; padding:8px 14px; border:1px solid var(--ink); border-radius:6px; background:var(--paper); cursor:pointer; }
 .burger-photo i { position:absolute; right:28px; top:22px; z-index:2; font-size:44px; font-style:normal; transform:rotate(8deg); }
 .card-copy { display:block; padding:22px 26px; }
 .card-copy>small { display:block; color:var(--red); font-size:10px; font-weight:800; letter-spacing:.18em; }

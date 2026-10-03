@@ -3,9 +3,48 @@ import type { CreationRecord, StartWorldcupInput, WorldcupTransaction, WorldcupU
 import type { WorldcupSessionState, createInitialSession } from '../domain/session.js';
 import { listEligibleProducts } from './pgProducts.js';
 import { translateStorageError } from './storageErrors.js';
+import type { PlayTransaction, PlayUnitOfWork } from '../application/playWorldcup.js';
+import type { StoredSession, StoredMatch, SessionStatus } from '../domain/progression.js';
+import type { RoundSize } from '../domain/session.js';
 
-class PgWorldcupTransaction implements WorldcupTransaction {
+class PgWorldcupTransaction implements WorldcupTransaction, PlayTransaction {
   constructor(private client: pg.PoolClient) {}
+
+  async loadSession(id: string, ownerHash: string, lock: boolean): Promise<StoredSession | undefined> {
+    const result = await this.client.query<{
+      id: string; round_size: RoundSize; status: SessionStatus; expires_at: Date;
+      completed_at: Date | null; winner_product_id: string | null;
+    }>(`SELECT id, round_size, status, expires_at, completed_at, winner_product_id
+        FROM worldcup_sessions WHERE id=$1 AND owner_token_hash=$2 ${lock ? 'FOR UPDATE' : ''}`, [id, ownerHash]);
+    const row = result.rows[0];
+    if (!row) return undefined;
+    const entries = await this.client.query(`SELECT product_id, name, brand_name, description, image_url
+      FROM worldcup_entries WHERE session_id=$1 ORDER BY position`, [id]);
+    const matches = await this.client.query(`SELECT id, round_size, match_index, left_product_id, right_product_id, winner_product_id
+      FROM worldcup_session_matches WHERE session_id=$1 ORDER BY round_size DESC, match_index`, [id]);
+    return {
+      sessionId: row.id, roundSize: row.round_size, status: row.status, expiresAt: row.expires_at.toISOString(),
+      completedAt: row.completed_at?.toISOString() ?? null, winnerId: row.winner_product_id,
+      entries: entries.rows.map((entry) => ({ productId: entry.product_id, name: entry.name, brandName: entry.brand_name, description: entry.description, imageUrl: entry.image_url })),
+      matches: matches.rows.map((match) => ({ id: match.id, roundSize: match.round_size, index: match.match_index, leftId: match.left_product_id, rightId: match.right_product_id, winnerId: match.winner_product_id })),
+    };
+  }
+
+  async now(): Promise<string> {
+    const result = await this.client.query<{ now: Date }>('SELECT clock_timestamp() AS now');
+    return result.rows[0].now.toISOString();
+  }
+
+  async saveDecision(sessionId: string, matchId: string, winnerId: string, decidedAt: string, newMatches: StoredMatch[], completed: boolean): Promise<void> {
+    await this.client.query('UPDATE worldcup_session_matches SET winner_product_id=$3, decided_at=$4 WHERE session_id=$1 AND id=$2',
+      [sessionId, matchId, winnerId, decidedAt]);
+    for (const match of newMatches) {
+      await this.client.query(`INSERT INTO worldcup_session_matches
+        (id, session_id, round_size, match_index, left_product_id, right_product_id) VALUES ($1,$2,$3,$4,$5,$6)`,
+      [match.id, sessionId, match.roundSize, match.index, match.leftId, match.rightId]);
+    }
+    if (completed) await this.client.query("UPDATE worldcup_sessions SET status='COMPLETED', winner_product_id=$2, completed_at=$3 WHERE id=$1", [sessionId, winnerId, decidedAt]);
+  }
 
   async reserveCreation(input: StartWorldcupInput, bodyHash: string, ttl: number): Promise<boolean> {
     const result = await this.client.query(
@@ -88,15 +127,15 @@ class PgWorldcupTransaction implements WorldcupTransaction {
   }
 }
 
-export class PgWorldcupUnitOfWork implements WorldcupUnitOfWork {
+export class PgWorldcupUnitOfWork implements WorldcupUnitOfWork, PlayUnitOfWork {
   constructor(private pool: Pick<pg.Pool, 'connect'>) {}
 
-  async transaction<T>(work: (tx: WorldcupTransaction) => Promise<T>): Promise<T> {
+  async transaction<T>(work: (tx: WorldcupTransaction & PlayTransaction) => Promise<T>, options?: { readOnly?: boolean }): Promise<T> {
     const client = await this.pool.connect().catch((error: unknown) => { throw translateStorageError(error); });
     let inTransaction = false;
     let discard = false;
     try {
-      await client.query('BEGIN');
+      await client.query(options?.readOnly ? 'BEGIN ISOLATION LEVEL REPEATABLE READ READ ONLY' : 'BEGIN');
       inTransaction = true;
       const result = await work(new PgWorldcupTransaction(client));
       await client.query('COMMIT');

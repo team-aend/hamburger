@@ -9,6 +9,8 @@ import { PgWorldcupUnitOfWork } from './infrastructure/pgUnitOfWork.js';
 import { hashStartBody, randomInt, randomUUID, sessionLifetimeSeconds } from './infrastructure/runtime.js';
 import { createOptionsHandler } from './presentation/optionsHandler.js';
 import { createStartSessionHandler } from './presentation/startSessionHandler.js';
+import { createGetSession, createVote } from './application/playWorldcup.js';
+import { createPlayHandlers } from './presentation/playHandlers.js';
 
 // Resolve the database lazily at request time, never during module loading.
 export function createWorldcupSession(input: StartWorldcupInput, pool: Pick<pg.Pool, 'connect'> = getDbPool()) {
@@ -34,5 +36,13 @@ export function createWorldcupRouter() {
     allowedOrigin: () => process.env.CORS_ORIGIN || 'http://localhost:3000',
     secureCookies: () => process.env.NODE_ENV === 'production',
   }));
+  const play = createPlayHandlers({
+    get: (id, ownerHash) => createGetSession(new PgWorldcupUnitOfWork(getDbPool()))(id, ownerHash),
+    vote: (id, ownerHash, matchId, winnerId) => createVote(new PgWorldcupUnitOfWork(getDbPool()), randomUUID)(id, ownerHash, matchId, winnerId),
+    configured: isDbConfigured,
+    allowedOrigin: () => process.env.CORS_ORIGIN || 'http://localhost:3000',
+  });
+  router.get('/sessions/:id', play.get);
+  router.post('/sessions/:id/matches/:matchId/vote', play.vote);
   return router;
 }
