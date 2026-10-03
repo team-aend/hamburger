@@ -70,8 +70,11 @@ test('SQL rankings preserve scope, ties, literal search, pagination and empty re
     const repo = new PgRankings(client);
     const all = await repo.read(defaults);
     assert.equal(all.completedSessionCount, 2);
-    assert.equal(all.totalCount, 4);
-    assert.deepEqual(all.items.map((item) => item.rank), [1, 1, 3, null]);
+    assert.equal(all.totalCount, 2);
+    assert.deepEqual(all.items.map((item) => item.rank), [1, 1]);
+    assert.ok(all.items.every((item) => item.championships >= 1));
+    assert.ok(all.leaders.every((item) => item.championships >= 1));
+    assert.equal((await repo.read({ ...defaults, q: '버거 C' })).totalCount, 0);
     const winner = all.items.find((item) => item.productId === '9007199254740993')!;
     assert.equal(winner.championships, 1);
     assert.equal(winner.appearances, 2);
@@ -85,6 +88,7 @@ test('SQL rankings preserve scope, ties, literal search, pagination and empty re
     assert.deepEqual((await repo.read({ ...defaults, page: 100 })).items, []);
     const eight = await repo.read({ ...defaults, roundSize: 8 });
     assert.equal(eight.completedSessionCount, 1);
+    assert.equal(eight.totalCount, 1);
     assert.equal(eight.items[0].productId, winner.productId);
     assert.equal(eight.items[0].appearances, 1);
     assert.equal(eight.items[0].matches, 2);
@@ -104,20 +108,21 @@ test('SQL rankings preserve scope, ties, literal search, pagination and empty re
     const b = precise.items.find((item) => item.productId === '2')!;
     assert.equal(a.winRate, b.winRate);
     assert.ok(a.rank! < b.rank!);
-    // Four products in shared third place must all remain in leaders.
+    // Products tied at third with at least one championship remain in leaders.
     await client.query(`
       INSERT INTO products VALUES (5,'버거 D',1,1,NULL,'ACTIVE');
       INSERT INTO worldcup_entries VALUES (1,4),(1,5);
       INSERT INTO worldcup_session_matches VALUES (1,3,5,3);
-      INSERT INTO worldcup_sessions VALUES (6,8,'COMPLETED',9007199254740993),(7,8,'COMPLETED',2);
+      INSERT INTO worldcup_sessions VALUES (6,8,'COMPLETED',9007199254740993),(7,8,'COMPLETED',2),
+        (8,8,'COMPLETED',3),(9,8,'COMPLETED',4),(10,8,'COMPLETED',5);
     `);
     const shared = await repo.read(defaults);
     assert.deepEqual(shared.leaders.map((item) => item.rank), [1,1,3,3,3]);
     await client.query('DELETE FROM worldcup_sessions');
     const empty = await repo.read(defaults);
     assert.equal(empty.completedSessionCount, 0);
-    assert.equal(empty.totalCount, 4);
+    assert.equal(empty.totalCount, 0);
     assert.deepEqual(empty.leaders, []);
-    assert.ok(empty.items.every((item) => item.rank === null && item.winRate === null && item.championships === 0));
+    assert.deepEqual(empty.items, []);
   } finally { client.release(true); await pool.end(); }
 });

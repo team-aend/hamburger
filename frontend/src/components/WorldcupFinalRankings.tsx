@@ -40,7 +40,7 @@ export default function WorldcupFinalRankings({ sessionId, winnerProductId }: {
       <div><span className="eyebrow">BURGER PICK · HALL OF FAME</span><h2 id="final-rankings-title">월드컵 최종 우승 랭킹</h2></div>
       <Link className="ranking-link-button" href="/ranking">전체 랭킹 검색하기 <span aria-hidden="true">→</span></Link>
     </div>
-    <p>완료한 모든 월드컵의 우승 횟수로 집계합니다. 같은 우승 횟수는 공동 순위입니다.</p>
+    <p>완료한 모든 월드컵에서 1회 이상 우승한 버거만 표시합니다. 같은 우승 횟수는 공동 순위입니다.</p>
     {loading ? <p role="status">방금 완료한 결과를 포함한 랭킹을 불러오고 있습니다…</p>
       : error ? <div role="alert"><p>랭킹을 불러오지 못했습니다. 다시 시도해 주세요.</p><button type="button" className="reset-button" onClick={() => setRetry((value) => value + 1)}>다시 조회하기</button></div>
       : data && <>

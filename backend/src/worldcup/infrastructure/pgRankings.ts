@@ -35,7 +35,7 @@ export class PgRankings implements RankingsRepository {
           FROM products p JOIN brands b ON b.id = p.brand_id JOIN categories cat ON cat.id = p.category_id
           LEFT JOIN championships c ON c.product_id = p.id
           LEFT JOIN appearances a ON a.product_id = p.id LEFT JOIN matches m ON m.product_id = p.id
-          WHERE (cat.slug = 'burger' AND p.status = 'ACTIVE' AND b.is_active = TRUE) OR a.product_id IS NOT NULL
+          WHERE c.championships >= 1
         ), ranked AS (
           SELECT *, CASE WHEN matches > 0 THEN RANK() OVER (
             ORDER BY (matches > 0) DESC,

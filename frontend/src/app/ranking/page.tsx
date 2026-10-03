@@ -106,7 +106,7 @@ export default function RankingPage() {
             <span> {page} / {Math.max(1, Math.ceil((data?.totalCount ?? 0) / 20))} </span>
             <button type="button" disabled={page * 20 >= (data?.totalCount ?? 0)} onClick={() => setPage(page + 1)}>다음</button>
           </nav>
-          <p className="ranking-definition">우승 횟수는 최종 우승 수, 대결 승률은 전체 대결 중 승리한 비율입니다. 같은 수치는 공동 순위로 표시합니다.</p>
+          <p className="ranking-definition">1회 이상 우승한 버거만 표시합니다. 우승 횟수는 최종 우승 수, 대결 승률은 전체 대결 중 승리한 비율입니다. 같은 수치는 공동 순위로 표시합니다.</p>
         </section>
         </>)}
         <div className="ranking-cta"><h2>당신의 1위는 누구인가요?</h2><Link className="start-button" href="/">월드컵 참여하기 <span aria-hidden="true">→</span></Link></div>
