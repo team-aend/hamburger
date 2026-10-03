@@ -1,7 +1,7 @@
 # 🐳 Docker 로컬 개발 환경 가이드
 
 팀원 모두가 **같은 환경(Node 22, 같은 Postgres 버전, 같은 실행 명령)** 에서 앱을 띄우기 위한 구성입니다.
-실서버 배포용이 아니라 **로컬 개발용**입니다.
+현재 구성은 서버 배포용이 아니라 **로컬 개발용**입니다.
 
 ## 언제 쓰나요?
 
@@ -94,16 +94,6 @@ hamburger/
 └── .dockerignore                # 이미지에 넣지 않을 파일 (node_modules, .env 등)
 ```
 
-### 알아두면 좋은 개념
-
-- **이미지 / 컨테이너** — Dockerfile(레시피)로 만든 실행 패키지가 이미지(밀키트), 그걸 실제로 띄운 게 컨테이너(차려진 요리)입니다.
-- **compose 파일 겹쳐 쓰기** — `-f A -f B` 처럼 여러 파일을 주면 뒤 파일(B)이 앞 파일(A) 설정을 덮어씁니다. 그래서 `backend/.env` 를 고치지 않고도 DB 주소만 로컬 DB 로 바꿀 수 있습니다.
-- **볼륨** — 컨테이너는 지우면 안의 데이터도 사라집니다. 로컬 DB 데이터는 컨테이너 밖의 저장공간(볼륨, `hamburger_pgdata`)에 두어서 컨테이너를 다시 만들어도 남습니다. `down -v` 를 하면 볼륨까지 지워집니다.
-- **빌드 시점 값 vs 실행 시점 값**
-  - `NEXT_PUBLIC_API_URL` 은 frontend 를 **빌드할 때** 이미지에 고정됩니다 → 바꾸면 `--build` 필요
-  - `backend/.env` 값, `NODE_ENV` 등은 **실행할 때** 넣어집니다 → `restart` 만 하면 반영
-- **NODE_ENV** — 이미지는 production 으로 만들어지지만, compose 가 실행할 때 `development` 로 덮어씁니다. production 이면 테스트 로그인이 꺼지고, 로그인 쿠키가 HTTPS 전용(Secure)이 되어 브라우저에 따라 http://localhost 에서 로그인이 유지되지 않기 때문입니다.
-
 ---
 
 ## 5. 문제 해결
@@ -116,5 +106,5 @@ hamburger/
 | backend 로그에 `PostgreSQL not configured` | `DATABASE_URL` 에 `[YOUR-PASSWORD]` 가 남아 있음 → 비밀번호 입력 후 `docker compose restart backend` |
 | DB 접속 시 `ENOTFOUND` | 직접 접속 주소(`db.xxx.supabase.co`)를 쓰는 중. IPv6 전용 주소라 IPv4 환경에서 접속 불가 → `.env.example` 의 Session Pooler 주소(`...pooler.supabase.com`) 사용 |
 | 로그인 시 `SESSION_SECRET` 오류 | `SESSION_SECRET` 이 비었거나 32자 미만 → 1번 표의 명령으로 생성 |
-| 로컬 DB에서 "테이블이 없다" 오류 | 자동 초기화는 **볼륨이 비어 있을 때 한 번만** 실행됨. 예전 볼륨이 남아 있거나 새 마이그레이션이 추가된 경우 → `down -v` 로 볼륨을 지우고 다시 띄우거나, `DATABASE_URL="...localhost:5432/hamburger?sslmode=disable" npm run db:migrate` |
+| 로컬 DB에서 "테이블이 없다" 오류 | 자동 초기화는 **볼륨(로컬 DB 데이터가 저장된 공간)이 비어 있을 때 한 번만** 실행됨. 예전 볼륨이 남아 있거나 새 마이그레이션이 추가된 경우 → `down -v` 로 볼륨을 지우고 다시 띄우거나, `DATABASE_URL="...localhost:5432/hamburger?sslmode=disable" npm run db:migrate` |
 | 코드를 고쳤는데 화면이 그대로 | 이미지를 다시 안 만듦 → `docker compose up --build` |
