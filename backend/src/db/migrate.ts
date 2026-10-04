@@ -12,7 +12,9 @@ dotenv.config();
  */
 async function migrate() {
   const pool = getDbPool();
-  const dir = path.resolve(process.cwd(), 'src/db/migrations');
+  const dir = fs.existsSync(path.resolve(__dirname, 'migrations'))
+    ? path.resolve(__dirname, 'migrations')
+    : path.resolve(process.cwd(), 'backend/src/db/migrations');
   const files = fs
     .readdirSync(dir)
     .filter((file) => file.endsWith('.sql'))

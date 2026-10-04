@@ -6,6 +6,9 @@ export interface Brand {
   id: number;
   name: string;
   slug: string;
+  logoUrl?: string | null;
+  homepageUrl?: string | null;
+  isActive?: boolean;
 }
 
 export interface Product {
@@ -27,7 +30,8 @@ export type SortType =
   | 'PRICE_ASC'
   | 'PRICE_DESC'
   | 'CALORIES_ASC'
-  | 'PROTEIN_DESC';
+  | 'PROTEIN_DESC'
+  | 'PROTEIN_EFFICIENCY_DESC';
 
 export const PATTY_TYPE_LABEL: Record<PattyType, string> = {
   BEEF: '비프',
@@ -42,6 +46,7 @@ export const SORT_OPTIONS: { value: SortType; label: string }[] = [
   { value: 'PRICE_DESC', label: '가격 높은순' },
   { value: 'CALORIES_ASC', label: '칼로리 낮은순' },
   { value: 'PROTEIN_DESC', label: '단백질 높은순' },
+  { value: 'PROTEIN_EFFICIENCY_DESC', label: '단백질 가성비순 (단성비 높은순)' },
 ];
 
 export const MAX_COMPARE_COUNT = 4;
