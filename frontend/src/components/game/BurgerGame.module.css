@@ -1,0 +1,514 @@
+/* ── 가게 틀 (시작·게임·결과 화면 공통) ── */
+.store {
+  position: relative;
+  overflow: hidden;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+/* 빨강·크림 줄무늬 차양과 아래쪽 물결 */
+.awning {
+  position: relative;
+  z-index: 2;
+  height: 44px;
+  display: grid;
+  place-items: center;
+  background: repeating-linear-gradient(90deg, var(--red) 0 36px, var(--paper) 36px 72px);
+  border-bottom: 2px solid var(--ink);
+}
+
+.awning::after {
+  content: '';
+  position: absolute;
+  top: 100%;
+  left: 0;
+  right: 0;
+  height: 12px;
+  background:
+    radial-gradient(circle at 18px 0, var(--red) 0 16px, transparent 17px) 0 0 / 72px 12px repeat-x,
+    radial-gradient(circle at 18px 0, var(--paper) 0 16px, transparent 17px) 36px 0 / 72px 12px repeat-x;
+  filter: drop-shadow(0 2px 0 var(--ink));
+}
+
+.sign {
+  position: relative;
+  padding: 4px 14px;
+  border: 2px solid var(--paper);
+  border-radius: 6px;
+  outline: 2px solid var(--ink);
+  background: var(--ink);
+  color: var(--mustard);
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 15px;
+  letter-spacing: 0.06em;
+}
+
+/* ── 시작 / 결과 화면 ── */
+.screen {
+  max-width: 560px;
+  margin: 0 auto;
+}
+
+.screenBody {
+  padding: 28px 36px 36px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--mustard);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.screenTitle {
+  margin-top: 14px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 48px;
+  font-weight: 400;
+  letter-spacing: -1.5px;
+}
+
+.screenText {
+  margin-top: 10px;
+  color: #5b554d;
+  font-size: 15px;
+  line-height: 1.7;
+}
+
+.screenText b {
+  color: var(--red);
+}
+
+/* TIME OVER! 글자가 크게 떨어지면서 쾅 찍히고, 결과가 뒤따라 나온다. */
+.timeOver {
+  margin-top: 12px;
+  color: var(--red);
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 68px;
+  font-weight: 400;
+  letter-spacing: -1px;
+  text-shadow: 4px 4px 0 var(--ink);
+  animation: slam 0.5s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+.resultReveal {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  animation: fadeUp 0.35s 0.5s ease-out both;
+}
+
+.result {
+  width: 100%;
+  margin-top: 18px;
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.result div {
+  padding: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+}
+
+.result dt {
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.result dd {
+  margin-top: 6px;
+  color: var(--red);
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px;
+}
+
+.primaryButton {
+  width: 100%;
+  max-width: 320px;
+  margin-top: 24px;
+  padding: 16px 22px;
+  display: flex;
+  justify-content: space-between;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--red);
+  color: white;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: 0.15s ease;
+}
+
+.primaryButton:hover {
+  background: var(--red-dark);
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+/* ── 게임 화면 ──
+   데스크톱: 점수판 / 가게(주문하는 손님 | 카운터 위 햄버거) / 재료 트레이
+   모바일: 점수판 → 손님 주문 → 햄버거 → 재료 → 조작 버튼 */
+.game {
+  max-width: 1080px;
+  margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+}
+
+.board {
+  padding: 26px 18px 18px;
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  grid-template-areas:
+    'order kitchen'
+    'panel panel';
+  gap: 16px;
+  /* 주방 벽 타일 */
+  background:
+    linear-gradient(90deg, rgba(27, 25, 22, 0.05) 1px, transparent 1px) 0 0 / 36px 36px,
+    linear-gradient(rgba(27, 25, 22, 0.05) 1px, transparent 1px) 0 0 / 36px 36px,
+    #fdf3df;
+}
+
+.order {
+  grid-area: order;
+  min-width: 0;
+}
+
+/* 카운터: 아래쪽 나무 상판 위에 접시가 놓인다. */
+.kitchen {
+  grid-area: kitchen;
+  position: relative;
+  min-width: 0;
+  padding: 14px 18px 22px;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  overflow: hidden;
+  background: rgba(255, 250, 240, 0.85);
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+}
+
+.kitchen::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 34px;
+  border-top: 2px solid var(--ink);
+  background: linear-gradient(#c98b4f, #a86a35);
+}
+
+.kitchen > * {
+  position: relative;
+  z-index: 1;
+}
+
+.feedbackArea {
+  position: absolute;
+  z-index: 2;
+  top: 14px;
+  left: 50%;
+  width: max-content;
+  max-width: calc(100% - 24px);
+  transform: translateX(-50%);
+  pointer-events: none;
+}
+
+.feedback {
+  display: block;
+  padding: 8px 14px;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  font-size: 13px;
+  font-weight: 800;
+  animation: pop 0.2s ease-out;
+}
+
+.success {
+  background: #d9ecc9;
+  color: #2f5a30;
+}
+
+.error {
+  background: #ffe3dc;
+  color: var(--red-dark);
+}
+
+/* 재료 트레이: 나무 카운터 앞면 */
+.panel {
+  grid-area: panel;
+  min-width: 0;
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background:
+    repeating-linear-gradient(0deg, rgba(27, 25, 22, 0.08) 0 2px, transparent 2px 26px),
+    linear-gradient(#b5793f, #9a6131);
+}
+
+.controls {
+  display: grid;
+  grid-template-columns: 1fr 1fr 1.6fr;
+  gap: 10px;
+}
+
+.secondaryButton,
+.submitButton {
+  min-height: 52px;
+  padding: 12px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: 0.12s ease;
+}
+
+.secondaryButton {
+  background: var(--paper);
+}
+
+.secondaryButton:hover:not(:disabled) {
+  background: var(--mustard);
+}
+
+.submitButton {
+  background: var(--red);
+  color: white;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.submitButton:hover:not(:disabled) {
+  background: var(--red-dark);
+}
+
+.submitButton:active:not(:disabled) {
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.secondaryButton:disabled,
+.submitButton:disabled {
+  border-color: #6b4524;
+  background: #d9c3a5;
+  color: #8a7258;
+  box-shadow: none;
+  cursor: not-allowed;
+}
+
+/* ── 3·2·1·START! ── */
+.countdown {
+  position: absolute;
+  z-index: 10;
+  inset: 0;
+  display: flex;
+  justify-content: center;
+  /* 가게가 화면보다 길어도 숫자가 보이도록 가운데가 아니라 위쪽에 띄운다. */
+  padding-top: min(24vh, 200px);
+  background: rgba(27, 25, 22, 0.55);
+}
+
+.countNumber,
+.countStart {
+  font-family: 'Black Han Sans', sans-serif;
+  line-height: 1;
+  text-shadow: 6px 6px 0 var(--ink);
+  -webkit-text-stroke: 3px var(--ink);
+  paint-order: stroke fill;
+  animation: countPop 0.6s ease-out both;
+}
+
+.countNumber {
+  color: var(--mustard);
+  font-size: 180px;
+}
+
+.countStart {
+  color: var(--red);
+  font-size: 120px;
+}
+
+@keyframes countPop {
+  0% {
+    opacity: 0;
+    transform: scale(2);
+  }
+  40% {
+    opacity: 1;
+    transform: scale(0.94);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes slam {
+  from {
+    opacity: 0;
+    transform: translateY(-60px) scale(1.8) rotate(-6deg);
+  }
+  to {
+    opacity: 1;
+    transform: rotate(-3deg);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes pop {
+  from {
+    opacity: 0;
+    transform: translateY(-6px) scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .feedback,
+  .timeOver,
+  .resultReveal,
+  .countNumber,
+  .countStart {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .store {
+    border-radius: 12px;
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+
+  .awning {
+    height: 30px;
+    background: repeating-linear-gradient(90deg, var(--red) 0 24px, var(--paper) 24px 48px);
+  }
+
+  .awning::after {
+    height: 8px;
+    background:
+      radial-gradient(circle at 12px 0, var(--red) 0 11px, transparent 12px) 0 0 / 48px 8px repeat-x,
+      radial-gradient(circle at 12px 0, var(--paper) 0 11px, transparent 12px) 24px 0 / 48px 8px repeat-x;
+  }
+
+  .sign {
+    padding: 2px 10px;
+    font-size: 11px;
+  }
+
+  .screenBody {
+    padding: 18px 18px 26px;
+  }
+
+  .screenTitle {
+    font-size: 36px;
+  }
+
+  .screenText {
+    font-size: 14px;
+  }
+
+  .timeOver {
+    font-size: 48px;
+  }
+
+  .result dd {
+    font-size: 28px;
+  }
+
+  .game {
+    gap: 10px;
+  }
+
+  .board {
+    padding: 16px 10px 10px;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-areas:
+      'order'
+      'kitchen'
+      'panel';
+    gap: 10px;
+  }
+
+  .kitchen {
+    padding: 8px 12px 16px;
+  }
+
+  .kitchen::after {
+    height: 24px;
+  }
+
+  .feedbackArea {
+    top: 8px;
+  }
+
+  .feedback {
+    padding: 6px 12px;
+    font-size: 12px;
+  }
+
+  .panel {
+    padding: 10px;
+    gap: 10px;
+  }
+
+  .controls {
+    gap: 6px;
+  }
+
+  .secondaryButton,
+  .submitButton {
+    min-height: 46px;
+    font-size: 14px;
+  }
+
+  .countdown {
+    padding-top: 120px;
+  }
+
+  .countNumber {
+    font-size: 120px;
+  }
+
+  .countStart {
+    font-size: 80px;
+  }
+}

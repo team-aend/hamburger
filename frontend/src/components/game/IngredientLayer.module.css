@@ -1,0 +1,122 @@
+/* 크기는 부모(BurgerStack)가 정하는 --unit 에 비례한다. 층마다 --w(너비)와 --h(높이 배수)만 다르다. */
+.layer {
+  position: relative;
+  display: block;
+  flex: none;
+  width: var(--w);
+  height: calc(var(--unit) * var(--h));
+  border: 2px solid var(--ink);
+}
+
+/* column-reverse 로 쌓기 때문에 margin-bottom 이 아래층과 겹치는 방향이다. */
+.layer + .layer {
+  margin-bottom: calc(var(--unit) * -0.35);
+}
+
+.image {
+  height: auto;
+  border: 0;
+  object-fit: contain;
+}
+
+.topBun {
+  --w: 100%;
+  --h: 3.4;
+  border-radius: 50% 50% 14% 14% / 82% 82% 18% 18%;
+  background:
+    radial-gradient(ellipse 4px 2px at 28% 38%, #fff0bd 98%, transparent),
+    radial-gradient(ellipse 4px 2px at 50% 24%, #fff0bd 98%, transparent),
+    radial-gradient(ellipse 4px 2px at 70% 42%, #fff0bd 98%, transparent),
+    linear-gradient(#f5c35a, #e9a23c);
+}
+
+.bottomBun {
+  --w: 96%;
+  --h: 2.4;
+  border-radius: 12% 12% 40% 40% / 22% 22% 78% 78%;
+  background: linear-gradient(#edae46, #d88c2b);
+}
+
+.beefPatty {
+  --w: 100%;
+  --h: 2.2;
+  border-radius: 999px;
+  background: #6d3527;
+}
+
+.chickenPatty {
+  --w: 102%;
+  --h: 2.4;
+  border-radius: 46% 54% 50% 50% / 60% 60% 40% 40%;
+  /* 빵과 헷갈리지 않도록 더 진한 튀김색 + 빵가루 점 */
+  background:
+    radial-gradient(circle at 20% 40%, #f0b765 0 1.5px, transparent 2px),
+    radial-gradient(circle at 45% 65%, #f0b765 0 1.5px, transparent 2px),
+    radial-gradient(circle at 72% 35%, #f0b765 0 1.5px, transparent 2px),
+    radial-gradient(circle at 85% 70%, #f0b765 0 1.5px, transparent 2px),
+    linear-gradient(#c56a1c, #94480f);
+}
+
+.cheese {
+  --w: 104%;
+  --h: 1.1;
+  background: #f8c928;
+  clip-path: polygon(0 0, 100% 0, 94% 70%, 76% 52%, 60% 100%, 40% 55%, 18% 80%, 6% 55%);
+}
+
+.lettuce {
+  --w: 106%;
+  --h: 1.2;
+  border-radius: 40% 30% 45% 35%;
+  background: #619849;
+}
+
+.tomato {
+  --w: 92%;
+  --h: 1;
+  border-radius: 999px;
+  background: var(--red);
+}
+
+.pickle {
+  --w: 78%;
+  --h: 0.8;
+  border-radius: 999px;
+  background: repeating-linear-gradient(90deg, #7ea443 0 14px, #5f8530 14px 18px);
+}
+
+.onion {
+  --w: 88%;
+  --h: 0.8;
+  border-color: #8a5a8c;
+  border-radius: 999px;
+  background: #f1e2f2;
+}
+
+.sauce {
+  --w: 94%;
+  --h: 0.75;
+  border-radius: 40% 60% 45% 55%;
+  background: #e0561f;
+}
+
+.dropIn {
+  animation: dropIn 0.22s ease-out;
+}
+
+@keyframes dropIn {
+  from {
+    opacity: 0;
+    transform: translateY(-28px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .dropIn {
+    animation: none;
+  }
+}
