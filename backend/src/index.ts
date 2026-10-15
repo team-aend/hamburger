@@ -1,11 +1,13 @@
 import express, { Application } from 'express';
 import cors from 'cors';
 import dotenv from 'dotenv';
+import path from 'path';
 import apiRouter from './routes/index.js';
 import { isDbConfigured } from './db/pool.js';
 import { prewarmDatasetCache } from './db/datasetCache.js';
 
 dotenv.config();
+dotenv.config({ path: path.resolve(process.cwd(), 'backend/.env') });
 
 const app: Application = express();
 const PORT = Number(process.env.PORT) || 4000;

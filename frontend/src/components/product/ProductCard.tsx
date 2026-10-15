@@ -1,5 +1,12 @@
-import { formatCalories, formatPrice, formatProtein } from '@/lib/format';
+import {
+  formatCalories,
+  formatPrice,
+  formatProtein,
+  formatProteinEfficiency,
+  formatProteinPerThousand,
+} from '@/lib/format';
 import { PATTY_TYPE_LABEL, type Product } from '@/types/product';
+import type { ReviewSummaryItem } from '@/types/review';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -10,6 +17,8 @@ interface ProductCardProps {
   likeCount: number;
   likePending: boolean;
   onToggleLike: (productId: number) => void;
+  reviewSummary?: ReviewSummaryItem;
+  onOpenReviews?: (product: Product) => void;
 }
 
 export default function ProductCard({
@@ -20,6 +29,8 @@ export default function ProductCard({
   likeCount,
   likePending,
   onToggleLike,
+  reviewSummary,
+  onOpenReviews,
 }: ProductCardProps) {
   return (
     <article className={`${styles.card} ${selected ? styles.cardSelected : ''}`}>
@@ -54,7 +65,28 @@ export default function ProductCard({
       <div className={styles.body}>
         <p className={styles.brand}>{product.brand.name}</p>
         <h3 className={styles.name}>{product.name}</h3>
-        <span className={styles.patty}>{PATTY_TYPE_LABEL[product.pattyType]}</span>
+
+        <div className={styles.metaRow}>
+          <span className={styles.patty}>{PATTY_TYPE_LABEL[product.pattyType]}</span>
+
+          {/* 한 줄 평 보기 / 작성 버튼 */}
+          <button
+            type="button"
+            className={styles.reviewTrigger}
+            onClick={() => onOpenReviews?.(product)}
+            aria-label={`${product.name} 한 줄 평 보기`}
+          >
+            <span className={styles.reviewTriggerStar} aria-hidden="true">
+              ★
+            </span>
+            <span>
+              {reviewSummary && reviewSummary.averageRating > 0
+                ? reviewSummary.averageRating.toFixed(1)
+                : '-'}
+            </span>
+            <span>({reviewSummary?.totalCount ?? 0})</span>
+          </button>
+        </div>
 
         <dl className={styles.prices}>
           <div className={styles.priceRow}>
@@ -70,6 +102,15 @@ export default function ProductCard({
         <p className={styles.nutrition}>
           {formatCalories(product.calories)} · 단백질 {formatProtein(product.protein)}
         </p>
+
+        {formatProteinPerThousand(product.protein, product.singlePrice) && (
+          <span
+            className={styles.proteinBadge}
+            title={formatProteinEfficiency(product.protein, product.singlePrice)}
+          >
+            ⚡ {formatProteinPerThousand(product.protein, product.singlePrice)}
+          </span>
+        )}
       </div>
 
       <button

@@ -23,6 +23,12 @@ function sortProducts(products: Product[], sortType: SortType): Product[] {
       );
     case 'PROTEIN_DESC':
       return sorted.sort((a, b) => (b.protein ?? -1) - (a.protein ?? -1));
+    case 'PROTEIN_EFFICIENCY_DESC':
+      return sorted.sort((a, b) => {
+        const effA = a.protein && a.singlePrice ? a.protein / a.singlePrice : -1;
+        const effB = b.protein && b.singlePrice ? b.protein / b.singlePrice : -1;
+        return effB - effA;
+      });
     default:
       return sorted;
   }

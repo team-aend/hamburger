@@ -213,3 +213,52 @@
     transform: scale(1.35);
   }
 }
+
+.metaRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: 8px;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+
+.proteinBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  margin-top: 6px;
+  padding: 3px 8px;
+  background: #ecfdf5;
+  color: #065f46;
+  border: 1px solid #a7f3d0;
+  border-radius: 6px;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: -0.2px;
+}
+
+.reviewTrigger {
+  background: #fff;
+  border: 1px solid var(--line, #e4e4e7);
+  border-radius: 999px;
+  padding: 3px 9px;
+  font-size: 11px;
+  font-weight: 700;
+  color: #4b5563;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 3px;
+  transition: all 0.15s ease;
+}
+
+.reviewTrigger:hover {
+  background: var(--cream, #fdf6ea);
+  border-color: var(--ink, #1a1a1a);
+  color: var(--ink, #1a1a1a);
+}
+
+.reviewTriggerStar {
+  color: #f59e0b;
+}
