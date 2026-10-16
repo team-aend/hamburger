@@ -30,9 +30,19 @@ interface Profile {
   stats: { likes: number; worldcups: number };
 }
 
+interface PriceChange {
+  previousPrice: number;
+  currentPrice: number;
+  changedAt: string;
+  /** 마이페이지에서 마지막으로 확인한 뒤에 바뀌었는지 */
+  isNew: boolean;
+}
+
 interface LikedItem {
   productId: number;
   likedAt: string;
+  /** 좋아요 후 단품 매장가가 바뀌었으면 값이 있다 */
+  priceChange: PriceChange | null;
   product: {
     id: number;
     name: string;
@@ -207,6 +217,7 @@ function MyPageContent() {
 // ── 좋아요한 버거 ──────────────────────────────────────────────
 
 function LikesTab({ onChanged }: { onChanged: () => void }) {
+  const { refresh } = useAuth();
   const [items, setItems] = useState<LikedItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<number | null>(null);
@@ -215,9 +226,16 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
   useEffect(() => {
     fetch('/api/me/likes', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
-      .then((data: { items: LikedItem[] }) => setItems(data.items))
+      .then(async (data: { items: LikedItem[] }) => {
+        setItems(data.items);
+        // 새 가격 변동을 보여줬으면 확인 처리 → 헤더 알림 배지가 사라진다. (이번 화면의 NEW 표시는 유지)
+        if (data.items.some((item) => item.priceChange?.isNew)) {
+          await fetch('/api/me/price-alerts/seen', { method: 'POST' }).catch(() => undefined);
+          await refresh();
+        }
+      })
       .catch(() => setError('좋아요 목록을 불러오지 못했습니다.'));
-  }, []);
+  }, [refresh]);
 
   const unlike = async (productId: number) => {
     setPendingId(productId);
@@ -277,8 +295,10 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
       </div>
       {error && <p className="mp-error" role="alert">{error}</p>}
 
+      <PriceChangeBanner items={items} />
+
       <div className="mp-grid">
-        {items.map(({ productId, likedAt, product }) => {
+        {items.map(({ productId, likedAt, product, priceChange }) => {
           const inCompare = compareIds.includes(productId);
           return (
             <article key={productId} className={`mp-card ${inCompare ? 'selected' : ''}`}>
@@ -286,7 +306,10 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
                 {product ? (
                   <>
                     <small className="mp-card-brand">{product.brand.name}</small>
-                    <h3 className="mp-card-name">{product.name}</h3>
+                    <h3 className="mp-card-name">
+                      <Link href={`/products/${productId}`}>{product.name}</Link>
+                    </h3>
+                    {priceChange && <PriceChangeTag change={priceChange} />}
                     <dl className="mp-card-prices">
                       <div>
                         <dt>단품</dt>
@@ -341,6 +364,50 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
   );
 }
 
+function PriceChangeTag({ change }: { change: PriceChange }) {
+  const diff = change.currentPrice - change.previousPrice;
+  const up = diff > 0;
+  return (
+    <p className={`mp-price-change ${up ? 'up' : 'down'}`}>
+      <span aria-hidden="true">{up ? '▲' : '▼'}</span>
+      좋아요 후 {Math.abs(diff).toLocaleString('ko-KR')}원 {up ? '올랐어요' : '내렸어요'}
+      <small>
+        {change.previousPrice.toLocaleString('ko-KR')}원 → {change.currentPrice.toLocaleString('ko-KR')}원
+      </small>
+      {change.isNew && <b className="mp-new">NEW</b>}
+    </p>
+  );
+}
+
+/** 좋아요한 버거 중 가격이 바뀐 버거 요약 (가격 변동 알림) */
+function PriceChangeBanner({ items }: { items: LikedItem[] }) {
+  const changed = items.filter((item) => item.priceChange && item.product);
+  if (changed.length === 0) return null;
+  const newCount = changed.filter((item) => item.priceChange!.isNew).length;
+  return (
+    <section className="mp-price-alert" aria-labelledby="mp-price-alert-title">
+      <h3 id="mp-price-alert-title">
+        🔔 좋아요한 버거 중 {changed.length}개의 가격이 바뀌었어요
+        {newCount > 0 && <small>새 소식 {newCount}개</small>}
+      </h3>
+      <ul>
+        {changed.map(({ productId, product, priceChange }) => {
+          const diff = priceChange!.currentPrice - priceChange!.previousPrice;
+          return (
+            <li key={productId}>
+              <Link href={`/products/${productId}`}>{product!.name}</Link>
+              <span className={diff > 0 ? 'up' : 'down'}>
+                {diff > 0 ? '▲' : '▼'} {Math.abs(diff).toLocaleString('ko-KR')}원
+              </span>
+              <small>{formatDate(priceChange!.changedAt)}</small>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
 // ── 월드컵 기록 ────────────────────────────────────────────────
 
 function WorldcupTab() {
@@ -378,7 +445,9 @@ function WorldcupTab() {
             🍔
           </div>
           <small>{favoriteBurger.brandName}</small>
-          <h3>{favoriteBurger.name}</h3>
+          <h3>
+            <Link className="mp-product-link" href={`/products/${favoriteBurger.productId}`}>{favoriteBurger.name}</Link>
+          </h3>
           <p>
             <strong>{favorite.count}회</strong> 우승시킨 최애 버거
           </p>
@@ -395,7 +464,7 @@ function WorldcupTab() {
                   <span className="mp-burger-icon" aria-hidden="true">
                     🍔
                   </span>
-                  <span className="mp-champion-name">{burger.name}</span>
+                  <Link className="mp-champion-name mp-product-link" href={`/products/${burger.productId}`}>{burger.name}</Link>
                   <span className="mp-champion-bar" aria-hidden="true">
                     <i style={{ width: `${(count / favorite.count) * 100}%` }} />
                   </span>
@@ -432,7 +501,9 @@ function WorldcupTab() {
                     </span>
                     <div>
                       <small>{burger.brandName}</small>
-                      <strong>{burger.name}</strong>
+                      <strong>
+                        <Link className="mp-product-link" href={`/products/${burger.productId}`}>{burger.name}</Link>
+                      </strong>
                     </div>
                   </div>
                 </th>

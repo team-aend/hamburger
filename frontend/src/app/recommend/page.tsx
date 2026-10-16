@@ -1,5 +1,6 @@
 'use client';
 
+import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
 import './recommend.css';
 
@@ -919,7 +920,9 @@ export default function RecommendPage() {
                     <article key={burger.id} className="rc-card">
                       <div className="rc-card-body">
                         <small className="rc-card-brand">{burger.brand.name}</small>
-                        <h3 className="rc-card-name">{burger.name}</h3>
+                        <h3 className="rc-card-name">
+                          <Link href={`/products/${burger.id}`}>{burger.name}</Link>
+                        </h3>
                         <p className="rc-card-desc">{burger.description}</p>
 
                         {/* 들어있는 재료 태그 목록 */}

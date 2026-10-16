@@ -835,3 +835,114 @@ body:has(.mypage-shell) {
     font-size: 8px;
   }
 }
+
+/* ── 가격 변동 알림 ── */
+.mp-price-alert {
+  margin-bottom: 18px;
+  padding: 16px 20px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: #fff0be;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.mp-price-alert h3 {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 16px;
+}
+
+.mp-price-alert h3 small {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--red);
+  color: white;
+  font-size: 11px;
+}
+
+.mp-price-alert ul {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 10px;
+  list-style: none;
+  font-size: 14px;
+}
+
+.mp-price-alert li {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 10px;
+}
+
+.mp-price-alert li a {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.mp-price-alert li small {
+  color: #71695f;
+  font-size: 12px;
+}
+
+.mp-price-alert .up,
+.mp-price-change.up {
+  color: var(--red-dark);
+  font-weight: 800;
+}
+
+.mp-price-alert .down,
+.mp-price-change.down {
+  color: var(--green);
+  font-weight: 800;
+}
+
+.mp-price-change {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin-top: 8px;
+  padding: 6px 10px;
+  border: 1px dashed currentColor;
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 12px;
+}
+
+.mp-price-change small {
+  color: #71695f;
+  font-weight: 600;
+}
+
+.mp-new {
+  padding: 1px 6px;
+  border-radius: 999px;
+  background: var(--red);
+  color: white;
+  font-size: 10px;
+}
+
+.mp-card-name a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.mp-card-name a:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+.mp-product-link {
+  color: inherit;
+  text-decoration: none;
+}
+
+.mp-product-link:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+

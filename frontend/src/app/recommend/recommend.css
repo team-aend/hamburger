@@ -1051,3 +1051,15 @@ body:has(.recommend-shell) {
     font-size: 8px;
   }
 }
+
+/* 버거 이름 → 상품 상세 링크 */
+.rc-card-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rc-card-name a:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+

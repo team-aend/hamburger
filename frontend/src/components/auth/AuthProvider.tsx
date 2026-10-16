@@ -26,6 +26,8 @@ interface AuthContextValue {
   googleEnabled: boolean;
   /** 개발용 테스트 로그인이 켜져 있는지 (backend DEV_LOGIN=true) */
   devLoginEnabled: boolean;
+  /** 확인하지 않은 알림 수 (좋아요한 버거의 가격 변동) */
+  alerts: { priceChanges: number };
   /** 현재 화면(또는 returnTo)으로 돌아오도록 로그인 화면으로 이동 */
   goToLogin: (returnTo?: string) => void;
   logout: () => Promise<void>;
@@ -55,6 +57,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const [user, setUser] = useState<AuthUser | null>(null);
   const [googleEnabled, setGoogleEnabled] = useState(false);
   const [devLoginEnabled, setDevLoginEnabled] = useState(false);
+  const [alerts, setAlerts] = useState({ priceChanges: 0 });
   const [loading, setLoading] = useState(true);
 
   const refresh = useCallback(async () => {
@@ -65,6 +68,7 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
       setUser(data.user ?? null);
       setGoogleEnabled(Boolean(data.providers?.google));
       setDevLoginEnabled(Boolean(data.providers?.dev));
+      setAlerts({ priceChanges: Number(data.alerts?.priceChanges ?? 0) });
     } catch {
       // 백엔드가 꺼져 있어도 로그인은 선택 사항이므로 비로그인 상태로 둔다.
       setUser(null);
@@ -88,12 +92,13 @@ export default function AuthProvider({ children }: { children: React.ReactNode }
   const logout = useCallback(async () => {
     await fetch('/api/auth/logout', { method: 'POST' }).catch(() => undefined);
     setUser(null);
+    setAlerts({ priceChanges: 0 });
     router.refresh();
   }, [router]);
 
   const value = useMemo(
-    () => ({ user, loading, googleEnabled, devLoginEnabled, goToLogin, logout, refresh }),
-    [user, loading, googleEnabled, devLoginEnabled, goToLogin, logout, refresh]
+    () => ({ user, loading, googleEnabled, devLoginEnabled, alerts, goToLogin, logout, refresh }),
+    [user, loading, googleEnabled, devLoginEnabled, alerts, goToLogin, logout, refresh]
   );
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

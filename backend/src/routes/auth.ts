@@ -16,6 +16,7 @@ import {
   setOAuthStateCookie,
   setSessionCookie,
 } from '../auth/session.js';
+import { priceAlerts } from '../priceAlerts/composition.js';
 import { upsertSocialUser } from '../db/users.js';
 
 const router = Router();
@@ -30,10 +31,17 @@ function redirectToLoginError(res: Response, error: string, returnTo = '/') {
  * GET /api/auth/me
  * 현재 로그인한 사용자. 비로그인이어도 200 + { user: null } (로그인은 선택 사항이므로)
  */
-router.get('/me', optionalAuth, (req: Request, res: Response) => {
+router.get('/me', optionalAuth, async (req: Request, res: Response) => {
+  // 로그인 사용자의 새 알림 수 (헤더 배지). 조회에 실패해도 로그인 상태 확인은 막지 않는다.
+  let priceChanges = 0;
+  if (req.user) {
+    priceChanges = await priceAlerts().countNew(req.user.id).catch(() => 0);
+  }
+
   res.set('Cache-Control', 'no-store');
   res.status(200).json({
     user: req.user ?? null,
+    alerts: { priceChanges },
     providers: {
       google: isGoogleConfigured() && isSessionConfigured(),
       dev: isDevLoginEnabled(),

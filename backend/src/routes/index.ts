@@ -6,6 +6,7 @@ import authRouter from './auth.js';
 import likesRouter from './likes.js';
 import meRouter from './me.js';
 import reviewsRouter from './reviews.js';
+import { createProductsRouter } from '../products/composition.js';
 
 
 const router = Router();
@@ -30,6 +31,7 @@ router.use('/likes', likesRouter);
 router.use('/me', meRouter);
 router.use('/worldcup', worldcupRouter);
 router.use('/reviews', reviewsRouter);
+router.use('/products', createProductsRouter());
 router.use('/recommend', recommendRouter);
 
 export default router;

@@ -3,6 +3,7 @@ import { requireAuth } from '../auth/middleware.js';
 import { clearSessionCookie } from '../auth/session.js';
 import { getCachedDataset } from '../db/datasetCache.js';
 import { getUserLikes } from '../db/likes.js';
+import { priceAlerts, priceAlertsHandlers } from '../priceAlerts/composition.js';
 import { deleteUser, getUserProfile, updateNickname } from '../db/users.js';
 import { worldcupRecordsHandlers } from '../worldcup/composition.js';
 
@@ -78,23 +79,27 @@ router.delete('/', async (req: Request, res: Response) => {
 
 router.get('/likes', async (req: Request, res: Response) => {
   try {
-    const [likes, { dataset }] = await Promise.all([
+    const [likes, { dataset }, priceChanges] = await Promise.all([
       getUserLikes(req.user!.id),
       getCachedDataset(),
+      priceAlerts().changes(req.user!.id),
     ]);
     const productById = new Map(dataset.baseEnrichedProducts.map((p) => [p.id, p]));
+    const changeByProductId = new Map(priceChanges.map((change) => [Number(change.productId), change]));
 
     const items = likes.map(({ productId, likedAt }) => {
       const product = productById.get(productId);
       if (!product) {
         // 판매 종료 등으로 목록에서 빠진 상품도 좋아요 기록은 보여준다.
-        return { productId, likedAt, product: null };
+        return { productId, likedAt, product: null, priceChange: null };
       }
       const single =
         product.variants.find((v) => v.variantType === 'SINGLE') ??
         product.variants.find((v) => v.isDefault) ??
         product.variants[0];
       const set = product.variants.find((v) => v.variantType === 'SET');
+      // 가격 변동은 DB 에서 바로 읽으므로, 상품 캐시(최대 10분)보다 최신일 수 있다 → 같은 값을 보여준다.
+      const change = changeByProductId.get(productId) ?? null;
       return {
         productId,
         likedAt,
@@ -103,11 +108,13 @@ router.get('/likes', async (req: Request, res: Response) => {
           name: product.name,
           description: product.description,
           brand: { name: product.brand.name, slug: product.brand.slug },
-          singlePrice: single?.prices.store ?? null,
+          singlePrice: change?.currentPrice ?? single?.prices.store ?? null,
           setPrice: set?.prices.store ?? null,
           calories: single?.nutrition.caloriesKcal ?? null,
           protein: single?.nutrition.proteinG ?? null,
         },
+        // 좋아요 후 단품 매장가가 바뀌었으면 { previousPrice, currentPrice, changedAt, isNew }
+        priceChange: change,
       };
     });
 
@@ -117,6 +124,12 @@ router.get('/likes', async (req: Request, res: Response) => {
     serverError(res, '좋아요 목록 조회', error);
   }
 });
+
+/**
+ * POST /api/me/price-alerts/seen
+ * 가격 변동 알림을 확인한 것으로 표시 (헤더의 알림 배지가 사라진다)
+ */
+router.post('/price-alerts/seen', priceAlertsHandlers().markSeen);
 
 router.get('/worldcup', worldcupRecordsHandlers().history);
 

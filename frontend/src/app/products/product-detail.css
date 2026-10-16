@@ -1,0 +1,840 @@
+/* ── 상품 상세 (.pd-shell) ──────────────────────────────────────
+   랭킹·비교·마이페이지와 같은 worldcup-shell 껍데기와 전역 토큰을 쓴다.
+   이 화면 전용 클래스는 pd- 접두어를 붙인다. */
+html:has(.pd-shell),
+body:has(.pd-shell) {
+  min-width: 320px;
+}
+
+.pd-shell {
+  background:
+    linear-gradient(rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    var(--cream);
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+.pd-shell :is(a, button, input, summary, svg):focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 4px;
+}
+
+.pd-content {
+  max-width: 1180px;
+  margin: 0 auto;
+  padding: 32px 0 56px;
+}
+
+.pd-breadcrumb {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-bottom: 24px;
+  color: #71695f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pd-breadcrumb a {
+  color: var(--ink);
+}
+
+/* ── 상단 요약 ── */
+.pd-hero {
+  display: grid;
+  grid-template-columns: minmax(0, 440px) minmax(0, 1fr);
+  gap: 40px;
+  align-items: start;
+}
+
+.pd-visual {
+  position: relative;
+  aspect-ratio: 1 / 1;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--mustard);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.pd-visual img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.pd-visual-placeholder {
+  font-size: 160px;
+  line-height: 1;
+  filter: drop-shadow(0 20px 8px rgba(35, 22, 10, 0.25));
+}
+
+.pd-badges {
+  position: absolute;
+  top: 16px;
+  left: 16px;
+  display: flex;
+  gap: 6px;
+}
+
+.pd-badge {
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--red);
+  color: white;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pd-badge.muted {
+  background: var(--paper);
+  color: var(--ink);
+}
+
+.pd-summary h1 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(36px, 4.6vw, 58px);
+  font-weight: 400;
+  line-height: 1.12;
+  letter-spacing: -2px;
+  word-break: keep-all;
+}
+
+.pd-description {
+  margin-top: 14px;
+  color: #655e55;
+  line-height: 1.7;
+}
+
+.pd-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-top: 14px;
+  list-style: none;
+}
+
+.pd-tags li {
+  padding: 4px 10px;
+  border: 1px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-quick {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  margin-top: 24px;
+  border-top: 2px solid var(--ink);
+  border-bottom: 1px solid var(--line);
+}
+
+.pd-quick > div {
+  padding: 14px 4px;
+}
+
+.pd-quick > div + div {
+  padding-left: 16px;
+  border-left: 1px solid var(--line);
+}
+
+.pd-quick dt {
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-quick dd {
+  margin-top: 4px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 24px;
+}
+
+.pd-quick dd a {
+  color: var(--ink);
+  text-decoration: none;
+}
+
+.pd-quick dd a:hover {
+  color: var(--red);
+}
+
+.pd-actions {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px 16px;
+  margin-top: 24px;
+}
+
+.pd-like {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 20px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 15px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: 0.15s ease;
+}
+
+.pd-like span {
+  color: var(--red);
+  font-size: 18px;
+  line-height: 1;
+}
+
+.pd-like b {
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: 13px;
+}
+
+.pd-like:hover:not(:disabled) {
+  background: var(--mustard);
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.pd-like.liked {
+  background: var(--red);
+  color: white;
+}
+
+.pd-like.liked span {
+  color: white;
+}
+
+.pd-like.liked b {
+  background: rgba(255, 255, 255, 0.2);
+}
+
+.pd-like.liked:hover:not(:disabled) {
+  background: var(--red-dark);
+}
+
+.pd-like:disabled {
+  cursor: progress;
+}
+
+.pd-like-help {
+  color: #71695f;
+  font-size: 12px;
+}
+
+/* ── 섹션 공통 ── */
+.pd-section {
+  margin-top: 48px;
+  scroll-margin-top: 24px;
+}
+
+.pd-section-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid var(--ink);
+}
+
+.pd-section-head h2 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.pd-section-head small {
+  color: #655e55;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pd-section-head > a {
+  margin-left: auto;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pd-empty-note {
+  padding: 18px 20px;
+  border: 1px dashed #827a6d;
+  border-radius: 8px;
+  background: var(--paper);
+  color: #655e55;
+  font-size: 14px;
+}
+
+.pd-empty-note a {
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.pd-error {
+  margin-top: 10px;
+  padding: 10px 14px;
+  border: 1px dashed var(--red-dark);
+  border-radius: 8px;
+  background: #fbe4df;
+  color: var(--red-dark);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pd-link-button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pd-link-button:hover {
+  color: var(--red);
+}
+
+/* 단품/세트 (월드컵 강수 선택 버튼과 같은 선택 스타일) */
+.pd-segment {
+  display: flex;
+  gap: 6px;
+  margin-left: auto;
+}
+
+.pd-segment button {
+  padding: 8px 16px;
+  border: 1.5px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pd-segment button:hover {
+  border-color: var(--red);
+}
+
+.pd-segment button.selected {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: var(--paper);
+  box-shadow: 3px 3px 0 var(--mustard);
+}
+
+/* ── 가격 ── */
+.pd-price-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+  margin-bottom: 20px;
+}
+
+.pd-price-tile {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding: 18px 20px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.pd-price-tile.primary {
+  background: #fff0be;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.pd-price-tile span {
+  color: #71695f;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.pd-price-tile strong {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 36px;
+  font-weight: 400;
+}
+
+.pd-price-tile small {
+  color: #655e55;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── 가격 추이 그래프 ── */
+.pd-chart {
+  padding: 18px 20px 14px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.pd-chart-head {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 800;
+}
+
+.pd-chart-legend {
+  display: flex;
+  gap: 14px;
+  list-style: none;
+  color: #655e55;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-chart-legend li {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.pd-chart-legend i,
+.pd-chart-tooltip-row i {
+  display: inline-block;
+  width: 14px;
+  height: 2px;
+  border-radius: 2px;
+}
+
+.pd-chart-frame {
+  position: relative;
+}
+
+.pd-chart-frame svg {
+  display: block;
+  max-width: 100%;
+  touch-action: pan-y;
+}
+
+.pd-chart-grid {
+  stroke: rgba(27, 25, 22, 0.1);
+  stroke-width: 1;
+}
+
+.pd-chart-tick {
+  fill: #71695f;
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-chart-endlabel {
+  fill: var(--ink);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.pd-chart-crosshair {
+  stroke: var(--ink);
+  stroke-width: 1;
+  opacity: 0.45;
+}
+
+.pd-chart-tooltip {
+  position: absolute;
+  top: 6px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 128px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+  transform: translateX(12px);
+  pointer-events: none;
+}
+
+.pd-chart-tooltip.flip {
+  transform: translateX(calc(-100% - 12px));
+}
+
+.pd-chart-tooltip-date {
+  color: #71695f;
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.pd-chart-tooltip-row {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  white-space: nowrap;
+}
+
+.pd-chart-tooltip-row strong {
+  font-size: 14px;
+}
+
+.pd-chart-tooltip-row small {
+  color: #71695f;
+  font-size: 11px;
+}
+
+.pd-chart-table {
+  margin-top: 8px;
+  font-size: 13px;
+}
+
+.pd-chart-table summary {
+  color: #655e55;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.pd-chart-table table {
+  width: 100%;
+  margin-top: 8px;
+  border-collapse: collapse;
+  font-variant-numeric: tabular-nums;
+}
+
+.pd-chart-table th,
+.pd-chart-table td {
+  padding: 8px 6px;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+}
+
+/* ── 영양 / 월드컵 숫자 타일 ── */
+.pd-stat-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+  gap: 12px;
+}
+
+.pd-stat-grid > div {
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.pd-stat-grid > div.highlight {
+  border: 2px solid var(--ink);
+  background: #fff0be;
+}
+
+.pd-stat-grid dt {
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.pd-stat-grid dd {
+  margin-top: 4px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+}
+
+.pd-stat-grid dd small {
+  margin-left: 3px;
+  color: #655e55;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+/* ── 재료 ── */
+.pd-ingredients {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.pd-ingredients > div {
+  display: grid;
+  grid-template-columns: 90px minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+}
+
+.pd-ingredients > div > span {
+  color: #71695f;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pd-ingredients ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  list-style: none;
+}
+
+.pd-ingredients li {
+  padding: 6px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+/* ── 한 줄 평 ── */
+.pd-review-form {
+  margin-bottom: 16px;
+  padding: 16px 18px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+}
+
+.pd-stars {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  margin-bottom: 10px;
+}
+
+.pd-stars button {
+  padding: 0 2px;
+  border: 0;
+  background: transparent;
+  color: #d8cfbd;
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
+.pd-stars button.on {
+  color: var(--mustard);
+  text-shadow: 1px 1px 0 var(--ink);
+}
+
+.pd-stars span {
+  margin-left: 8px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.pd-review-input {
+  display: flex;
+  gap: 8px;
+}
+
+.pd-review-input input {
+  flex: 1;
+  min-width: 0;
+  min-height: 46px;
+  padding: 10px 14px;
+  border: 1.5px solid #827a6d;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 14px;
+}
+
+.pd-review-input button {
+  padding: 0 22px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  background: var(--red);
+  color: white;
+  font-size: 14px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.pd-review-input button:disabled {
+  border-style: dashed;
+  border-color: #827a6d;
+  background: #e4dccb;
+  color: #827a6d;
+  cursor: not-allowed;
+}
+
+.pd-reviews {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  border-top: 1px solid var(--line);
+}
+
+.pd-reviews li {
+  padding: 14px 4px;
+  border-bottom: 1px solid var(--line);
+}
+
+.pd-review-meta {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+}
+
+.pd-review-stars {
+  color: var(--mustard);
+  letter-spacing: 1px;
+  text-shadow: 1px 1px 0 var(--ink);
+}
+
+.pd-review-stars span {
+  color: #d8cfbd;
+  text-shadow: none;
+}
+
+.pd-review-meta time {
+  color: #827a6d;
+  font-size: 12px;
+}
+
+.pd-review-meta .pd-link-button {
+  margin-left: auto;
+  font-size: 12px;
+}
+
+.pd-reviews p {
+  margin-top: 6px;
+  line-height: 1.6;
+}
+
+/* ── 비슷한 버거 ── */
+.pd-similar {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+  gap: 16px;
+  list-style: none;
+}
+
+.pd-similar a {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  height: 100%;
+  padding: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--paper);
+  color: var(--ink);
+  text-decoration: none;
+  box-shadow: 4px 4px 0 var(--ink);
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+
+.pd-similar a:hover {
+  transform: translate(-2px, -3px);
+  box-shadow: 7px 8px 0 var(--ink);
+}
+
+.pd-similar small {
+  color: var(--red-dark);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.pd-similar strong {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 20px;
+  font-weight: 400;
+}
+
+.pd-similar-price {
+  margin-top: 6px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+}
+
+.pd-similar-meta {
+  color: #71695f;
+  font-size: 12px;
+}
+
+/* ── 반응형 ── */
+@media (max-width: 860px) {
+  .pd-hero {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 28px;
+  }
+
+  .pd-visual {
+    max-width: 420px;
+  }
+}
+
+@media (max-width: 700px) {
+  .pd-shell {
+    padding: 0 18px;
+  }
+
+  .pd-shell .site-header {
+    height: 80px;
+  }
+
+  .pd-shell .brand {
+    font-size: 20px;
+  }
+
+  .pd-shell .menu-toggle {
+    top: 17px;
+    right: 18px;
+  }
+
+  .pd-shell .main-navigation {
+    width: min(340px, 100vw);
+  }
+
+  .pd-visual-placeholder {
+    font-size: 120px;
+  }
+
+  .pd-quick dd {
+    font-size: 19px;
+  }
+
+  .pd-price-grid {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .pd-price-tile strong {
+    font-size: 30px;
+  }
+
+  .pd-segment {
+    margin-left: 0;
+  }
+
+  .pd-ingredients > div {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 6px;
+  }
+
+  .pd-review-input {
+    flex-direction: column;
+  }
+
+  .pd-review-input button {
+    min-height: 46px;
+  }
+
+  .pd-shell .site-footer {
+    gap: 12px;
+    font-size: 8px;
+  }
+}
