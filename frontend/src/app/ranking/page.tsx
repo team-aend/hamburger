@@ -59,13 +59,13 @@ export default function RankingPage() {
                 : `완료된 실제 상품 월드컵 ${totalResults.toLocaleString()}회의 결과로 집계합니다.`}
           </span>
         </aside>
-          <div className="ranking-controls">
+          <div className="ranking-controls ranking-controls-top">
             <label>버거 이름 검색<input type="search" placeholder="어떤 버거가 궁금하세요?" maxLength={100} value={query} onChange={(event) => { setQuery(event.target.value); setPage(1); }} /></label>
             <label>정렬 기준<select value={sort} onChange={(event) => { setSort(event.target.value as RankingSort); setPage(1); }}><option value="championships">우승 횟수 높은 순</option><option value="winRate">대결 승률 높은 순</option></select></label>
+            <label>월드컵 범위<select value={roundSize} onChange={(event) => { setRoundSize(event.target.value); setPage(1); }}><option value="">전체</option><option value="8">8강</option><option value="16">16강</option></select></label>
           </div>
 
-        {error && <button type="button" onClick={() => setRetry((value) => value + 1)}>다시 시도</button>}
-        <label>월드컵 범위 <select value={roundSize} onChange={(event) => { setRoundSize(event.target.value); setPage(1); }}><option value="">전체</option><option value="8">8강</option><option value="16">16강</option></select></label>
+        {error && <button type="button" className="ranking-retry" onClick={() => setRetry((value) => value + 1)}>다시 시도</button>}
 
         {!loading && !error && totalResults !== null && !hasResults ? (
           <div className="ranking-empty">

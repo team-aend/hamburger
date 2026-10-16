@@ -406,3 +406,10 @@ body:has(.compare-shell) {
 .ranking-pagination button:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
 .ranking-page-count { min-width:64px; text-align:center; color:#655e55; font-size:14px; font-weight:700; }
 .ranking-page-count strong { font-family:'Black Han Sans',sans-serif; font-size:22px; font-weight:400; color:var(--ink); }
+
+/* 랭킹 상단 검색·정렬·범위 조건 (같은 줄, 같은 입력 스타일) */
+.ranking-controls-top { margin-bottom:36px; }
+.ranking-controls select { cursor:pointer; }
+.ranking-retry { margin:-20px 0 28px; padding:10px 18px; border:1.5px solid var(--ink); border-radius:8px; background:var(--mustard); color:var(--ink); font-size:13px; font-weight:800; cursor:pointer; }
+.ranking-retry:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.ranking-controls-top label:last-child select { min-width:120px; }
