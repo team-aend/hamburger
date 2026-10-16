@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
+import SavedSearchesBar, { type SearchFilters } from '@/components/recommend/SavedSearchesBar';
 import './recommend.css';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -359,6 +360,20 @@ export default function RecommendPage() {
     if (preset.variant) setVariantType(preset.variant);
   };
 
+  // 저장해 둔 "내 조건" 적용
+  const applySavedFilters = (filters: SearchFilters) => {
+    setKeyword(filters.keyword);
+    setSelectedBrands(filters.brands);
+    setIncludeIngredients(filters.includeIngredients);
+    setExcludeIngredients(filters.excludeIngredients);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+    setPriceChannel(filters.priceChannel);
+    setMaxCalories(filters.maxCalories);
+    setVariantType(filters.variantType);
+    setSortBy(filters.sortBy);
+  };
+
   // 조건 전체 초기화
   const resetAllFilters = () => {
     setKeyword('');
@@ -499,6 +514,22 @@ export default function RecommendPage() {
             ↺ 조건 전체 해제
           </button>
         </div>
+
+        <SavedSearchesBar
+          current={{
+            keyword,
+            brands: selectedBrands,
+            includeIngredients,
+            excludeIngredients,
+            minPrice,
+            maxPrice,
+            priceChannel,
+            maxCalories,
+            variantType,
+            sortBy,
+          }}
+          onApply={applySavedFilters}
+        />
 
         <div className="rc-layout">
           {/* 좌측: 조건 선택 필터 패널 (아코디언 구조) */}

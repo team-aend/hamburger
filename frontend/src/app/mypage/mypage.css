@@ -946,3 +946,31 @@ body:has(.mypage-shell) {
   text-decoration: underline;
 }
 
+
+/* ── 취향 리포트 ── */
+.mp-taste { display: flex; flex-direction: column; gap: 20px; }
+.mp-taste-hero { padding: 24px 26px; border: 2px solid var(--ink); border-radius: 12px; background: #fff0be; box-shadow: 4px 4px 0 var(--ink); }
+.mp-taste-hero h3 { margin-top: 14px; font-family: 'Black Han Sans', sans-serif; font-size: clamp(26px, 3.4vw, 40px); font-weight: 400; line-height: 1.2; word-break: keep-all; }
+.mp-taste-hero h3 strong { color: var(--red); font-weight: 400; }
+.mp-taste-hero p { margin-top: 10px; color: #655e55; font-size: 13px; }
+.mp-taste-stats { display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 12px; }
+.mp-taste-stats > div { padding: 16px 18px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); }
+.mp-taste-stats dt { color: #71695f; font-size: 12px; font-weight: 700; }
+.mp-taste-stats dd { margin-top: 4px; font-family: 'Black Han Sans', sans-serif; font-size: 28px; }
+.mp-taste-stats small { color: #71695f; font-size: 12px; }
+.mp-taste-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+.mp-taste-bars { padding: 18px 20px; border: 1px solid var(--line); border-radius: 12px; background: var(--paper); }
+.mp-taste-bars h4 { margin-bottom: 12px; font-size: 15px; }
+.mp-taste-bars ul { display: flex; flex-direction: column; gap: 10px; list-style: none; }
+.mp-taste-bars li { display: grid; grid-template-columns: minmax(0, 110px) minmax(0, 1fr) 44px; align-items: center; gap: 10px; font-size: 13px; }
+.mp-taste-label { overflow: hidden; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+.mp-taste-bars li strong { text-align: right; }
+.mp-taste-reco { display: grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap: 16px; list-style: none; }
+.mp-taste-reco a { display: flex; flex-direction: column; gap: 4px; height: 100%; padding: 16px; border: 2px solid var(--ink); border-radius: 12px; background: var(--paper); color: var(--ink); text-decoration: none; box-shadow: 4px 4px 0 var(--ink); transition: transform 0.15s ease, box-shadow 0.15s ease; }
+.mp-taste-reco a:hover { transform: translate(-2px, -3px); box-shadow: 7px 8px 0 var(--ink); }
+.mp-taste-reco small { color: var(--red-dark); font-size: 10px; font-weight: 800; letter-spacing: 0.1em; }
+.mp-taste-reco strong { font-family: 'Black Han Sans', sans-serif; font-size: 20px; font-weight: 400; }
+.mp-taste-price { font-family: 'Black Han Sans', sans-serif; font-size: 22px; }
+.mp-taste-reasons { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 4px; }
+.mp-taste-reasons em { padding: 2px 8px; border: 1px solid var(--line); border-radius: 999px; background: var(--cream); font-size: 11px; font-style: normal; font-weight: 700; }
+@media (max-width: 700px) { .mp-taste-grid { grid-template-columns: minmax(0, 1fr); } }

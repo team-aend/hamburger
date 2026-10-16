@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import SiteHeader, { menuRoutes, type MenuKey } from '@/components/SiteHeader';
+import ShareResultButton from '@/components/worldcup/ShareResultButton';
 import WorldcupFinalRankings from '@/components/WorldcupFinalRankings';
 import { getWorldcupSession, startWorldcupSession, voteWorldcup, type WorldcupProduct, type WorldcupRoundSize, type WorldcupSession } from '@/lib/worldcupSession';
 
@@ -207,7 +208,7 @@ export default function HomePage() {
       {session?.status === 'COMPLETED' && session.winner && <section className="result-screen" aria-labelledby="result-title" aria-live="polite">
         <div className="confetti" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
         <div className="winner-visual" style={{ '--accent': '#f0b735' } as React.CSSProperties}><span className="winner-ring ring-one" /><span className="winner-ring ring-two" /><span className="crown" aria-hidden="true">♛</span><span className="winner-burger"><ProductImage product={session.winner} /></span><span className="winner-seal">MY<br />NO.1</span></div>
-        <div className="winner-copy"><span className="winner-label">TOURNAMENT WINNER</span><h1 id="result-title">당신의<br /><strong>최애 버거</strong>는</h1><div className="winner-name"><small>{session.winner.brandName}</small><h2>{session.winner.name}</h2><p>{session.winner.description}</p></div><p className="worldcup-save saved">우승 결과가 저장됐어요.</p><div className="result-actions"><button className="replay-button" type="button" disabled={busy || Boolean(retry) || !available(session.roundSize)} onClick={() => start(session.roundSize, true)}><span>{busy ? '시작하는 중…' : `${session.roundSize}강 다시 하기`}</span><b>↻</b></button><button className="reset-button" type="button" disabled={busy} onClick={reset}>다른 강수 선택하기</button></div></div>
+        <div className="winner-copy"><span className="winner-label">TOURNAMENT WINNER</span><h1 id="result-title">당신의<br /><strong>최애 버거</strong>는</h1><div className="winner-name"><small>{session.winner.brandName}</small><h2>{session.winner.name}</h2><p>{session.winner.description}</p></div><p className="worldcup-save saved">우승 결과가 저장됐어요.</p><ShareResultButton sessionId={session.sessionId} winnerName={session.winner.name} /><div className="result-actions"><button className="replay-button" type="button" disabled={busy || Boolean(retry) || !available(session.roundSize)} onClick={() => start(session.roundSize, true)}><span>{busy ? '시작하는 중…' : `${session.roundSize}강 다시 하기`}</span><b>↻</b></button><button className="reset-button" type="button" disabled={busy} onClick={reset}>다른 강수 선택하기</button></div></div>
       </section>}
       {session?.status === 'COMPLETED' && session.winner && <WorldcupFinalRankings key={session.sessionId} sessionId={session.sessionId} winnerProductId={session.winner.productId} />}
       {session && ['EXPIRED', 'ABANDONED'].includes(session.status) && <section className="start-screen"><div className="hero-copy"><h1>{session.status === 'EXPIRED' ? '진행 시간이 만료됐어요.' : '종료된 월드컵이에요.'}</h1><p>새로운 월드컵을 시작해 주세요.</p><button className="start-button" type="button" onClick={abandonLocal}>강수 선택하기</button></div></section>}

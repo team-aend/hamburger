@@ -10,11 +10,12 @@ import type { WorldcupProduct } from '@/lib/worldcupSession';
 import { MAX_COMPARE_COUNT } from '@/types/product';
 import './mypage.css';
 
-type TabKey = 'likes' | 'worldcup' | 'account';
+type TabKey = 'likes' | 'worldcup' | 'taste' | 'account';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'likes', label: '좋아요한 버거' },
   { key: 'worldcup', label: '월드컵 기록' },
+  { key: 'taste', label: '취향 리포트' },
   { key: 'account', label: '회원 정보' },
 ];
 
@@ -198,6 +199,7 @@ function MyPageContent() {
       <div id={`mp-panel-${tab}`} role="tabpanel" aria-labelledby={`mp-tab-${tab}`} className="mp-panel">
         {tab === 'likes' && <LikesTab onChanged={loadProfile} />}
         {tab === 'worldcup' && <WorldcupTab />}
+        {tab === 'taste' && <TasteTab name={user.displayName} />}
         {tab === 'account' && profile && (
           <AccountTab
             profile={profile}
@@ -405,6 +407,126 @@ function PriceChangeBanner({ items }: { items: LikedItem[] }) {
         })}
       </ul>
     </section>
+  );
+}
+
+// ── 취향 리포트 ────────────────────────────────────────────────
+
+interface TasteReport {
+  enough: boolean;
+  sources: { likes: number; worldcupWins: number; highRatings: number };
+  patties: { label: string; share: number }[];
+  brands: { label: string; share: number }[];
+  averagePrice: number | null;
+  priceBand: string | null;
+  averageCalories: number | null;
+  summary: string | null;
+  recommendations: { productId: string; name: string; brandName: string; singlePrice: number | null; reasons: string[] }[];
+}
+
+/** 막대 하나에 비율(%)을 글자로 함께 적어, 색 없이도 읽을 수 있게 한다. */
+function ShareBars({ title, items }: { title: string; items: { label: string; share: number }[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="mp-taste-bars">
+      <h4>{title}</h4>
+      <ul>
+        {items.map((item) => (
+          <li key={item.label}>
+            <span className="mp-taste-label">{item.label}</span>
+            <span className="mp-champion-bar" aria-hidden="true">
+              <i style={{ width: `${item.share}%` }} />
+            </span>
+            <strong>{item.share}%</strong>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TasteTab({ name }: { name: string }) {
+  const [report, setReport] = useState<TasteReport | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/me/taste', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
+      .then(setReport)
+      .catch(() => setError(true));
+  }, []);
+
+  if (error) return <p className="mp-error" role="alert">취향 리포트를 불러오지 못했습니다.</p>;
+  if (!report) return <p className="mp-state">취향을 분석하는 중...</p>;
+
+  const { sources } = report;
+  const basis = `좋아요 ${sources.likes}개 · 월드컵 우승 ${sources.worldcupWins}회 · 높은 별점 ${sources.highRatings}개`;
+
+  if (!report.enough) {
+    return (
+      <div className="mp-empty">
+        <h3>취향을 알려면 기록이 조금 더 필요해요.</h3>
+        <p>
+          좋아요를 3개 이상 누르거나, 월드컵을 2번 이상 완주하면 취향 리포트가 만들어져요.
+          <br />
+          지금까지: {basis}
+        </p>
+        <Link href="/">월드컵 하러 가기</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mp-taste">
+      <section className="mp-taste-hero" aria-labelledby="mp-taste-title">
+        <span className="winner-label">MY BURGER TASTE</span>
+        <h3 id="mp-taste-title">
+          {name}님은
+          <br />
+          <strong>{report.summary}</strong>
+        </h3>
+        <p>{basis}을 바탕으로 분석했어요.</p>
+      </section>
+
+      <dl className="mp-taste-stats">
+        <div>
+          <dt>자주 고르는 가격대</dt>
+          <dd>{report.priceBand ?? '-'}</dd>
+          {report.averagePrice !== null && <small>평균 {report.averagePrice.toLocaleString('ko-KR')}원</small>}
+        </div>
+        <div>
+          <dt>평균 열량</dt>
+          <dd>{report.averageCalories !== null ? `${report.averageCalories.toLocaleString('ko-KR')}kcal` : '-'}</dd>
+        </div>
+      </dl>
+
+      <div className="mp-taste-grid">
+        <ShareBars title="좋아하는 패티" items={report.patties} />
+        <ShareBars title="좋아하는 브랜드" items={report.brands} />
+      </div>
+
+      {report.recommendations.length > 0 && (
+        <section aria-labelledby="mp-taste-reco-title">
+          <h3 id="mp-taste-reco-title" className="mp-section-title mp-history-title">
+            취향 저격 버거 <small>아직 고르지 않은 버거 중 취향에 맞는 버거</small>
+          </h3>
+          <ul className="mp-taste-reco">
+            {report.recommendations.map((item) => (
+              <li key={item.productId}>
+                <Link href={`/products/${item.productId}`}>
+                  <small>{item.brandName}</small>
+                  <strong>{item.name}</strong>
+                  <span className="mp-taste-price">{formatPrice(orUndefined(item.singlePrice))}</span>
+                  <span className="mp-taste-reasons">
+                    {item.reasons.map((reason) => <em key={reason}>{reason}</em>)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
   );
 }
 

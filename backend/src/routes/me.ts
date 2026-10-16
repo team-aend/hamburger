@@ -4,6 +4,7 @@ import { clearSessionCookie } from '../auth/session.js';
 import { getCachedDataset } from '../db/datasetCache.js';
 import { getUserLikes } from '../db/likes.js';
 import { priceAlerts, priceAlertsHandlers } from '../priceAlerts/composition.js';
+import { tasteHandler } from '../taste/composition.js';
 import { deleteUser, getUserProfile, updateNickname } from '../db/users.js';
 import { worldcupRecordsHandlers } from '../worldcup/composition.js';
 
@@ -130,6 +131,9 @@ router.get('/likes', async (req: Request, res: Response) => {
  * 가격 변동 알림을 확인한 것으로 표시 (헤더의 알림 배지가 사라진다)
  */
 router.post('/price-alerts/seen', priceAlertsHandlers().markSeen);
+
+/** GET /api/me/taste — 내 취향 리포트 */
+router.get('/taste', tasteHandler());
 
 router.get('/worldcup', worldcupRecordsHandlers().history);
 

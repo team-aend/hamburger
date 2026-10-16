@@ -1,0 +1,219 @@
+/* ── 월드컵 결과 공유 화면 (.share-shell) ── */
+html:has(.share-shell),
+body:has(.share-shell) {
+  min-width: 320px;
+}
+
+/* 방사형 원 장식은 콘텐츠 높이에 따라 움직이므로 격자무늬만 남긴다. (랭킹·비교 화면과 동일) */
+.share-shell {
+  background:
+    linear-gradient(rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(27, 25, 22, 0.035) 1px, transparent 1px),
+    var(--cream);
+  background-size: 32px 32px, 32px 32px, auto;
+}
+
+.share-shell :is(a, button):focus-visible {
+  outline: 3px solid var(--red);
+  outline-offset: 4px;
+}
+
+.share-content {
+  max-width: 1180px;
+  min-height: calc(100vh - 156px);
+  margin: 0 auto;
+  padding: 48px 0;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 420px);
+  gap: 48px;
+  align-items: start;
+}
+
+.share-winner h1 {
+  margin-top: 18px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: clamp(40px, 5vw, 62px);
+  font-weight: 400;
+  line-height: 1.08;
+  letter-spacing: -2px;
+}
+
+.share-winner h1 strong {
+  color: var(--red);
+  font-weight: 400;
+}
+
+.share-card {
+  position: relative;
+  margin-top: 28px;
+  padding: 28px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--mustard);
+  box-shadow: 8px 8px 0 var(--ink);
+}
+
+.share-crown {
+  position: absolute;
+  top: -34px;
+  right: 28px;
+  color: var(--mustard);
+  font-size: 64px;
+  filter: drop-shadow(3px 3px 0 var(--ink));
+  transform: rotate(10deg);
+}
+
+.share-burger {
+  display: block;
+  font-size: 110px;
+  line-height: 1;
+  filter: drop-shadow(0 16px 8px rgba(35, 22, 10, 0.25));
+}
+
+.share-card small {
+  display: block;
+  margin-top: 16px;
+  color: var(--red-dark);
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.share-card h2 {
+  margin-top: 4px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 44px;
+  font-weight: 400;
+  letter-spacing: -1px;
+}
+
+.share-card p {
+  margin-top: 6px;
+  word-break: keep-all;
+  color: #4d4740;
+  line-height: 1.6;
+}
+
+.share-detail-link {
+  display: inline-block;
+  margin-top: 16px;
+  color: var(--ink);
+  font-weight: 800;
+}
+
+.share-section-title {
+  margin-bottom: 12px;
+  font-size: 18px;
+}
+
+.share-path {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  list-style: none;
+}
+
+.share-path li {
+  display: grid;
+  grid-template-columns: 56px minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 14px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  background: var(--paper);
+}
+
+.share-round {
+  color: var(--red);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.share-opponent {
+  overflow: hidden;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.share-opponent small {
+  display: block;
+  color: #71695f;
+  font-size: 10px;
+  letter-spacing: 0.1em;
+}
+
+.share-win {
+  padding: 3px 9px;
+  border-radius: 999px;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.share-cta {
+  margin-top: 28px;
+  padding-top: 24px;
+  border-top: 2px solid var(--ink);
+}
+
+.share-cta h2 {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 30px;
+  font-weight: 400;
+}
+
+.share-cta p {
+  margin-top: 6px;
+  color: #655e55;
+}
+
+.share-cta .start-button {
+  width: 100%;
+  text-decoration: none;
+}
+
+.share-cta .ranking-link-button {
+  width: 100%;
+}
+
+@media (max-width: 860px) {
+  .share-content {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 32px;
+  }
+}
+
+@media (max-width: 700px) {
+  .share-shell {
+    padding: 0 18px;
+  }
+
+  .share-shell .site-header {
+    height: 80px;
+  }
+
+  .share-shell .brand {
+    font-size: 20px;
+  }
+
+  .share-shell .menu-toggle {
+    top: 17px;
+    right: 18px;
+  }
+
+  .share-shell .main-navigation {
+    width: min(340px, 100vw);
+  }
+
+  .share-card h2 {
+    font-size: 34px;
+  }
+
+  .share-shell .site-footer {
+    gap: 12px;
+    font-size: 8px;
+  }
+}

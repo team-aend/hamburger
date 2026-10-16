@@ -18,6 +18,9 @@ import { createOptionsHandler } from './presentation/optionsHandler.js';
 import { createStartSessionHandler } from './presentation/startSessionHandler.js';
 import { createGetSession, createVote } from './application/playWorldcup.js';
 import { createPlayHandlers } from './presentation/playHandlers.js';
+import { createGetShare } from './application/getShare.js';
+import { PgWorldcupShare } from './infrastructure/pgShare.js';
+import { createShareHandler } from './presentation/shareHandler.js';
 
 // Resolve the database lazily at request time, never during module loading.
 export function createWorldcupSession(input: StartWorldcupInput, pool: Pick<pg.Pool, 'connect'> = getDbPool()) {
@@ -51,6 +54,10 @@ export function createWorldcupRouter() {
   });
   router.get('/sessions/:id', play.get);
   router.post('/sessions/:id/matches/:matchId/vote', play.vote);
+  /** GET /share/:sessionId: 공유 링크용 완료 결과 (우승 버거와 우승까지 이긴 상대) */
+  router.get('/share/:sessionId', createShareHandler(
+    (sessionId) => createGetShare(new PgWorldcupShare(getDbPool()))(sessionId), isDbConfigured,
+  ));
   router.get('/rankings', createRankingsHandler(
     createGetRankings({ read: (input) => new PgRankings(getDbPool()).read(input) }), isDbConfigured,
   ));
