@@ -101,10 +101,10 @@ export default function RankingPage() {
               ))}</tbody>
             </table>
           ) : <div className="ranking-empty"><h3>검색한 버거가 없습니다.</h3><p>다른 이름으로 검색해 보세요.</p><button type="button" onClick={() => { setQuery(''); setPage(1); }}>검색 초기화</button></div>}
-          <nav aria-label="랭킹 페이지">
-            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}>이전</button>
-            <span> {page} / {Math.max(1, Math.ceil((data?.totalCount ?? 0) / 20))} </span>
-            <button type="button" disabled={page * 20 >= (data?.totalCount ?? 0)} onClick={() => setPage(page + 1)}>다음</button>
+          <nav className="ranking-pagination" aria-label="랭킹 페이지">
+            <button type="button" disabled={page === 1} onClick={() => setPage(page - 1)}><span aria-hidden="true">←</span> 이전</button>
+            <span className="ranking-page-count"><strong>{page}</strong> / {Math.max(1, Math.ceil((data?.totalCount ?? 0) / 20))}</span>
+            <button type="button" disabled={page * 20 >= (data?.totalCount ?? 0)} onClick={() => setPage(page + 1)}>다음 <span aria-hidden="true">→</span></button>
           </nav>
           <p className="ranking-definition">1회 이상 우승한 버거만 표시합니다. 우승 횟수는 최종 우승 수, 대결 승률은 전체 대결 중 승리한 비율입니다. 같은 수치는 공동 순위로 표시합니다.</p>
         </section>

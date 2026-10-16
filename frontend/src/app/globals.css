@@ -397,3 +397,12 @@ body:has(.compare-shell) {
 .share-result-button:hover { transform:translate(1px,1px); box-shadow:2px 2px 0 var(--ink); }
 .share-result-button:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
 .share-result-status { color:#655e55; font-size:13px; font-weight:700; }
+
+/* 랭킹 페이지 넘김 (랭킹 화면 · 월드컵 결과 아래 랭킹 공통) */
+.ranking-pagination { display:flex; align-items:center; justify-content:center; gap:16px; margin:24px 0 8px; }
+.ranking-pagination button { min-width:96px; padding:10px 16px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1.5px solid var(--ink); border-radius:8px; background:var(--paper); color:var(--ink); font-size:13px; font-weight:800; cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:.15s ease; }
+.ranking-pagination button:hover:not(:disabled) { background:var(--mustard); transform:translate(1px,1px); box-shadow:2px 2px 0 var(--ink); }
+.ranking-pagination button:disabled { border-style:dashed; border-color:#827a6d; background:transparent; color:#a39b8e; box-shadow:none; cursor:not-allowed; }
+.ranking-pagination button:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.ranking-page-count { min-width:64px; text-align:center; color:#655e55; font-size:14px; font-weight:700; }
+.ranking-page-count strong { font-family:'Black Han Sans',sans-serif; font-size:22px; font-weight:400; color:var(--ink); }

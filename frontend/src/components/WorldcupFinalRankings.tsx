@@ -54,10 +54,10 @@ export default function WorldcupFinalRankings({ sessionId, winnerProductId }: {
             <td>{item.championships.toLocaleString()}회</td><td>{item.appearances.toLocaleString()}회</td><td>{item.winRate === null ? '—' : `${item.winRate.toFixed(1)}%`}</td>
           </tr>)}</tbody>
         </table></div> : <p>조회된 랭킹이 없습니다.</p>}
-        <nav className="final-rankings-pagination" aria-label="최종 우승 랭킹 페이지">
-          <button className="reset-button" type="button" disabled={page === 1} onClick={() => setPage((value) => value - 1)}>이전</button>
-          <span>{page} / {Math.max(1, Math.ceil(data.totalCount / data.pageSize))}</span>
-          <button className="reset-button" type="button" disabled={page * data.pageSize >= data.totalCount} onClick={() => setPage((value) => value + 1)}>다음</button>
+        <nav className="final-rankings-pagination ranking-pagination" aria-label="최종 우승 랭킹 페이지">
+          <button type="button" disabled={page === 1} onClick={() => setPage((value) => value - 1)}><span aria-hidden="true">←</span> 이전</button>
+          <span className="ranking-page-count"><strong>{page}</strong> / {Math.max(1, Math.ceil(data.totalCount / data.pageSize))}</span>
+          <button type="button" disabled={page * data.pageSize >= data.totalCount} onClick={() => setPage((value) => value + 1)}>다음 <span aria-hidden="true">→</span></button>
         </nav>
       </>}
   </section>;
