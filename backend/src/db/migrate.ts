@@ -7,8 +7,8 @@ dotenv.config();
 
 /**
  * src/db/migrations/*.sql 을 파일명 순서대로 실행한다.
- * 모든 SQL은 CREATE ... IF NOT EXISTS 로 작성해 여러 번 실행해도 안전하게 유지한다.
- * (db:init 과 달리 시드 데이터를 덮어쓰지 않으므로 운영 중인 DB에도 실행할 수 있다.)
+ * 모든 SQL은 IF NOT EXISTS 또는 기존 값을 보존하는 조건부 UPDATE로 작성해
+ * 여러 번 실행해도 안전하게 유지한다. db:init처럼 시드 전체를 덮어쓰지 않는다.
  */
 async function migrate() {
   const pool = getDbPool();

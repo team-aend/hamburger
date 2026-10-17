@@ -1,0 +1,34 @@
+{
+  "productName": "통새우와퍼",
+  "brandSlug": "burgerking",
+  "productSlug": "shrimp-whopper",
+  "assetPath": "frontend/public/images/burgers/burgerking-shrimp-whopper-ai.png",
+  "publicUrl": "/images/burgers/burgerking-shrimp-whopper-ai.png",
+  "createdOn": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceSources": [
+    {
+      "pageUrl": "https://www.burgerking.co.kr/menu/detail/1080121",
+      "imageUrl": "https://mob-prd.burgerking.co.kr/images/menu/web/main/2025/01/06/b29489df-fafb-43f1-b0e1-21ab7b0c19e3.png",
+      "inspectedVisually": true
+    }
+  ],
+  "patty": "one flame-grilled beef patty plus whole grilled shrimp",
+  "observedIngredients": [
+    "참깨번",
+    "직화 소고기 패티 1장",
+    "갈릭페퍼 통새우",
+    "붉은 스파이시 토마토 소스",
+    "흰 양파",
+    "토마토",
+    "양상추",
+    "흰 마요 소스"
+  ],
+  "limitations": [
+    "공식 사진과 메뉴 설명을 참고한 AI 재구성 이미지이며 실제 제품 사진이 아닙니다.",
+    "패티 종류·개수와 보이는 주요 재료를 맞췄지만 실물의 크기·형태·배합까지 동일함을 보장하지 않습니다."
+  ],
+  "prompt": "Use case: product-mockup. Create one NEW photorealistic catalogue cutout for a Korean burger comparison website, closely matching the observed ingredient composition and exterior of the named Korean Burger King product. Genuinely transparent background with alpha, no grey rectangle, no painted checkerboard. One assembled intact burger only, entire silhouette visible, centered with at least 10% clear margin, near-frontal subtle three-quarter view at filling level, softly lit realistic food textures and normal fast-food proportions. Keep the same clean catalogue style as the already approved crispy chicken burger. No text, logos, watermark, packaging, plate, fries, drinks, hands, duplicate burger, floating ingredients, exaggerated tower. This is an AI reconstruction, not an official photo.\nSubject: Korean WHOLE SHRIMP WHOPPER (통새우와퍼). EXACTLY ONE broad flame-grilled BEEF patty PLUS a single topping row of curled WHOLE GRILLED SHRIMP; this is not a shrimp patty or breaded shrimp burger. Bottom to top: toasted bottom bun, one grilled beef patty, about four clearly distinguishable plump curled orange-pink whole shrimp with black garlic-pepper flecks and small streaks of red spicy tomato sauce, white raw onion slices, red tomato slices, fresh crinkled green lettuce and a little ivory mayonnaise, rounded golden sesame top bun. Shrimp sit directly above beef and below onion, no shrimp tails. NO cheese, chicken, bacon, egg, breaded seafood patty, second beef patty, middle bun or pickles.",
+  "transparentBackground": true
+}

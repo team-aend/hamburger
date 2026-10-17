@@ -1,0 +1,25 @@
+{
+  "name": "새우버거",
+  "brandSlug": "lotteria",
+  "productSlug": "shrimp-burger",
+  "officialUrl": "https://www.lotteeatz.com/shopping/mobileGift",
+  "officialImageUrl": "https://img.lotteeatz.com/upload/coupon/2026/05/27/20260527084947500_2.png/dims/resize/x360",
+  "verifiedIngredients": [
+    "공식 현재 표시명 리아 새우",
+    "참깨 번",
+    "고운 빵가루 튀김옷의 새우 패티 1장",
+    "양상추",
+    "공식 사진에 보이는 연한 주황 소스",
+    "공식 사진에 보이는 밝은 크림 소스"
+  ],
+  "uncertainties": [
+    "소스와 패티의 상세 배합은 공식 상품권 사진에서 확인할 수 없음",
+    "사진으로 패티의 둥근 모서리와 균일한 두께를 참고했으며 내부 새우 함량·실물 질감은 추정하지 않음"
+  ],
+  "publicUrl": "/images/burgers/lotteria-shrimp-burger-ai.png",
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceReviewMethod": "공식 홈페이지를 브라우저로 열어 제품 설명과 상품 사진을 직접 확인함. 공식 이미지는 배포 파일로 저장하지 않음.",
+  "prompt": "Use case: product-mockup. Asset type: a transparent PNG single burger for a Korean hamburger tournament. Generate an original realistic studio product cutout closely depicting the Lotteria Korea 새우버거 / 리아 새우 (Shrimp Burger), following the official LOTTE EATZ product image I visually checked at https://www.lotteeatz.com/shopping/mobileGift and https://img.lotteeatz.com/upload/coupon/2026/05/27/20260527084947500_2.png/dims/resize/x360. One complete burger on a square transparent canvas, centered, whole object fully visible with small margins, near-frontal with very slight three-quarter perspective. Exact visible stack from top: golden lightly domed sesame bun with many small pale sesame seeds; creamy light orange sauce with small red/green relish flecks under the top bun; ruffled and roughly shredded fresh green lettuce; a little creamy pale tartar-style sauce; exactly ONE thick breaded shrimp patty, a compact uniform broad rounded rectangle with rounded corners and a relatively flat top, fine crispy golden breadcrumb crust, visibly DIFFERENT from a shaggy fried whole chicken fillet; creamy pale tartar sauce with little vegetable flecks; soft golden bottom bun. Keep realistic compact proportions like a standard Korean shrimp burger. No exposed whole shrimp, no chicken, no beef, no cheese, no tomato slices, no onion rings, no bacon, no egg, no second patty, no middle bun. Realistic appetizing catalog food photography with diffuse studio light and detailed crumb texture. This is newly generated, not a reproduction of the official photo. Genuine transparent alpha background with no brown halo or vignette, no backdrop, floor, plate, packaging, wrapper, text, logo, watermark, fries or additional objects."
+}

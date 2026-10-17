@@ -1,0 +1,48 @@
+{
+  "name": "커넬골드문버거",
+  "brandSlug": "kfc",
+  "productSlug": "kernel-goldmoon-burger",
+  "publicUrl": "/images/burgers/kfc-kernel-goldmoon-burger-ai.png",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "generatedOn": "2026-10-17",
+  "sourceUrls": [
+    "https://m.ekn.kr/view.php?key=20201124010005688",
+    "https://www.ekn.kr/mnt/file/202011/2020112401001252600056881.jpg",
+    "https://www.ajunews.com/view/20201125150740610"
+  ],
+  "referenceVerification": {
+    "method": "현 공식 홈페이지에서 과거 상품 사진을 확인하지 못해 KFC 출시 프로모션 이미지를 게재한 2020-11-24 보도기사의 사진을 브라우저에서 직접 관찰했습니다. 관련 2020-11-25 기사도 사진 출처를 KFC로 명시합니다.",
+    "observedTopToBottom": [
+      "참깨 윗번",
+      "반숙 에그프라이 1개",
+      "접힌 슬라이스햄",
+      "노란 슬라이스치즈",
+      "피클 조각이 보이는 밝은 소스",
+      "통다리살 치킨 필렛 1장",
+      "피클·생양파 링",
+      "양상추",
+      "오렌지색 소스",
+      "아랫번"
+    ],
+    "verifiedIngredients": [
+      "통다리살 필렛 1장",
+      "반숙 계란",
+      "슬라이스햄",
+      "슬라이스치즈",
+      "양파",
+      "양상추",
+      "스윗랠리쉬소스"
+    ],
+    "uncertainties": [
+      "소스의 상세 배합과 양, 패티 실측 크기는 사진에서 확인할 수 없습니다.",
+      "기존 DB 설명의 베이컨·할라피뇨 소스 대신 당시 KFC의 출시 설명 및 사진을 반영했습니다.",
+      "AI 재현 이미지이며 실물과 완전히 동일함을 보장하지 않습니다."
+    ]
+  },
+  "prompt": "Use case: product-mockup.\nAsset type: a new photorealistic transparent food catalogue cutout for a Korean burger tournament app.\nPrimary request: reconstruct the Korean KFC Colonel Gold Moon Burger (커넬골드문버거), based on its visually inspected 2020 official release promotional image reproduced in the launch report https://m.ekn.kr/view.php?key=20201124010005688.\nSubject accuracy: EXACTLY ONE crispy breaded whole CHICKEN THIGH fillet, broad irregular craggy golden crunchy coating, not breast, beef or an extra patty. Closely follow the observed top-to-bottom ingredient stack: golden low rounded sesame top bun; one sunny-side fried egg with white set edge and a plump glossy golden soft yolk (show a small natural yolk ooze within the filling only); a folded pink cooked sliced ham layer; one yellow sliced cheese layer; pale yellow relish-style sauce with small green pickle specks; one thick crunchy whole-thigh chicken fillet; green pickle slices and raw white onion rings; green crinkled leaf lettuce; a little peach-orange sauce; toasted bottom bun. HAM not bacon. Keep the egg above ham and cheese, chicken below them, and lettuce and onion BELOW the chicken as in the reference. No tomato, bacon, second chicken fillet, hash brown, middle bun or beef.\nComposition: one complete assembled intact burger, centered square catalogue framing, near frontal with a very slight three-quarter view at filling height. Food occupies about 80-85% of canvas width with generous transparent clear margins all around. Match clean neutral studio food photography of the project's approved crispy chicken burgers.\nLighting/materials: soft bright studio light; realistic bread, crisp flaky chicken, glossy sauce, natural pink ham and fresh leaves. Normal product proportions, no oversized yolk waterfall or theatrical tower.\nScene/backdrop: genuinely transparent alpha background, no surface, no solid backdrop.\nAvoid: text, lettering, brand logo, packaging, watermark, plate, fries, beverage, hands, other objects, exploded view, duplicate burger, dramatic smoke. This is an AI reconstruction rather than an official photo.",
+  "transparentBackground": true,
+  "validation": {
+    "visualInspection": "통다리살 패티 1장, 에그프라이, 슬라이스햄·치즈, 하단 채소의 층 순서와 텍스트·로고 없음 확인"
+  }
+}

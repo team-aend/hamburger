@@ -1,0 +1,25 @@
+{
+  "brandSlug": "frankburger",
+  "officialUrl": "https://www.frankburger.co.kr/html/menu_1.html",
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceReviewMethod": "공식 홈페이지 상품 카드 HTML의 상품명과 설명 및 CSS 배경사진 URL을 대조한 후 원본 상품 사진을 직접 시각 확인함. 공식 사진은 임시 참고용으로만 사용하고 배포하지 않음.",
+  "name": "JG치즈버거",
+  "officialProductName": "JG버거",
+  "productSlug": "jg-cheese-burger",
+  "officialImageUrl": "https://www.frankburger.co.kr/img/page/2022_menu/01/menu1_img7_v2.jpg",
+  "verifiedIngredients": [
+    "참깨 없는 매끈한 번",
+    "소고기 수제 패티 2장",
+    "두 패티 위의 노란 치즈 소스",
+    "상단의 구운 베이컨"
+  ],
+  "uncertainties": [
+    "공식 상품명은 JG버거이며 프로젝트의 기존 상품명 JG치즈버거와 연결함.",
+    "공식 사진에는 양상추·토마토·양파·피클이 보이지 않아 생성에서 제외함.",
+    "실물 패티 형태와 두께의 완전 일치 및 치즈 소스 상세 배합은 보장하지 않음."
+  ],
+  "publicUrl": "/images/burgers/frankburger-jg-cheese-burger-ai.png",
+  "prompt": "Use case: product-mockup. Create a new original photorealistic food catalog asset for a Korean burger world cup website: exactly one whole Frank Burger JG Burger (프랭크버거 JG버거), faithfully matching the ingredient configuration and proportions in reference image 1. Image 1 is the official product appearance/ingredient reference, not an edit target. Image 2 is solely the established project's photography/cutout style reference; do not copy its chicken patty or sesame bun. Exact structure from top to bottom: round glossy golden-brown smooth brioche-style top bun with NO sesame seeds; generous folded and lightly crinkled pink-red grilled bacon strips with browned edges, extending modestly beyond the bun; thick rich glossy golden-yellow cheddar cheese sauce; first wide hand-formed griddle-seared beef patty with irregular coarse browned edges; another abundant layer of golden-yellow cheese sauce; second wide hand-formed griddle-seared beef patty; pale-golden soft bottom bun. Exactly TWO distinct beef patties, with generous cheese sauce coating each patty and draping naturally over their edges. No vegetables: absolutely no lettuce, no tomato, no onion, no pickles. No egg or fried chicken, no third patty. Show intact full burger facing nearly straight forward with only slight three-quarter depth, at ingredient-eye-level, centered square composition, whole bun and all toppings visible with comfortable transparent margins. Appetizing realistic studio food photography, crisp clean edge detail, natural soft diffuse highlights, no exaggerated cartoon texture. True transparent PNG background everywhere outside the burger, no backdrop, no pedestal, no tabletop, no drop shadow or cast shadow, no ground, no colored halo, no scene. No text, logo, watermark, fries, packaging or plate. Only one burger. Maintain close resemblance of correct visible ingredients to official reference while rendering a fresh original image."
+}

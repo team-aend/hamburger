@@ -1,0 +1,62 @@
+{
+  "title": "맘스터치 싸이버거 AI 재현 이미지",
+  "assetPath": "frontend/public/images/burgers/momstouch-thigh-burger-ai.png",
+  "publicUrl": "/images/burgers/momstouch-thigh-burger-ai.png",
+  "createdOn": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "description": "공식 메뉴 설명과 화면에서 확인한 재료 구성을 바탕으로 새로 생성한 이미지. 실제 제품의 모양·두께·질감과 완전히 동일함을 보장하지 않는다.",
+  "sources": [
+    {
+      "url": "https://momstouch.co.kr/menu/view.php?idx=80",
+      "checkedOn": "2026-10-17",
+      "verifiedText": [
+        "기본 싸이버거",
+        "닭다리살",
+        "바삭하고 매콤한 치킨 패티와 양상추"
+      ],
+      "visualObservations": [
+        "튀긴 닭 패티 1장",
+        "참깨번",
+        "양파",
+        "피클",
+        "흰 소스"
+      ]
+    },
+    {
+      "url": "https://order.momstouch.co.kr/momsmall/menu.jsp?menu_cd=001",
+      "checkedOn": "2026-10-17",
+      "verifiedText": [
+        "통다리살 패티",
+        "양파",
+        "양상추"
+      ]
+    }
+  ],
+  "constraints": {
+    "pattyType": "whole boneless fried chicken thigh fillet",
+    "pattyCount": 1,
+    "otherIngredients": [
+      "sesame bun",
+      "green lettuce",
+      "white onion",
+      "green pickle",
+      "ivory creamy sauce"
+    ],
+    "excludedIngredients": [
+      "cheese",
+      "tomato",
+      "bacon",
+      "egg",
+      "beef",
+      "second patty"
+    ]
+  },
+  "visualReview": {
+    "observedPattyCount": 1,
+    "excludedIngredientsVisible": false,
+    "ingredientAppearanceReviewed": true,
+    "realMeatCutVerifiableFromImage": false
+  },
+  "prompt": "Use case: product-mockup.\nAsset type: one photorealistic burger catalogue cutout for a Korean burger comparison web application, square composition, transparent PNG.\nPrimary request: Create a NEW independently composed product photograph-style image depicting the ORIGINAL Korean Mom's Touch Thigh Burger (싸이버거), carefully matching its actual ingredient composition. This is an AI reconstruction, not an official photograph. Do not reproduce a website screenshot or add brand graphics.\nScene/backdrop: genuinely transparent background with alpha, isolated single intact burger, no plate, no packaging, no scenery, no drop shadow that looks like a floor.\nSubject and factual ingredient constraints: EXACTLY ONE substantial, whole boneless CHICKEN THIGH fillet, deep-fried with golden-brown, coarse, flaky, craggy, irregular breading. It is a natural whole-muscle thigh cut with an asymmetrical outline, protruding slightly beyond the bun. It is not ground chicken, not a uniform circular processed patty, not chicken breast, not beef, and not a double patty. Show the natural thickness and rugged fried crust clearly.\nLayer order from bottom to top: a lightly toasted bottom bun; a thin visible layer of ivory creamy sauce; ONE whole fried chicken-thigh fillet; ivory creamy sauce; a few thin raw WHITE onion slices and green pickle slices; fresh crinkled green lettuce; a soft golden sesame-seed top bun. Onion, pickle and lettuce belong ABOVE the chicken. Keep the bun low and softly rounded with sparse natural sesame seeds, not an oversized tall brioche dome. Keep the whole burger reasonably compact and realistic, with no floating or exploded ingredients.\nStyle/medium: realistic clean food photography with natural fine texture and slight ingredient irregularities, appetizing but honest fast-food proportions; sharp chicken crust and distinguishable onion, pickle and lettuce.\nComposition/framing: one burger only, entire burger visible with generous transparent margin, burger occupies approximately 78 percent of image width, front-facing with a subtle three-quarter angle at the filling level so the chicken fillet and ingredient layers are easy to count. Camera sees a little of the top bun. Do not crop any edge.\nLighting: soft neutral studio light, realistic warm food colors, no dramatic color casts.\nText: none.\nAvoid: cheese or cheese sauce, tomato, bacon, egg, beef, an extra chicken fillet, a middle bun, red sauce, ketchup, grill marks, exaggerated towering burger, fries, drink, hands, logos, watermark, text, checkerboard pattern painted into the image.\nOutput: one polished high-resolution square image with a real alpha channel."
+}
