@@ -50,7 +50,7 @@ export default function WorldcupFinalRankings({ sessionId, winnerProductId }: {
           <thead><tr><th scope="col">순위</th><th scope="col">버거</th><th scope="col">우승 횟수</th><th scope="col">참가 횟수</th><th scope="col">대결 승률</th></tr></thead>
           <tbody>{data.items.map((item) => <tr key={item.productId} className={item.productId === winnerProductId ? 'my-worldcup-winner' : undefined}>
             <td className="ranking-number">{item.rank ?? '—'}</td>
-            <th scope="row"><div className="ranking-burger"><span aria-hidden="true">🍔</span><div><small>{item.brandName}</small><strong>{item.name}</strong>{item.productId === winnerProductId && <small className="final-winner-label">이번 월드컵 우승</small>}{item.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th>
+            <th scope="row"><div className="ranking-burger"><span aria-hidden="true" style={{ overflow: 'hidden' }}>{item.imageUrl ? <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} /> : '🍔'}</span><div><small>{item.brandName}</small><strong>{item.name}</strong>{item.productId === winnerProductId && <small className="final-winner-label">이번 월드컵 우승</small>}{item.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th>
             <td>{item.championships.toLocaleString()}회</td><td>{item.appearances.toLocaleString()}회</td><td>{item.winRate === null ? '—' : `${item.winRate.toFixed(1)}%`}</td>
           </tr>)}</tbody>
         </table></div> : <p>조회된 랭킹이 없습니다.</p>}

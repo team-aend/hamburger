@@ -81,7 +81,14 @@ export default function RankingPage() {
             {leaders.map((entry) => (
               <article className={`ranking-leader ${entry.rank === 1 ? 'first' : ''}`} key={entry.productId}>
                 <span className="ranking-position">{entry.rank}위</span>
-                <div className="ranking-art" aria-hidden="true">🍔</div>
+                <div className="ranking-art" aria-hidden="true" style={{ overflow: 'hidden' }}>
+                  {entry.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={entry.imageUrl} alt={entry.name} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />
+                  ) : (
+                    '🍔'
+                  )}
+                </div>
                 <small>{entry.brandName}</small><h3><Link className="ranking-product-link" href={`/products/${entry.productId}`}>{entry.name}</Link></h3>
                 <p>우승 <strong>{entry.championships}회</strong><span>대결 승률 {rate(entry.winRate)}</span></p>
               </article>
@@ -97,7 +104,7 @@ export default function RankingPage() {
               <caption className="visually-hidden">햄버거 월드컵 랭킹, {sort === 'championships' ? '우승 횟수' : '대결 승률'} 내림차순</caption>
               <thead><tr><th scope="col">순위</th><th scope="col">버거</th><th scope="col">우승 횟수</th><th scope="col">대결 승률</th></tr></thead>
               <tbody>{filtered.map((entry) => (
-                <tr key={entry.productId}><td className="ranking-number">{entry.rank ?? '—'}</td><th scope="row"><div className="ranking-burger"><span aria-hidden="true">🍔</span><div><small>{entry.brandName}</small><strong><Link className="ranking-product-link" href={`/products/${entry.productId}`}>{entry.name}</Link></strong>{entry.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th><td>{entry.championships}회</td><td>{rate(entry.winRate)}</td></tr>
+                <tr key={entry.productId}><td className="ranking-number">{entry.rank ?? '—'}</td><th scope="row"><div className="ranking-burger"><span aria-hidden="true" style={{ overflow: 'hidden' }}>{entry.imageUrl ? <img src={entry.imageUrl} alt={entry.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} /> : '🍔'}</span><div><small>{entry.brandName}</small><strong><Link className="ranking-product-link" href={`/products/${entry.productId}`}>{entry.name}</Link></strong>{entry.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th><td>{entry.championships}회</td><td>{rate(entry.winRate)}</td></tr>
               ))}</tbody>
             </table>
           ) : <div className="ranking-empty"><h3>검색한 버거가 없습니다.</h3><p>다른 이름으로 검색해 보세요.</p><button type="button" onClick={() => { setQuery(''); setPage(1); }}>검색 초기화</button></div>}

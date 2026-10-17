@@ -22,15 +22,46 @@ import {
 } from '@/types/product';
 import styles from './ProductExplorer.module.css';
 
+export interface DbProductImage {
+  id: number;
+  name: string;
+  slug: string;
+  imageUrl: string | null;
+}
+
+export function mergeProductImages(products: Product[], dbImages: DbProductImage[]): Product[] {
+  if (!Array.isArray(dbImages) || dbImages.length === 0) return products;
+  const norm = (s: string) => s.toLowerCase().replace(/[\s-_]/g, '');
+  const bySlug = new Map<string, string>();
+  const byName = new Map<string, string>();
+  const byId = new Map<number, string>();
+
+  for (const item of dbImages) {
+    if (!item.imageUrl) continue;
+    bySlug.set(norm(item.slug), item.imageUrl);
+    byName.set(norm(item.name), item.imageUrl);
+    byId.set(Number(item.id), item.imageUrl);
+  }
+
+  return products.map((p) => {
+    const dbUrl = bySlug.get(norm(p.slug)) ?? byName.get(norm(p.name)) ?? byId.get(p.id);
+    return {
+      ...p,
+      imageUrl: dbUrl || p.imageUrl,
+    };
+  });
+}
+
 interface ProductExplorerProps {
   products: Product[];
   initialBrands?: Brand[];
 }
 
 export default function ProductExplorer({
-  products,
+  products: initialProducts,
   initialBrands,
 }: ProductExplorerProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<Brand[]>(
     initialBrands && initialBrands.length > 0 ? initialBrands : BRANDS
   );
@@ -49,6 +80,17 @@ export default function ProductExplorer({
       })
       .catch((err) => {
         console.warn('DB 브랜드 목록 조회 실패 (fallback 유지):', err);
+      });
+
+    fetch('/api/products/images', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { items?: DbProductImage[] }) => {
+        if (!ignore && Array.isArray(data.items)) {
+          setProducts((prev) => mergeProductImages(prev, data.items!));
+        }
+      })
+      .catch(() => {
+        // DB 이미지 조회 실패 시 기본 이미지(placeholder) 유지
       });
 
     return () => {

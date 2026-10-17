@@ -52,6 +52,7 @@ interface RecommendedBurger {
   name: string;
   slug: string;
   description: string;
+  imageUrl?: string | null;
   brand: Brand;
   ingredients: Ingredient[];
   tags: Tag[];
@@ -949,6 +950,19 @@ export default function RecommendPage() {
 
                   return (
                     <article key={burger.id} className="rc-card">
+                      <div className="rc-card-thumb">
+                        {burger.imageUrl ? (
+                          // eslint-disable-next-line @next/next/no-img-element
+                          <img src={burger.imageUrl} alt={burger.name} className="rc-card-image" />
+                        ) : (
+                          <div className="rc-card-placeholder">
+                            <span className="rc-card-placeholder-icon" aria-hidden="true">
+                              🍔
+                            </span>
+                            <span className="rc-card-placeholder-text">이미지 준비중</span>
+                          </div>
+                        )}
+                      </div>
                       <div className="rc-card-body">
                         <small className="rc-card-brand">{burger.brand.name}</small>
                         <h3 className="rc-card-name">
@@ -1078,7 +1092,12 @@ export default function RecommendPage() {
 
                 <div className="rc-modal-visual" aria-hidden="true">
                   <span className="crown">♛</span>
-                  <b>🍔</b>
+                  {randomPicked.imageUrl ? (
+                    // eslint-disable-next-line @next/next/no-img-element
+                    <img src={randomPicked.imageUrl} alt={randomPicked.name} className="rc-modal-image" />
+                  ) : (
+                    <b>🍔</b>
+                  )}
                 </div>
 
                 <div className="rc-modal-copy">
