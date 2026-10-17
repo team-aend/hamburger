@@ -55,11 +55,14 @@ export function mergeProductImages(products: Product[], dbImages: DbProductImage
 interface ProductExplorerProps {
   products: Product[];
   initialBrands?: Brand[];
+  /** 상품 목록 조회 실패 안내 문구 */
+  loadError?: string;
 }
 
 export default function ProductExplorer({
   products: initialProducts,
   initialBrands,
+  loadError,
 }: ProductExplorerProps) {
   const [products, setProducts] = useState<Product[]>(initialProducts);
   const [brands, setBrands] = useState<Brand[]>(
@@ -229,7 +232,7 @@ export default function ProductExplorer({
         }`}
       >
         <div className="compare-heading">
-          <span className="eyebrow">BURGER PICK · PRICE COMPARE</span>
+          <span className="eyebrow">BURGER PICK · BURGER COMPARE</span>
           <h1>
             같은 값이면,
             <br />
@@ -237,13 +240,6 @@ export default function ProductExplorer({
           </h1>
           <p>여러 브랜드의 햄버거를 한 화면에서 찾고, 최대 4개까지 가격과 영양정보를 비교해 보세요.</p>
         </div>
-
-        <aside className="compare-notice">
-          <strong>샘플 데이터</strong>
-          <span>
-            화면 미리보기용 가격·영양정보입니다. 실제 판매 가격과 다를 수 있습니다.
-          </span>
-        </aside>
 
         <section className={styles.filters} aria-label="검색 및 필터">
           <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
@@ -257,6 +253,12 @@ export default function ProductExplorer({
           </p>
           <ProductSort value={sortType} onChange={setSortType} />
         </div>
+
+        {loadError && (
+          <p className={styles.likeError} role="alert">
+            {loadError}
+          </p>
+        )}
 
         {likeError && (
           <p className={styles.likeError} role="alert">
