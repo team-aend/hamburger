@@ -98,6 +98,7 @@ test('SQL saves, lists newest first and deletes only the owner\'s conditions', {
 }, async () => {
   const pool = new pg.Pool({ connectionString: process.env.TEST_DATABASE_URL });
   const client = await pool.connect();
+  const release = client.release.bind(client);
   try {
     await client.query(`
       CREATE TEMP TABLE users (id bigint);
@@ -116,7 +117,7 @@ test('SQL saves, lists newest first and deletes only the owner\'s conditions', {
     assert.equal(await saved.remove(1, first.savedSearchId), true);
     assert.equal((await saved.list(1)).length, 1);
   } finally {
-    client.release();
+    release();
     await pool.end();
   }
 });
