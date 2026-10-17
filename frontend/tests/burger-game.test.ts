@@ -1,7 +1,7 @@
 import { test } from 'node:test';
 import assert from 'node:assert/strict';
-import { BURGER_RECIPES, INGREDIENT_ORDER, INGREDIENTS } from '../src/data/burgerGame';
-import { formatTimer, isOrderMatched, pickNextOrder } from '../src/lib/burgerGame';
+import { BURGER_RECIPES, INGREDIENT_KEYS, INGREDIENT_ORDER, INGREDIENTS } from '../src/data/burgerGame';
+import { formatTimer, isOrderMatched, keyLabel, keyToAction, pickNextOrder } from '../src/lib/burgerGame';
 import type { IngredientType } from '../src/types/burgerGame';
 
 const order: IngredientType[] = ['bottomBun', 'beefPatty', 'cheese', 'lettuce', 'topBun'];
@@ -46,4 +46,20 @@ test('recipes are valid burgers with the planned difficulty spread', () => {
     assert.equal(recipe.ingredients[0], 'bottomBun', recipe.id);
     assert.equal(recipe.ingredients.at(-1), 'topBun', recipe.id);
   }
+});
+
+test('키보드: 재료 키는 버튼 배치와 같은 Q~T·A~G 이고, 조작 키는 완성·되돌리기·초기화다', () => {
+  assert.deepEqual(
+    INGREDIENT_ORDER.map((type) => keyLabel(INGREDIENT_KEYS[type])),
+    ['Q', 'W', 'E', 'R', 'T', 'A', 'S', 'D', 'F', 'G'],
+  );
+  for (const type of INGREDIENT_ORDER) {
+    assert.deepEqual(keyToAction(INGREDIENT_KEYS[type]), { type: 'add', ingredient: type });
+  }
+  assert.deepEqual(keyToAction('Space'), { type: 'submit' });
+  assert.deepEqual(keyToAction('Enter'), { type: 'submit' });
+  assert.deepEqual(keyToAction('NumpadEnter'), { type: 'submit' });
+  assert.deepEqual(keyToAction('Backspace'), { type: 'undo' });
+  assert.deepEqual(keyToAction('Escape'), { type: 'reset' });
+  for (const other of ['KeyZ', 'Digit1', 'Tab', 'ArrowUp']) assert.equal(keyToAction(other), null);
 });

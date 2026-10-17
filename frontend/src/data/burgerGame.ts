@@ -40,6 +40,23 @@ export const INGREDIENT_ORDER: IngredientType[] = [
   'sauce',
 ];
 
+/**
+ * PC 키보드 단축키. 재료 버튼 배치(5칸 × 2줄)와 같은 모양으로 Q W E R T / A S D F G 에 둔다.
+ * 한글 입력 상태(ㅂㅈㄷㄱㅅ)에서도 동작하도록 글자(key)가 아니라 키 위치(KeyboardEvent.code)로 정한다.
+ */
+export const INGREDIENT_KEYS: Record<IngredientType, string> = {
+  bottomBun: 'KeyQ',
+  topBun: 'KeyW',
+  beefPatty: 'KeyE',
+  chickenPatty: 'KeyR',
+  cheese: 'KeyT',
+  lettuce: 'KeyA',
+  tomato: 'KeyS',
+  pickle: 'KeyD',
+  onion: 'KeyF',
+  sauce: 'KeyG',
+};
+
 /** 게임 소개 / 결과 화면에 보여줄 장식용 햄버거 */
 export const SHOWCASE_BURGER: IngredientType[] = [
   'bottomBun',
