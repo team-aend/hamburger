@@ -268,8 +268,8 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
     return (
       <div className="mp-empty">
         <h3>아직 좋아요한 버거가 없어요.</h3>
-        <p>가격 비교 화면에서 마음에 드는 버거에 ♥를 눌러 보세요.</p>
-        <Link href="/compare">가격 비교 보러 가기</Link>
+        <p>햄버거 비교 화면에서 마음에 드는 버거에 ♥를 눌러 보세요.</p>
+        <Link href="/compare">햄버거 비교 보러 가기</Link>
       </div>
     );
   }

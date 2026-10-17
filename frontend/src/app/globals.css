@@ -214,7 +214,7 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
 .round-option:disabled:hover { border-color:var(--line); }
 .start-button:disabled:hover { background:var(--red); }
 .worldcup-options-status button:focus-visible { outline:3px solid var(--red); outline-offset:3px; }
-/* ── 가격 비교 화면 (.compare-shell) ──────────────────────────────
+/* ── 햄버거 비교 화면 (.compare-shell) ──────────────────────────────
    랭킹 페이지와 동일하게 worldcup-shell 위에 얹고, 폭 제한만 모바일까지 푼다.
    색/테두리/그림자/폰트는 전역 토큰(--paper, --ink, --red, --mustard)을 그대로 쓴다. */
 html:has(.compare-shell),
@@ -241,28 +241,14 @@ body:has(.compare-shell) {
   font-weight: 400;
 }
 
+.compare-heading {
+  margin-bottom: 32px;
+}
+
 .compare-heading p {
   margin-top: 18px;
   color: #655e55;
   line-height: 1.7;
-}
-
-.compare-notice {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 28px 0 32px;
-  padding: 16px 20px;
-  background: var(--paper);
-  border: 1px dashed #827a6d;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.compare-notice strong {
-  flex-shrink: 0;
-  color: var(--red-dark);
 }
 
 .compare-shell :is(input, select):focus-visible,
@@ -301,12 +287,6 @@ body:has(.compare-shell) {
 
   .compare-content {
     padding: 32px 0;
-  }
-
-  .compare-notice {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
 }
 
