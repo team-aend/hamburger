@@ -107,8 +107,34 @@ test('DB image URLs survive dataset caching, recommendation filtering and random
       }
       const emptyRandom = await fetch(`${url}/api/recommend/random?keyword=missing-product`);
       assert.equal((await emptyRandom.json()).picked, null);
+
+      // Image edits, including removal, must appear while the other cached data stays warm.
+      for (const imageUrl of ['https://images.example.com/burgers/replaced.png', null, '/images/burgers/replaced.png']) {
+        await client.query('UPDATE products SET image_url=$1 WHERE id=101', [imageUrl]);
+        const changedList = await fetch(`${url}/api/recommend?keyword=RelativeBurger`);
+        assert.equal(changedList.status, 200);
+        const changedBody = await changedList.json();
+        assert.equal(changedBody.cache.hit, true);
+        assert.equal(changedBody.cache.cachedAt, loaded.dataset.cachedAt);
+        assert.equal(changedBody.items[0].imageUrl, imageUrl);
+
+        const changedRandom = await fetch(`${url}/api/recommend/random?keyword=RelativeBurger`);
+        assert.equal(changedRandom.status, 200);
+        assert.equal((await changedRandom.json()).picked.imageUrl, imageUrl);
+        assert.deepEqual(loaded.dataset.products.map((p) => [p.id, p.imageUrl]), [
+          [101, imageUrl], expectedImages[1], expectedImages[2],
+        ]);
+        assert.deepEqual(loaded.dataset.baseEnrichedProducts.map((p) => [p.id, p.imageUrl]), [
+          [101, imageUrl], expectedImages[1], expectedImages[2],
+        ]);
+      }
     });
-    assert.equal(queryMock.mock.callCount(), queryCount, 'HTTP reads retain image URLs from the warm cache without reloading');
+    const warmQueries = queryMock.mock.calls.slice(queryCount);
+    assert.ok(warmQueries.length > 0, 'warm-cache requests still refresh product images');
+    assert.ok(
+      warmQueries.every((call) => call.arguments[0] === 'SELECT id, name, slug, image_url FROM products'),
+      'warm-cache requests only synchronize images instead of reloading the full dataset',
+    );
   } finally {
     invalidateDatasetCache();
     if (applicationPool) await applicationPool.end();

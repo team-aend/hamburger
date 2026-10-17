@@ -955,6 +955,8 @@ body:has(.recommend-shell) {
 }
 
 .rc-modal-visual .crown {
+  position: absolute;
+  z-index: 1;
   top: 6px;
   font-size: 40px;
   color: var(--paper);

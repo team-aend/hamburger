@@ -1,0 +1,690 @@
+/* ── 버거 심리테스트 (시작·질문·결과 화면 공통 카드) ── */
+.card {
+  max-width: 640px;
+  margin: 0 auto;
+  padding: 40px 44px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  box-shadow: 6px 6px 0 var(--ink);
+}
+
+.intro,
+.result {
+  align-items: center;
+  text-align: center;
+}
+
+.eyebrow {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: var(--mustard);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.14em;
+}
+
+.title {
+  margin-top: 16px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 46px;
+  font-weight: 400;
+  line-height: 1.15;
+  letter-spacing: -1.5px;
+}
+
+.title strong {
+  color: var(--red);
+  font-weight: 400;
+}
+
+.text {
+  margin-top: 14px;
+  color: #5b554d;
+  font-size: 15px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.primaryButton,
+.secondaryButton {
+  min-width: 220px;
+  padding: 15px 22px;
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 8px;
+  font-size: 16px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 5px 5px 0 var(--ink);
+  transition: 0.15s ease;
+}
+
+.primaryButton {
+  background: var(--red);
+  color: white;
+}
+
+.secondaryButton {
+  background: var(--paper);
+}
+
+.primaryButton:hover,
+.secondaryButton:hover {
+  transform: translate(2px, 2px);
+  box-shadow: 3px 3px 0 var(--ink);
+}
+
+.primaryButton:hover {
+  background: var(--red-dark);
+}
+
+.intro .primaryButton {
+  margin-top: 28px;
+}
+
+/* ── 질문 화면 ── */
+.progressRow {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+}
+
+.step {
+  color: var(--red);
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 32px;
+}
+
+.step small {
+  color: #71695f;
+  font-family: 'Noto Sans KR', sans-serif;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.backButton {
+  border: 0;
+  background: none;
+  color: #71695f;
+  font-size: 13px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.backButton:hover {
+  color: var(--red);
+}
+
+.progressTrack {
+  height: 6px;
+  margin-top: 12px;
+  overflow: hidden;
+  border: 1px solid var(--ink);
+  background: var(--cream);
+}
+
+.progressTrack span {
+  display: block;
+  height: 100%;
+  background: var(--red);
+  transition: width 0.25s ease;
+}
+
+.question {
+  margin: 36px 0 28px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 34px;
+  font-weight: 400;
+  line-height: 1.3;
+  letter-spacing: -1px;
+  word-break: keep-all;
+}
+
+.choices {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.choice {
+  padding: 20px 22px;
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+  font-size: 16px;
+  font-weight: 700;
+  text-align: left;
+  cursor: pointer;
+  transition: 0.15s ease;
+}
+
+.choice b {
+  flex-shrink: 0;
+  width: 34px;
+  height: 34px;
+  display: grid;
+  place-items: center;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+  font-family: 'Black Han Sans', sans-serif;
+  font-weight: 400;
+}
+
+/* 터치 기기는 탭한 자리에 :hover 가 남아, 다음 질문의 같은 위치 선택지가 미리 고른 것처럼 보인다.
+   그래서 마우스가 있는 기기에서만 hover 효과를 주고, 터치에서는 누르는 순간(:active)에만 표시한다. */
+@media (hover: hover) {
+  .choice:hover {
+    background: var(--mustard);
+    transform: translate(-2px, -2px);
+    box-shadow: 4px 4px 0 var(--ink);
+  }
+}
+
+.choice:active {
+  background: var(--mustard);
+}
+
+/* ── 결과 화면 ── */
+/* 결과 코드 풀이: [H]든든 [C]클래식 [K]바삭 */
+.codeGuide {
+  margin-top: 10px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+}
+
+.codeGuide span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 3px 10px 3px 3px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--paper);
+  color: #4a443c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.codeGuide b {
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--mustard);
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 12px;
+  font-weight: 400;
+}
+
+.burgerName {
+  margin-top: 20px;
+  color: var(--red);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.result .title {
+  margin-top: 4px;
+}
+
+.traits {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  list-style: none;
+}
+
+.traits li {
+  padding: 6px 12px;
+  border: 1.5px solid var(--line);
+  border-radius: 999px;
+  background: var(--cream);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.axes {
+  width: 100%;
+  margin-top: 26px;
+  padding: 20px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  border: 2px dashed rgba(27, 25, 22, 0.35);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.axesTitle {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 18px;
+  letter-spacing: -0.3px;
+}
+
+.axis {
+  display: grid;
+  grid-template-columns: 92px 1fr 92px;
+  align-items: center;
+  gap: 12px;
+}
+
+/* 이모지 + 이름 + 퍼센트. 더 많이 고른 쪽(.axisWin)만 진하게 */
+.axisSide {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #a39a8c;
+  font-size: 13px;
+  white-space: nowrap;
+  transition: color 0.2s ease;
+}
+
+.axisRight {
+  justify-content: flex-end;
+}
+
+.axisSide i {
+  font-style: normal;
+  font-size: 20px;
+  filter: grayscale(0.8);
+  opacity: 0.6;
+}
+
+.axisSide b {
+  font-weight: 800;
+}
+
+.axisSide small {
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.axisWin {
+  color: var(--ink);
+}
+
+.axisWin i {
+  filter: none;
+  opacity: 1;
+  animation: wiggle 1.6s ease-in-out infinite;
+}
+
+.axisWin small {
+  color: var(--red);
+}
+
+/* 왼쪽 비율은 빨강, 나머지(오른쪽)는 머스터드로 막대 전체를 채운다 */
+.axisTrack {
+  position: relative;
+  height: 16px;
+  display: block;
+  border: 2px solid var(--ink);
+  border-radius: 999px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--mustard) 0 8px,
+    #f8c94f 8px 16px
+  );
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+.axisLeft {
+  position: absolute;
+  inset: 0 auto 0 0;
+  border-radius: 999px 0 0 999px;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--red) 0 8px,
+    #ee5a47 8px 16px
+  );
+  animation: grow 0.8s cubic-bezier(0.2, 0.9, 0.3, 1.1) both;
+}
+
+.axisMarker {
+  position: absolute;
+  top: 50%;
+  font-size: 22px;
+  line-height: 1;
+  transform: translate(-50%, -55%);
+  filter: drop-shadow(1px 2px 0 rgba(27, 25, 22, 0.35));
+  animation: pop 0.5s 0.6s cubic-bezier(0.2, 1.4, 0.4, 1) both;
+}
+
+@keyframes grow {
+  from { width: 0; }
+}
+
+@keyframes pop {
+  from { transform: translate(-50%, -55%) scale(0); }
+}
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(0); }
+  50% { transform: rotate(-12deg) scale(1.1); }
+}
+
+.burgerCard {
+  width: 100%;
+  margin-top: 28px;
+  padding: 18px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  border: 2px solid var(--ink);
+  border-radius: 12px;
+  background: var(--cream);
+  text-align: left;
+}
+
+.burgerCard div {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.burgerCard small {
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.burgerCard strong {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.burgerCard span {
+  color: #5b554d;
+  font-size: 13px;
+}
+
+.burgerCard a {
+  flex-shrink: 0;
+  color: var(--red);
+  font-size: 14px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.burgerCard a:hover {
+  text-decoration: underline;
+}
+
+/* ── 결과 해석 (MBTI 결과지처럼 섹션별로) ── */
+.report {
+  width: 100%;
+  margin-top: 26px;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  text-align: left;
+}
+
+.section {
+  padding: 20px 22px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: var(--paper);
+}
+
+.section h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 19px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+}
+
+.section p {
+  color: #4a443c;
+  font-size: 14.5px;
+  line-height: 1.8;
+  word-break: keep-all;
+}
+
+.bullets {
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+  list-style: none;
+}
+
+.bullets li {
+  position: relative;
+  padding-left: 22px;
+  color: #4a443c;
+  font-size: 14.5px;
+  line-height: 1.65;
+  word-break: keep-all;
+}
+
+.bullets li::before {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 0.62em;
+  width: 9px;
+  height: 9px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--mustard);
+}
+
+.twoColumns {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+}
+
+.good {
+  background: #eef5e6;
+}
+
+.good .bullets li::before {
+  background: var(--green);
+}
+
+.careful {
+  background: #fdeeea;
+}
+
+.careful .bullets li::before {
+  background: var(--red);
+}
+
+.burgerSection {
+  background: var(--cream);
+}
+
+.burgerSection .burgerCard {
+  margin-top: 14px;
+  background: var(--paper);
+}
+
+.matchCard {
+  padding: 18px 20px;
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  box-shadow: 4px 4px 0 var(--ink);
+}
+
+.matchCard h2 {
+  margin-bottom: 6px;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.matchCard strong {
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 22px;
+  font-weight: 400;
+}
+
+.matchCard span {
+  color: #5b554d;
+  font-size: 13px;
+}
+
+.matchCard small {
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.matchBest {
+  background: #ffe9a8;
+}
+
+.matchWorst {
+  background: #e7e2d8;
+}
+
+.actions {
+  margin-top: 24px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+}
+
+.primaryButton:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
+.saveImage {
+  margin-top: 16px;
+  color: #5b554d;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.saveImage:hover {
+  color: var(--red);
+}
+
+.shareUrl {
+  width: 100%;
+  max-width: 420px;
+  margin-top: 6px;
+  padding: 10px 12px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--cream);
+  font: inherit;
+  font-size: 13px;
+}
+
+.shareStatus {
+  min-height: 20px;
+  margin-top: 12px;
+  color: var(--green);
+  font-size: 13px;
+  font-weight: 700;
+}
+
+@media (max-width: 700px) {
+  .card {
+    padding: 28px 20px;
+  }
+
+  .title {
+    font-size: 34px;
+  }
+
+  .question {
+    margin: 28px 0 22px;
+    font-size: 26px;
+  }
+
+  .choice {
+    padding: 16px;
+    font-size: 15px;
+  }
+
+  .burgerCard {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .axes {
+    padding: 16px 14px 18px;
+  }
+
+  .twoColumns {
+    grid-template-columns: 1fr;
+  }
+
+  .section {
+    padding: 18px 16px;
+  }
+
+  .axis {
+    grid-template-columns: 74px 1fr 74px;
+    gap: 8px;
+  }
+
+  .axisSide {
+    gap: 2px;
+    font-size: 12px;
+  }
+
+  .axisSide i {
+    font-size: 16px;
+  }
+
+  .axisSide small {
+    font-size: 10px;
+  }
+
+  .actions {
+    width: 100%;
+    flex-direction: column;
+  }
+
+  .primaryButton,
+  .secondaryButton {
+    width: 100%;
+    min-width: 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .axisLeft,
+  .axisMarker,
+  .axisWin i {
+    animation: none;
+  }
+
+  .progressTrack span,
+  .choice,
+  .primaryButton,
+  .secondaryButton {
+    transition: none;
+  }
+}
