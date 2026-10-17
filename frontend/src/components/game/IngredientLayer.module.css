@@ -57,47 +57,151 @@
     linear-gradient(#c56a1c, #94480f);
 }
 
+/* 얇은 재료(치즈·채소·소스)는 위층에 가려지기 쉬워 두께를 키우고, 색·무늬로 서로 구분되게 그린다. */
+
+/* 치즈: 아래층(패티)에 녹아 붙은 슬라이스. 납작한 판 + 아래층 위로 흘러내린 녹은 방울 세 개 */
 .cheese {
   --w: 104%;
-  --h: 1.1;
-  background: #f8c928;
-  clip-path: polygon(0 0, 100% 0, 94% 70%, 76% 52%, 60% 100%, 40% 55%, 18% 80%, 6% 55%);
+  --h: 1.4;
+  z-index: 1;
+  border-radius: 6px 6px 40% 40% / 6px 6px 60% 60%;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.4), transparent 45%),
+    #ffcc33;
 }
 
+.cheese::before,
+.cheese::after {
+  content: '';
+  position: absolute;
+  top: calc(100% - 4px);
+  width: calc(var(--unit) * 1.4);
+  height: calc(var(--unit) * 1.3);
+  border: 2px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 999px 999px;
+  /* 위쪽 경계선을 판 색으로 덮어 판과 방울이 한 덩어리로 보이게 한다 */
+  background: #ffcc33;
+  box-shadow: inset 0 3px 0 #ffcc33;
+}
+
+.cheese::before {
+  left: 12%;
+}
+
+.cheese::after {
+  right: 18%;
+  height: calc(var(--unit) * 0.9);
+  width: calc(var(--unit) * 1.1);
+}
+
+/* 양상추: 아래쪽이 물결치는 잎 + 잎맥 */
 .lettuce {
-  --w: 106%;
-  --h: 1.2;
-  border-radius: 40% 30% 45% 35%;
-  background: #619849;
+  --w: 110%;
+  --h: 1.6;
+  border-radius: 30% 40% 35% 45% / 50% 50% 50% 50%;
+  background:
+    repeating-linear-gradient(105deg, transparent 0 18px, rgba(255, 255, 255, 0.35) 18px 20px),
+    linear-gradient(#8cc63f, #4f8a2e);
 }
 
+.lettuce::after {
+  content: '';
+  position: absolute;
+  left: 4%;
+  right: 4%;
+  bottom: calc(var(--unit) * -0.45);
+  height: calc(var(--unit) * 0.6);
+  background: radial-gradient(circle at 50% 0, #4f8a2e 0 60%, transparent 62%) 0 0 / calc(var(--unit) * 1.6) 100% repeat-x;
+}
+
+/* 토마토: 슬라이스 단면. 진한 빨강 껍질 안에 칸막이로 나뉜 밝은 씨방 4칸과 씨가 보인다. */
 .tomato {
-  --w: 92%;
-  --h: 1;
-  border-radius: 999px;
-  background: var(--red);
+  --w: 96%;
+  --h: 1.6;
+  border-radius: 44% / 50%;
+  background:
+    linear-gradient(rgba(255, 255, 255, 0.28), transparent 35%),
+    #d42f1e;
 }
 
+/* 씨방 4칸: 둥근 타원 과육 + 가운데 씨 (칸 사이는 껍질색이 보여 칸막이처럼 보인다) */
+.tomato::after {
+  content: '';
+  position: absolute;
+  inset: 20% 6%;
+  background:
+    radial-gradient(ellipse 3px 2px at 13% 50%, #fff1c2 90%, transparent),
+    radial-gradient(ellipse 3px 2px at 38% 50%, #fff1c2 90%, transparent),
+    radial-gradient(ellipse 3px 2px at 62% 50%, #fff1c2 90%, transparent),
+    radial-gradient(ellipse 3px 2px at 87% 50%, #fff1c2 90%, transparent),
+    radial-gradient(ellipse 11% 50% at 13% 50%, #ff8566 0 92%, transparent),
+    radial-gradient(ellipse 11% 50% at 38% 50%, #ff8566 0 92%, transparent),
+    radial-gradient(ellipse 11% 50% at 62% 50%, #ff8566 0 92%, transparent),
+    radial-gradient(ellipse 11% 50% at 87% 50%, #ff8566 0 92%, transparent);
+}
+
+/* 피클: 동그란 피클 조각 세 개. 바탕은 투명하고 조각마다 [씨 · 과육 · 껍질 · 윤곽선] 을 그린다. */
 .pickle {
-  --w: 78%;
-  --h: 0.8;
-  border-radius: 999px;
-  background: repeating-linear-gradient(90deg, #7ea443 0 14px, #5f8530 14px 18px);
+  --w: 86%;
+  --h: 1.3;
+  --chip: #d6e88f 0 25%, #9bc24a 28% 66%, #4f7a26 68% 84%, var(--ink) 86% 100%, transparent 101%;
+  border: 0;
+  background:
+    radial-gradient(ellipse 16% 50% at 17% 50%, var(--chip)),
+    radial-gradient(ellipse 16% 50% at 50% 50%, var(--chip)),
+    radial-gradient(ellipse 16% 50% at 83% 50%, var(--chip));
 }
 
+/* 양파: 보라색 링이 겹친 단면 */
 .onion {
-  --w: 88%;
-  --h: 0.8;
-  border-color: #8a5a8c;
+  --w: 90%;
+  --h: 1.3;
+  border-color: #6b3270;
   border-radius: 999px;
-  background: #f1e2f2;
+  background:
+    repeating-linear-gradient(90deg, #fbf1fb 0 10px, #b16bb5 10px 13px),
+    #f4e1f5;
 }
 
+/* 소스: 얇으면 위층에 가려 안 보이므로 두껍게 + 양옆으로 흘러내리는 방울 + 하이라이트.
+   토마토(밝은 빨강 알약 모양)와 구분되도록 더 진한 케첩색에 물결 모양으로 그린다. */
 .sauce {
-  --w: 94%;
-  --h: 0.75;
-  border-radius: 40% 60% 45% 55%;
-  background: #e0561f;
+  --w: 100%;
+  --h: 1.4;
+  z-index: 1;
+  border-radius: 45% 55% 50% 50% / 60% 60% 40% 40%;
+  background:
+    linear-gradient(90deg, transparent 18%, rgba(255, 255, 255, 0.55) 18% 34%, transparent 34%) 0 28% / 100% 22% no-repeat,
+    #b8261b;
+}
+
+/* 흘러내리는 방울 두 개 (아래층 위로 걸쳐 보인다) */
+.sauce::before,
+.sauce::after {
+  content: '';
+  position: absolute;
+  top: 55%;
+  width: calc(var(--unit) * 0.7);
+  height: calc(var(--unit) * 1.1);
+  border: 2px solid var(--ink);
+  border-top: 0;
+  border-radius: 0 0 999px 999px;
+  background: #b8261b;
+}
+
+.sauce::before {
+  left: 16%;
+}
+
+.sauce::after {
+  right: 22%;
+  height: calc(var(--unit) * 0.8);
+}
+
+/* 소스 바로 위층은 덜 겹치게 해서 소스 두께가 보이게 한다. */
+.sauce + .layer {
+  margin-bottom: calc(var(--unit) * -0.1);
 }
 
 .dropIn {

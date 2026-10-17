@@ -321,6 +321,135 @@
   cursor: not-allowed;
 }
 
+/* 키보드로 누른 순간 버튼이 눌린 것처럼 보여준다 */
+.secondaryButton.pressed:not(:disabled) {
+  background: var(--mustard);
+}
+
+.submitButton.pressed:not(:disabled) {
+  background: var(--red-dark);
+  transform: translate(2px, 2px);
+  box-shadow: 2px 2px 0 var(--ink);
+}
+
+/* ── 키보드 단축키 표시 (마우스·키보드가 있는 기기에서만) ── */
+/* 조작 버튼 옆 작은 키 표시 */
+.key {
+  display: inline-grid;
+  place-items: center;
+  min-width: 20px;
+  height: 20px;
+  margin-left: 6px;
+  padding: 0 5px;
+  border: 1.5px solid currentColor;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+  vertical-align: middle;
+  opacity: 0.75;
+}
+
+/* 시작 화면의 미니 키보드 */
+.keyGuide {
+  margin-top: 20px;
+  padding: 14px 18px 16px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  border: 2px solid var(--ink);
+  border-radius: 14px;
+  background: var(--cream);
+}
+
+.keyGuideTitle {
+  margin-bottom: 3px;
+  color: #71695f;
+  font-size: 12px;
+  font-weight: 800;
+  letter-spacing: 0.04em;
+}
+
+.keyRow {
+  display: flex;
+  gap: 6px;
+}
+
+/* 실제 자판처럼 아랫줄을 살짝 오른쪽으로 민다 */
+.keyRowShift {
+  margin-left: 22px;
+}
+
+.keycap {
+  width: 42px;
+  height: 44px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  border: 1.5px solid var(--ink);
+  border-radius: 8px;
+  background: var(--paper);
+  box-shadow: 0 3px 0 var(--ink);
+}
+
+.keycap b {
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.keycap span {
+  font-size: 16px;
+  line-height: 1;
+}
+
+.actionRow {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px 14px;
+  color: #4a443c;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.actionRow span {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.actionRow kbd {
+  min-width: 30px;
+  height: 24px;
+  padding: 0 7px;
+  display: inline-grid;
+  place-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: 6px;
+  background: var(--paper);
+  box-shadow: 0 2px 0 var(--ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.actionRow .wideKey {
+  min-width: 64px;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .key,
+  .keyGuide {
+    display: none;
+  }
+}
+
 /* ── 3·2·1·START! ── */
 .countdown {
   position: absolute;
