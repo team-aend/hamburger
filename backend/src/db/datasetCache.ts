@@ -224,7 +224,7 @@ async function fetchDatasetFromSupabase(): Promise<CachedDataset> {
       ),
       pool.query('SELECT id, name, slug FROM tags ORDER BY id'),
       pool.query(
-        'SELECT id, brand_id, category_id, name, slug, description, status, is_limited FROM products ORDER BY id'
+        'SELECT id, brand_id, category_id, name, slug, description, image_url, status, is_limited FROM products ORDER BY id'
       ),
       pool.query(
         'SELECT id, product_id, name, variant_type, is_default, is_active FROM product_variants ORDER BY id'
@@ -291,6 +291,7 @@ async function fetchDatasetFromSupabase(): Promise<CachedDataset> {
             name: r.name,
             slug: r.slug,
             description: r.description ?? '',
+            imageUrl: r.image_url ?? null,
             status: r.status,
             isLimited: Boolean(r.is_limited),
           }))

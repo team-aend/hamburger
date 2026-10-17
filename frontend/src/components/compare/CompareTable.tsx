@@ -6,6 +6,7 @@ import {
 } from '@/lib/format';
 import { PATTY_TYPE_LABEL, type Product } from '@/types/product';
 import type { ReviewsSummaryMap } from '@/types/review';
+import BurgerImage from '@/components/product/BurgerImage';
 import styles from './CompareTable.module.css';
 
 interface CompareTableProps {
@@ -61,18 +62,12 @@ export default function CompareTable({
             {products.map((product) => (
               <td key={product.id}>
                 <div className={styles.thumb}>
-                  {product.imageUrl ? (
-                    // eslint-disable-next-line @next/next/no-img-element
-                    <img
-                      src={product.imageUrl}
-                      alt={product.name}
-                      className={styles.image}
-                    />
-                  ) : (
-                    <span className={styles.placeholder} aria-label="이미지 준비중">
-                      🍔
-                    </span>
-                  )}
+                  <BurgerImage
+                    src={product.imageUrl}
+                    alt={product.name}
+                    className={styles.image}
+                    fallback={<span className={styles.placeholder} aria-label="이미지 준비중">🍔</span>}
+                  />
                 </div>
               </td>
             ))}

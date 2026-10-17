@@ -36,7 +36,10 @@ test('DB 조회에 성공하면 /api/recommend 결과를 Product 목록으로 �
   const calls: { url: string; init?: RequestInit }[] = [];
   const fakeFetch = (async (url: string, init?: RequestInit) => {
     calls.push({ url, init });
-    return Response.json({ items: [item(5, ['beef-patty'], [single(7100, 722, 31)])] });
+    return Response.json({ items: [{
+      ...item(5, ['beef-patty'], [single(7100, 722, 31)]),
+      imageUrl: '/images/burgers/burgerking-whopper-ai.png',
+    }] });
   }) as typeof fetch;
 
   const products = await fetchProducts('http://backend:4000', fakeFetch);
@@ -45,6 +48,7 @@ test('DB 조회에 성공하면 /api/recommend 결과를 Product 목록으로 �
   assert.equal(calls[0].url, 'http://backend:4000/api/recommend');
   assert.equal(calls[0].init?.cache, 'no-store');
   assert.deepEqual(products?.map((p) => [p.id, p.singlePrice, p.pattyType]), [[5, 7100, 'BEEF']]);
+  assert.equal(products?.[0].imageUrl, '/images/burgers/burgerking-whopper-ai.png');
 });
 
 test('DB 조회가 실패하면 Mock 대신 null 을 돌려준다', async () => {

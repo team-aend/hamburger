@@ -2,6 +2,7 @@
 
 import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
+import BurgerImage from '@/components/product/BurgerImage';
 import SavedSearchesBar, { type SearchFilters } from '@/components/recommend/SavedSearchesBar';
 import './recommend.css';
 
@@ -52,6 +53,7 @@ interface RecommendedBurger {
   name: string;
   slug: string;
   description: string;
+  imageUrl?: string | null;
   brand: Brand;
   ingredients: Ingredient[];
   tags: Tag[];
@@ -949,6 +951,14 @@ export default function RecommendPage() {
 
                   return (
                     <article key={burger.id} className="rc-card">
+                      <Link className="rc-card-visual" href={`/products/${burger.id}`} aria-label={`${burger.name} 상세 보기`}>
+                        <BurgerImage
+                          src={burger.imageUrl}
+                          alt={burger.name}
+                          className="rc-card-image"
+                          fallback={<span className="rc-card-placeholder" aria-hidden="true">🍔</span>}
+                        />
+                      </Link>
                       <div className="rc-card-body">
                         <small className="rc-card-brand">{burger.brand.name}</small>
                         <h3 className="rc-card-name">
@@ -1076,9 +1086,15 @@ export default function RecommendPage() {
                     : `전체 ${randomTotalCandidates}개 중`}
                 </p>
 
-                <div className="rc-modal-visual" aria-hidden="true">
-                  <span className="crown">♛</span>
-                  <b>🍔</b>
+                <div className="rc-modal-visual">
+                  <span className="crown" aria-hidden="true">♛</span>
+                  <BurgerImage
+                    src={randomPicked.imageUrl}
+                    alt={randomPicked.name}
+                    className="rc-modal-image"
+                    loading="eager"
+                    fallback={<b aria-hidden="true">🍔</b>}
+                  />
                 </div>
 
                 <div className="rc-modal-copy">

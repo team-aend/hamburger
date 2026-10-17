@@ -7,6 +7,7 @@ import {
 } from '@/lib/format';
 import { PATTY_TYPE_LABEL, type Product } from '@/types/product';
 import type { ReviewSummaryItem } from '@/types/review';
+import BurgerImage from './BurgerImage';
 import styles from './ProductCard.module.css';
 
 interface ProductCardProps {
@@ -35,18 +36,17 @@ export default function ProductCard({
   return (
     <article className={`${styles.card} ${selected ? styles.cardSelected : ''}`}>
       <div className={styles.thumb}>
-        {product.imageUrl ? (
-          // 실제 이미지가 준비되면 imageUrl 값만 채우면 된다.
-          // eslint-disable-next-line @next/next/no-img-element
-          <img src={product.imageUrl} alt={product.name} className={styles.image} />
-        ) : (
-          <div className={styles.placeholder}>
-            <span className={styles.placeholderIcon} aria-hidden>
-              🍔
-            </span>
-            <span className={styles.placeholderText}>이미지 준비중</span>
-          </div>
-        )}
+        <BurgerImage
+          src={product.imageUrl}
+          alt={product.name}
+          className={styles.image}
+          fallback={
+            <div className={styles.placeholder}>
+              <span className={styles.placeholderIcon} aria-hidden>🍔</span>
+              <span className={styles.placeholderText}>이미지 준비중</span>
+            </div>
+          }
+        />
 
         {/* 좋아요 (로그인 필수: 비로그인이면 로그인 화면으로 이동) */}
         <button
