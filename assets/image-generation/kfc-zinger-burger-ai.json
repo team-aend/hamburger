@@ -1,0 +1,36 @@
+{
+  "name": "징거버거",
+  "brandSlug": "kfc",
+  "productSlug": "zinger-burger",
+  "publicUrl": "/images/burgers/kfc-zinger-burger-ai.png",
+  "officialUrl": "https://www.kfckorea.com/menu/A1406",
+  "referenceArticleUrl": "https://biz.chosun.com/distribution/food/2024/03/11/MYKUJ7LRBJDSVNWUAL4IWMZ72E/",
+  "referenceImageUrl": "https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosunbiz/7TN6WUQIRRHYLMW5UQDMK4CQZI.png",
+  "referenceImageAttribution": "기사의 'KFC 징거버거 ./KFC 제공' 사진. 리뉴얼 이전 사진은 제외하고 토마토 없는 리뉴얼 이후 공식 제공 사진을 사용함.",
+  "referenceReviewMethod": "KFC 공식 메뉴 페이지가 브라우저에서 차단되어 직접 상품 사진에 접근하지 못함. 2024-03-11 조선비즈 기사에서 KFC 제공으로 명시한 공식 배포 제품 사진을 임시로 열어 직접 관찰함. 담당 에이전트는 임시 다운로드 후 view_image로, 부모 에이전트는 브라우저로 독립 확인함. 공식 사진은 프로젝트 배포 파일로 저장하지 않음.",
+  "verifiedIngredients": [
+    "참깨 번",
+    "통닭가슴살 튀김 필렛 1장",
+    "굵고 불규칙한 크리스피 플레이크 튀김옷",
+    "잘게 썬 아이스버그 양상추",
+    "아이보리색 마요 드레싱"
+  ],
+  "excludedIngredients": [
+    "토마토",
+    "치즈",
+    "양파",
+    "피클",
+    "베이컨",
+    "두 번째 패티"
+  ],
+  "recipeVersion": "2023년 말 리뉴얼 이후 구성(2024-03-11 KFC 제공 사진 확인)",
+  "uncertainties": [
+    "현재 공식 메뉴 페이지에 직접 접근하지 못해 KFC 제공으로 명시한 2024년 공식 배포 사진으로 보완함",
+    "기존 프로젝트 seed의 토마토 포함 설명은 과거 구성으로 보이며 이미지에는 확인한 공식 리뉴얼 사진의 토마토 없는 구성을 우선 반영함",
+    "마요 드레싱의 상세 배합과 실제 필렛의 형상·두께·질감은 완전히 일치한다고 보장하지 않음"
+  ],
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "prompt": "Use case: product-mockup. Asset type: transparent PNG menu burger for a Korean hamburger tournament. Generate one new original photorealistic cutout accurately depicting the RENEWED Korean KFC 징거버거 (Zinger Burger), the version shown in the official KFC-provided photograph published on 2024-03-11 at https://biz.chosun.com/distribution/food/2024/03/11/MYKUJ7LRBJDSVNWUAL4IWMZ72E/. I inspected the official-provided photo at https://cloudfront-ap-northeast-1.images.arcpublishing.com/chosunbiz/7TN6WUQIRRHYLMW5UQDMK4CQZI.png. IMPORTANT: after the late-2023 renewal it contains NO TOMATO. One complete burger centered in a square composition, whole burger fully visible with small transparent margins, near-frontal view with a subtle three-quarter angle, clean catalog photography consistent with existing realistic burger cutouts. Exact visible layers top to bottom: a small glossy golden round sesame-seed top bun with a moderate sparse scattering of sesame seeds; thick creamy slightly ivory-yellow mayonnaise dressing drizzled generously over SMALL ROUGHLY CHOPPED ICEBERG LETTUCE, crisp pale/light green and some darker green pieces, not large frilly whole leaves; exactly ONE VERY THICK broad whole chicken BREAST fillet with dramatic coarse irregular golden crispy flaky breading, huge flat overlapping golden flakes and craggy jagged edges extending beyond the sides of the bun, distinctly much larger than the buns; a soft toasted golden bottom bun. The breast fillet is a single thick whole meat slab, not a processed ground patty, not chicken thigh, not two chicken patties. Do not add a sliced-open cut surface. No tomato, cheese, onion, pickle, bacon, ham, egg, middle bun or extra meat. Texture and proportions should resemble the very thick coarse-crusted Korean KFC Zinger in the actual reference, not a thin generic chicken burger. Realistic diffuse professional studio light, appetizing natural colors and detailed crunchy texture. Newly generated food depiction, not a copy of the original photo. Genuinely transparent alpha background with no haze, brown halo, vignette, floor or backdrop. No wooden board, plate, table, wrapper, KFC paper, branded packaging, text, logo, watermark, fries, garnish or other objects."
+}

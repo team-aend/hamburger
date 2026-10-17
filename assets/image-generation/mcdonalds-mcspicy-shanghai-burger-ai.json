@@ -1,0 +1,48 @@
+{
+  "name": "맥스파이시 상하이 버거",
+  "brandSlug": "mcdonalds",
+  "productSlug": "mcspicy-shanghai-burger",
+  "publicUrl": "/images/burgers/mcdonalds-mcspicy-shanghai-burger-ai.png",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "generatedOn": "2026-10-17",
+  "sourceUrls": [
+    "https://www.mcdonalds.co.kr/kor/menu/detail/603/5/16",
+    "https://www.mcdonalds.co.kr/upload/product/pcfile/1723562660091.png",
+    "https://www.mcdonalds.co.kr/kor/menu/information/origin"
+  ],
+  "referenceVerification": {
+    "method": "Read official Korean menu description and visually inspected the rendered official product photo in the browser.",
+    "observedIngredients": [
+      "쌀가루를 더한 닭가슴살 튀김 패티 1장",
+      "참깨번",
+      "양상추",
+      "토마토",
+      "흰색 마요네즈 계열 소스"
+    ],
+    "observedTopToBottom": [
+      "참깨 윗번",
+      "흰색 소스",
+      "양상추",
+      "토마토",
+      "닭가슴살 튀김 패티 1장",
+      "아랫번"
+    ],
+    "uncertainties": [
+      "공식 설명에서 100% 닭가슴살 패티와 쌀가루·양상추·토마토를 확인했다.",
+      "흰색 소스의 종류는 상품 사진에 기초한 관찰이며, 해당 상세 설명은 이름을 명시하지 않는다."
+    ]
+  },
+  "prompt": "Use case: product-mockup. Asset type: original generated food photo cutout for a burger tournament.\nPrimary request: one realistic Korean McDonald's McSpicy Shanghai Burger, modeled on the actual ingredient structure in the official Korean menu photo viewed at https://www.mcdonalds.co.kr/kor/menu/detail/603/5/16. Create a new original photographic depiction.\nSubject accuracy: EXACTLY ONE large, fairly flat oval-round breaded fried CHICKEN BREAST fillet patty, golden orange, with fine crunchy rice-flour breadcrumb granules. It must look like a breast-fillet patty, not a beef patty, minced patty, two patties, or enormous ragged thigh fillet. Top-to-bottom visible stack from the official photo: lightly domed golden sesame-seed top bun; a little white mayonnaise under crown; generous pale-green shredded iceberg lettuce; bright red fresh tomato slice layer; single golden orange breaded chicken breast patty; toasted bottom bun. Standard compact fast-food burger proportions. Do not add cheese, pickles, onions, bacon, sweet dark glaze or beef.\nStyle/medium: realistic high-quality studio food product photograph, natural bread/vegetable textures, bright neutral softbox lighting, detailed crisp patty crust, matching a clean isolated fast-food burger product collection.\nComposition: one complete assembled burger centered square canvas, nearly straight-on slight three-quarter angle with a little crown visible; fills about 85% of width but not cropped, clean margins on all sides.\nScene/backdrop: genuine transparent alpha background, no surface, subtle natural self shading only.\nConstraints: no text, logos, watermark, packaging, plate, fries, drink, hands, props, extra burgers, exploded view or cutaway.",
+  "validation": {
+    "format": "PNG",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "transparentCorners": true,
+    "visualInspection": "패티 개수·주요 재료·층 순서·로고/텍스트 없음·전체 버거 구도를 검수했다. 배경 후광이나 바닥은 보이지 않는다.",
+    "note": "AI 재현 이미지이며 실제 상품의 두께·형상·질감과 완전히 동일함을 보장하지 않는다."
+  }
+}

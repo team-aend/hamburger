@@ -1,0 +1,54 @@
+{
+  "name": "베이컨 토마토 디럭스",
+  "brandSlug": "mcdonalds",
+  "productSlug": "bacon-tomato-deluxe",
+  "publicUrl": "/images/burgers/mcdonalds-bacon-tomato-deluxe-ai.png",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "generatedOn": "2026-10-17",
+  "sourceUrls": [
+    "https://www.mcdonalds.co.kr/kor/menu/detail/187/11/16",
+    "https://www.mcdonalds.co.kr/upload/product/pcfile/1723563896442.png",
+    "https://www.mcdonalds.co.kr/kor/menu/information/origin"
+  ],
+  "referenceVerification": {
+    "method": "Read official Korean menu description and visually inspected the rendered official product photo in the browser.",
+    "observedIngredients": [
+      "쇠고기 패티 2장",
+      "그릴 베이컨 1장",
+      "토마토",
+      "양상추",
+      "스위트 칠리 소스",
+      "치즈",
+      "마요네즈",
+      "참깨번"
+    ],
+    "observedTopToBottom": [
+      "참깨 윗번",
+      "마요네즈·스위트 칠리 소스",
+      "양상추",
+      "토마토",
+      "베이컨 1장",
+      "윗 쇠고기 패티",
+      "치즈",
+      "아랫 쇠고기 패티",
+      "아랫번"
+    ],
+    "uncertainties": [
+      "공식 설명에서 쇠고기 패티 2장과 베이컨 1장 및 모든 주요 재료를 확인했다.",
+      "치즈와 베이컨 위치는 공식 사진을 관찰했다. 소스의 정확한 도포 위치와 양은 사진만으로 완전히 확정할 수 없다."
+    ]
+  },
+  "prompt": "Use case: product-mockup. Asset type: original AI-generated food product cutout for Korean burger tournament UI.\nPrimary request: create a photorealistic Korean McDonald's Bacon Tomato Deluxe burger whose ingredients and visible stack closely match the official Korean menu photo viewed at https://www.mcdonalds.co.kr/kor/menu/detail/187/11/16. This is a newly generated food photograph, not copied official pixels.\nAccuracy: EXACTLY TWO thin, flat round 100% beef patties, browned griddled fast-food patties, each separate and visible. EXACTLY ONE long grilled pork bacon strip folded slightly across the burger above the upper beef patty, its ends extending just beyond both sides. EXACTLY ONE soft yellow American cheese slice in between the two beef patties, with a corner draping toward the bottom bun.\nOfficial visible stack top to bottom: rounded golden sesame-seed top bun; white mayonnaise and small amount of reddish sweet chili sauce; shredded pale green iceberg lettuce; fresh red tomato slice layer; grilled bacon strip; upper thin beef patty; one yellow cheese slice; lower thin beef patty; toasted bottom bun. Only TWO bread pieces, no middle bun. Compact fast-food proportions, no enormous gourmet patties, no raw onion rings, pickles, fried chicken, breaded patty or extra meat.\nStyle: realistic high-quality bright studio product food photography, detailed toasted bun and browned beef textures, fresh vegetables, soft neutral lighting; same clean appetizing isolated style as a collection of burger cutouts.\nComposition: entire assembled burger centered in square image, nearly front-on with slight three-quarter angle and a little crown visible; about 85% canvas width, all burger and bacon edges inside frame, clean transparent margin.\nScene/backdrop: genuine transparent alpha background, no surface and no cast background.\nAvoid: text, branding, logo, watermark, packaging, plates, fries, drink, hands, props, multiple burgers, cutaway or exploded layers.",
+  "validation": {
+    "format": "PNG",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "transparentCorners": true,
+    "visualInspection": "패티 개수·주요 재료·층 순서·로고/텍스트 없음·전체 버거 구도를 검수했다. 배경 후광이나 바닥은 보이지 않는다.",
+    "note": "AI 재현 이미지이며 실제 상품의 두께·형상·질감과 완전히 동일함을 보장하지 않는다."
+  }
+}

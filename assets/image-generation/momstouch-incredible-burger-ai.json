@@ -1,0 +1,32 @@
+{
+  "name": "인크레더블버거",
+  "brandSlug": "momstouch",
+  "productSlug": "incredible-burger",
+  "publicUrl": "/images/burgers/momstouch-incredible-burger-ai.png",
+  "officialUrl": "https://order.momstouch.co.kr/momsmall/menu.jsp?menu_cd=001",
+  "officialSocialProfile": "https://www.instagram.com/momstouch.love/",
+  "referenceArticleUrl": "https://web.insight.co.kr/news/190793",
+  "referenceImageUrl": "https://img.insight.co.kr/static/2018/11/13/700/icaa3rf37e7mi1l2a89n.jpg",
+  "referenceImageAttribution": "기사 본문에서 instagram 'momstouch.love'로 명시한 맘스터치 공식 인스타그램 홍보 사진",
+  "referenceReviewMethod": "현재 공식 메뉴 목록에서 해당 상품 사진을 찾지 못했고 공식 주문 페이지 직접 접근은 인증서 만료로 차단됨. 공식 주문 페이지의 검색 색인 설명으로 에그프라이·프리미엄 더블햄·통다리살을 확인하고, 공식 인스타그램 출처를 명시한 출시 보도기사의 제품 사진을 브라우저로 직접 열어 층과 외형을 보완 확인함. 인증서 경고를 우회하지 않았고 공식 사진은 배포 파일로 저장하지 않음.",
+  "verifiedIngredients": [
+    "참깨 번",
+    "양상추",
+    "피클",
+    "양파",
+    "프리미엄 더블햄",
+    "에그프라이 1개",
+    "통다리살 튀김 패티 1장",
+    "공식 홍보 사진 하단에 보이는 밝은 허브 소스"
+  ],
+  "uncertainties": [
+    "현재 공식 홈페이지 상품 사진에 직접 접근하지 못해 2018년 공식 인스타그램 홍보 사진의 보도 사용본을 참고함",
+    "현재 판매 여부와 최신 배합은 확정하지 않음",
+    "소스의 상세 배합은 공식 설명으로 확인하지 못함",
+    "신규 생성 이미지로 실제 패티 모양·두께·질감이 완전히 같지는 않음"
+  ],
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "prompt": "Use case: product-mockup. Asset type: transparent PNG single burger image for a Korean hamburger tournament. Create a new original realistic studio food cutout accurately depicting Mom's Touch 인크레더블버거 (Incredible Burger). I visually checked the actual official Mom's Touch Instagram promotional product photograph, reproduced with explicit attribution to instagram 'momstouch.love' in the 2018 launch article https://web.insight.co.kr/news/190793, at image https://img.insight.co.kr/static/2018/11/13/700/icaa3rf37e7mi1l2a89n.jpg. The official order menu description confirms egg fry, premium double ham and whole chicken thigh patty. Use this photographed construction, not a generic burger. One complete tall substantial burger centered on a square canvas, whole burger visible with small transparent margins, nearly frontal with very slight three-quarter angle, realistic catalog food photography matching other clean burger cutouts. EXACT layers top to bottom: a glossy golden sesame-seed top bun; ruffled fresh green lettuce; green crinkle-cut pickle slices; thick white onion rings; TWO thin pink smooth deli-ham slices folded to make curled edges (not bacon); ONE round fried egg, white rim lightly golden at edges and visible yellow yolk area; EXACTLY ONE thick irregular whole boneless chicken THIGH fillet with craggy flaky golden-brown crispy breading; a modest pale white herb-speckled creamy sauce layer; lightly toasted bottom bun. The chicken is one thick whole fillet, not ground beef or shrimp, not a double patty. Preserve the egg between ham and chicken. No tomato, cheese, bacon, middle bun, second egg or second chicken patty. Appetizing but realistic proportions, diffuse professional lighting and natural texture. Newly generated depiction rather than copied photo. Genuine transparent alpha background, no brown haze, halo or vignette, no background, ground, plate, board, packaging, wrapper, text, logos, watermark, fries or other objects."
+}

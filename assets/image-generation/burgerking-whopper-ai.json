@@ -1,0 +1,34 @@
+{
+  "productName": "와퍼",
+  "brandSlug": "burgerking",
+  "productSlug": "whopper",
+  "assetPath": "frontend/public/images/burgers/burgerking-whopper-ai.png",
+  "publicUrl": "/images/burgers/burgerking-whopper-ai.png",
+  "createdOn": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceSources": [
+    {
+      "pageUrl": "https://www.burgerking.co.kr/menu/detail/1080013",
+      "imageUrl": "https://mob-prd.burgerking.co.kr/images/menu/web/main/2025/01/06/c9811022-3678-4988-9fa4-1d3fc6a69bf5.png",
+      "inspectedVisually": true
+    }
+  ],
+  "patty": "one flame-grilled beef patty",
+  "observedIngredients": [
+    "참깨번",
+    "직화 소고기 패티 1장",
+    "피클",
+    "케첩",
+    "흰 양파",
+    "토마토",
+    "양상추",
+    "흰 마요 소스"
+  ],
+  "limitations": [
+    "공식 사진과 메뉴 설명을 참고한 AI 재구성 이미지이며 실제 제품 사진이 아닙니다.",
+    "패티 종류·개수와 보이는 주요 재료를 맞췄지만 실물의 크기·형태·배합까지 동일함을 보장하지 않습니다."
+  ],
+  "prompt": "Use case: product-mockup. Create one NEW photorealistic catalogue cutout for a Korean burger comparison website, closely matching the observed ingredient composition and exterior of the named Korean Burger King product. Genuinely transparent background with alpha, no grey rectangle, no painted checkerboard. One assembled intact burger only, entire silhouette visible, centered with at least 10% clear margin, near-frontal subtle three-quarter view at filling level, softly lit realistic food textures and normal fast-food proportions. Keep the same clean catalogue style as the already approved crispy chicken burger. No text, logos, watermark, packaging, plate, fries, drinks, hands, duplicate burger, floating ingredients, exaggerated tower. This is an AI reconstruction, not an official photo.\nSubject: original Korean WHOPPER (와퍼). EXACTLY ONE broad thin flame-grilled BEEF patty, slightly irregular browned edge with realistic dark char, not two patties. Layer order bottom to top: toasted bottom bun, one beef patty, green pickle slices with small red ketchup streaks, thin raw WHITE onion rings, two broad red tomato slices arranged across the width, fresh crinkled green lettuce and a thin white mayonnaise layer, low rounded golden-brown sesame top bun. Wide compact classic Whopper silhouette. NO cheese, chicken, bacon, egg, shrimp or middle bun.",
+  "transparentBackground": true
+}

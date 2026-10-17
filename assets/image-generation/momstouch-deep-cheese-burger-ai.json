@@ -1,0 +1,24 @@
+{
+  "name": "딥치즈버거",
+  "brandSlug": "momstouch",
+  "productSlug": "deep-cheese-burger",
+  "officialUrl": "https://momstouch.co.kr/menu/view.php?idx=83",
+  "verifiedIngredients": [
+    "참깨 번",
+    "통가슴살 튀김 패티 1장",
+    "치즈 소스",
+    "양상추",
+    "피클",
+    "양파"
+  ],
+  "uncertainties": [
+    "공식 사진과 설명으로 통가슴살 및 눈에 보이는 층을 확인했지만 실제 패티 모양·두께·질감의 완전 일치를 보장하지 않음",
+    "치즈 소스의 상세 배합은 공개 설명에서 확인하지 못함"
+  ],
+  "publicUrl": "/images/burgers/momstouch-deep-cheese-burger-ai.png",
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceReviewMethod": "공식 홈페이지를 브라우저로 열어 제품 설명과 상품 사진을 직접 확인함. 공식 이미지는 배포 파일로 저장하지 않음.",
+  "prompt": "Use case: product-mockup. Asset type: transparent PNG menu illustration for a Korean hamburger comparison tournament. Create one original photorealistic studio food cutout accurately depicting Mom's Touch 딥치즈버거 (Deep Cheese Burger), based on the official menu photo I checked at https://momstouch.co.kr/menu/view.php?idx=83. It is the chicken BREAST version, not thigh. One complete burger, centered, square composition, nearly frontal with a slight three-quarter angle, whole burger fully in frame with small transparent margins, matching a clean realistic catalog cutout style. Exact visible layers top to bottom: shiny golden sesame-seed top bun; generous ruffled green lettuce; a few green crinkle-cut pickle slices; thick white onion rings; glossy creamy orange cheese sauce draping directly over ONE thick crispy breaded whole chicken BREAST fillet with golden craggy flakes (the fillet has a compact broad single slab shape, not a beef patty); a thin layer of orange cheese sauce; lightly toasted bottom bun. Include only these visible ingredients. The cheese is a smooth thick flowing orange sauce, NOT a separate square cheddar slice. No tomato, egg, ham, bacon, extra chicken patty or middle bun. Soft professional lighting with realistic texture and color. This is a newly generated food depiction, not a copied official photo. Truly transparent alpha background; no plate, packaging, table, floor, shadow backdrop, text, logos, watermark, garnish or side dishes."
+}

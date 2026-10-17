@@ -1,0 +1,52 @@
+{
+  "name": "맥치킨 모짜렐라",
+  "brandSlug": "mcdonalds",
+  "productSlug": "mcchicken-mozzarella",
+  "publicUrl": "/images/burgers/mcdonalds-mcchicken-mozzarella-ai.png",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "generatedOn": "2026-10-17",
+  "sourceUrls": [
+    "https://www.mcdonalds.co.kr/kor/menu/detail/293/12/16",
+    "https://www.mcdonalds.co.kr/upload/product/pcfile/1723563301214.png",
+    "https://www.mcdonalds.co.kr/kor/menu/information/origin"
+  ],
+  "referenceVerification": {
+    "method": "Read official Korean menu description and visually inspected the rendered official product photo in the browser.",
+    "observedIngredients": [
+      "맥치킨 튀김 닭고기 패티 1장",
+      "골든 모짜렐라 치즈스틱 2개",
+      "아라비아따 소스",
+      "참깨번",
+      "잘게 썬 양상추",
+      "흰색 마요네즈 계열 소스"
+    ],
+    "observedTopToBottom": [
+      "참깨 윗번",
+      "흰색 소스",
+      "양상추",
+      "모짜렐라 치즈스틱 2개",
+      "아라비아따 소스",
+      "맥치킨 닭고기 패티 1장",
+      "흰색 소스",
+      "아랫번"
+    ],
+    "uncertainties": [
+      "공식 설명에서 골든 모짜렐라 치즈스틱 2개와 아라비아따 소스를 확인했다.",
+      "닭고기 부위·성형 여부는 이 상품 상세 설명만으로 확정하지 않았다.",
+      "치즈스틱 배치 및 흰색 소스는 공식 제품 사진의 관찰을 반영한 재현이다."
+    ]
+  },
+  "prompt": "Use case: product-mockup. Asset type: an original generated burger product cutout for a Korean burger tournament.\nPrimary request: create one photorealistic Korean McDonald's McChicken Mozzarella, using the ingredient structure from the official photo and description viewed at https://www.mcdonalds.co.kr/kor/menu/detail/293/12/16. Create an original photograph, not the original official image.\nSubject accuracy: EXACTLY ONE standard round breaded fried McChicken CHICKEN patty, fairly flat, golden-brown crunchy coating, plus EXACTLY TWO separate golden breaded oblong mozzarella CHEESE STICKS laid horizontally side-by-side above the chicken patty, unmistakably two cheese sticks, not a second chicken patty or round mozzarella patty. Slight white melted mozzarella visible between the two sticks as in the reference, no cheese pull stretching outside burger.\nOfficial visible top-to-bottom stack: domed golden sesame-seed top bun; a little white mayonnaise; shredded pale-green iceberg lettuce; two golden mozzarella sticks forming their own horizontal layer; a thin red arrabbiata sauce layer; single round breaded chicken patty; a little white mayo at toasted bottom bun. No fresh tomato slices. No yellow American cheese, beef, bacon, pickles or onion rings.\nStyle: high quality realistic studio food product photography, bright neutral soft light, natural toasted bread and crunchy crumb textures, appetizing restrained color. Keep same clean cutout style as a fast-food burger product collection.\nComposition: complete assembled burger centered on square canvas, nearly frontal slight three-quarter angle with top of bun visible, fills about 85% of width, all edges uncropped and clean transparent margin.\nScene/backdrop: real alpha transparency, no surface, no fake checkerboard.\nAvoid: any text, logo, watermark, packaging, plate, fries, drink, props, hands, extra items, exploded diagram, cutaway burger.",
+  "validation": {
+    "format": "PNG",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "transparentCorners": true,
+    "visualInspection": "패티 개수·주요 재료·층 순서·로고/텍스트 없음·전체 버거 구도를 검수했다. 배경 후광이나 바닥은 보이지 않는다.",
+    "note": "AI 재현 이미지이며 실제 상품의 두께·형상·질감과 완전히 동일함을 보장하지 않는다."
+  }
+}
