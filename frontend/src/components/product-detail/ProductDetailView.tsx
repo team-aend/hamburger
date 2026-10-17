@@ -39,7 +39,7 @@ export default function ProductDetailView({ product }: { product: ProductDetail 
   const store = variant?.prices.store ?? null;
   const delivery = variant?.prices.delivery ?? null;
   const nutrition = variant?.nutrition ?? null;
-  // 단백질 가성비: 1,000원당 단백질 (가격 비교 화면의 "단성비"와 같은 개념)
+  // 단백질 가성비: 1,000원당 단백질 (햄버거 비교 화면의 "단성비"와 같은 개념)
   const proteinPer1000 =
     nutrition?.proteinG && store ? Math.round((nutrition.proteinG / store) * 1000 * 10) / 10 : null;
 
@@ -300,7 +300,7 @@ function Stat({
   );
 }
 
-// ── 한 줄 평 (가격 비교 화면의 리뷰 모달과 같은 API: /api/reviews) ──
+// ── 한 줄 평 (햄버거 비교 화면의 리뷰 모달과 같은 API: /api/reviews) ──
 
 function ReviewsSection({ productId }: { productId: number }) {
   const { user, goToLogin } = useAuth();
