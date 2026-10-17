@@ -1,27 +1,11 @@
 import { ImageResponse } from 'next/og';
+import { loadOgFont } from '@/lib/ogFont';
 import { fetchWorldcupShare } from '@/lib/worldcupShare';
 
 /** 카카오톡·메신저 등에 링크를 보냈을 때 보이는 미리보기 이미지 (1200x630) */
 export const alt = 'BURGER PICK 햄버거 월드컵 결과';
 export const size = { width: 1200, height: 630 };
 export const contentType = 'image/png';
-
-/**
- * 이미지 안의 한글을 그리려면 글꼴이 필요하다. 쓰는 글자만 담은 Black Han Sans 를 Google Fonts 에서 받는다.
- * 받지 못하면(네트워크 차단 등) 기본 글꼴로 그린다.
- */
-async function loadFont(text: string): Promise<ArrayBuffer | null> {
-  try {
-    const css = await (await fetch(
-      `https://fonts.googleapis.com/css2?family=Black+Han+Sans&text=${encodeURIComponent(text)}`,
-      { headers: { 'User-Agent': 'Mozilla/5.0' } },
-    )).text();
-    const url = css.match(/src: url\((.+?)\) format\('(?:opentype|truetype)'\)/)?.[1];
-    return url ? await (await fetch(url)).arrayBuffer() : null;
-  } catch {
-    return null;
-  }
-}
 
 export default async function Image({ params }: { params: Promise<{ sessionId: string }> }) {
   const share = await fetchWorldcupShare((await params).sessionId).catch(() => null);
@@ -30,7 +14,7 @@ export default async function Image({ params }: { params: Promise<{ sessionId: s
   const headline = share ? '나의 최애 버거는' : '오늘의 최애 버거를 골라보세요';
   const round = share ? `${share.roundSize}강 우승` : '';
   const footer = '너의 최애 버거는? BURGER PICK';
-  const font = await loadFont(`${headline}${brand}${name}${round}${footer}🍔`);
+  const font = await loadOgFont(`${headline}${brand}${name}${round}${footer}🍔`);
 
   return new ImageResponse(
     (
