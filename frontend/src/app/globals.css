@@ -101,8 +101,6 @@ button { color:inherit; }
 .card-copy>small { display:block; color:var(--red); font-size:10px; font-weight:800; letter-spacing:.18em; }
 .card-copy>strong { display:block; margin-top:5px; font-family:'Black Han Sans'; font-size:28px; font-weight:400; letter-spacing:-.8px; }
 .card-copy>em { display:block; margin-top:4px; color:#70685e; font-size:13px; font-style:normal; }
-.card-copy>span { position:absolute; right:24px; bottom:22px; display:flex; gap:14px; align-items:center; font-size:12px; font-weight:800; }
-.card-copy>span b { width:25px; height:25px; display:grid; place-items:center; border-radius:50%; background:var(--ink); color:white; }
 .vs-divider { position:absolute; z-index:5; left:50%; top:245px; width:76px; height:76px; display:grid; place-items:center; transform:translate(-50%,-50%) rotate(-7deg); border:3px solid var(--ink); border-radius:50%; background:var(--mustard); box-shadow:4px 4px 0 var(--ink); }
 .vs-divider span { font-family:'Black Han Sans'; font-size:30px; }
 .match-help { display:flex; justify-content:space-between; align-items:center; margin-top:26px; font-size:12px; color:#71695f; }
