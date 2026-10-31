@@ -1,0 +1,41 @@
+# 로컬 Postgres 를 함께 띄울 때 docker-compose.yml 위에 겹쳐 쓰는 파일
+#   docker compose -f docker-compose.yml -f docker-compose.local-db.yml up --build
+#
+# backend/.env 는 그대로 두고 backend 의 DATABASE_URL 만 로컬 DB 로 바꾼다.
+# (npm run dev 는 계속 backend/.env 의 Supabase 를 쓰므로 둘이 섞이지 않는다)
+#
+# 최초 기동 시 스키마·브랜드 시드·마이그레이션은 자동 적용된다 (docker/local-db/init-db.sh).
+# 상품 시드는 호스트에서 한 번 실행한다:
+#   DATABASE_URL="postgresql://postgres:postgres@localhost:5432/hamburger?sslmode=disable" npm run db:init
+# DB 를 처음 상태로 되돌리려면 볼륨까지 지운다:
+#   docker compose -f docker-compose.yml -f docker-compose.local-db.yml down -v
+
+services:
+  backend:
+    environment:
+      # 앱은 항상 SSL 로 접속하도록 되어 있는데 로컬 Postgres 는 SSL 이 없어서 sslmode=disable 로 끈다.
+      DATABASE_URL: postgresql://postgres:postgres@db:5432/hamburger?sslmode=disable
+    depends_on:
+      db:
+        condition: service_healthy
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: hamburger
+    ports:
+      - '5432:5432'
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      - ./backend/src/db:/sql:ro
+      - ./docker/local-db/init-db.sh:/docker-entrypoint-initdb.d/init-db.sh:ro
+    healthcheck:
+      test: ['CMD-SHELL', 'pg_isready -U postgres -d hamburger']
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  pgdata:

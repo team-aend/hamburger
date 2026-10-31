@@ -1,0 +1,19 @@
+# 이미지에 들어가면 안 되거나, 컨테이너 안에서 다시 설치/빌드되는 것들
+node_modules
+**/node_modules
+.next
+**/.next
+dist
+**/dist
+.git
+.gitignore
+.env
+**/.env
+*.log
+.DS_Store
+**/.DS_Store
+Dockerfile
+**/Dockerfile
+docker-compose*.yml
+docker
+README.md

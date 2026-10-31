@@ -1,0 +1,38 @@
+# 로컬 개발용 구성
+#   docker compose up --build
+#       backend + frontend (팀 공용 Supabase 사용)
+#   docker compose -f docker-compose.yml -f docker-compose.local-db.yml up --build
+#       위 + 로컬 Postgres (오프라인/스키마 실험용, docker-compose.local-db.yml 참고)
+#
+# 환경변수는 npm run dev 와 같은 backend/.env 를 그대로 쓴다 (backend/.env.example 참고, 커밋 금지).
+
+services:
+  backend:
+    build:
+      context: .
+      dockerfile: backend/Dockerfile
+    ports:
+      - '4000:4000'
+    env_file:
+      - backend/.env
+    environment:
+      # 이미지는 NODE_ENV=production 으로 빌드되지만, production 이면 Secure 쿠키가 켜지고
+      # DEV_LOGIN 이 강제로 꺼진다. 로컬(http://localhost)에서 로그인을 쓰려면 development 로 띄운다.
+      NODE_ENV: development
+      PORT: 4000
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: .
+      dockerfile: frontend/Dockerfile
+      args:
+        # 브라우저가 아니라 Next 서버가 프록시할 주소라서 compose 서비스명을 쓴다.
+        # 빌드 시점에 이미지에 고정되므로 값을 바꾸면 재빌드가 필요하다.
+        NEXT_PUBLIC_API_URL: http://backend:4000
+        NEXT_PUBLIC_SITE_URL: http://localhost:3000
+    ports:
+      - '3000:3000'
+    depends_on:
+      - backend
+    restart: unless-stopped

@@ -152,3 +152,13 @@ npm test --workspace=backend
 | `/api/reviews` | 한 줄 평 작성·삭제 |
 | `/api/saved-searches` | 검색 조건 저장·삭제 |
 | `/api/worldcup` | 참가 옵션, 세션 시작·진행, 경기 선택, 랭킹, 결과 공유 |
+
+## 🐳 Docker로 실행하기 (로컬 개발용)
+
+Docker Desktop 만 있으면 팀원 모두 같은 환경에서 앱을 띄울 수 있습니다. `backend/.env` 를 준비한 뒤:
+
+```bash
+docker compose up --build   # → http://localhost:3000
+```
+
+로컬 DB 사용법, 명령어, 문제 해결은 **[docker/README.md](docker/README.md)** 를 참고하세요.
