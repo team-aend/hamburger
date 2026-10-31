@@ -9,14 +9,17 @@
     "lint": "next lint"
   },
   "dependencies": {
+    "@react-three/fiber": "^9.8.2",
     "next": "^15.1.6",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "three": "^0.187.0"
   },
   "devDependencies": {
     "@types/node": "^22.10.2",
     "@types/react": "^19.0.2",
     "@types/react-dom": "^19.0.2",
+    "@types/three": "^0.187.0",
     "typescript": "^5.7.2"
   }
 }

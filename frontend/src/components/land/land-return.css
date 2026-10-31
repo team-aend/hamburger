@@ -1,0 +1,4 @@
+.land-return-link { position: fixed; z-index: 90; bottom: max(16px, env(safe-area-inset-bottom)); left: max(16px, env(safe-area-inset-left)); display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 10px 16px; border: 1.5px solid var(--ink); border-radius: 999px; background: var(--paper); color: var(--ink); box-shadow: 3px 3px 0 var(--ink); text-decoration: none; font-size: 12px; font-weight: 800; }
+.land-return-link:hover { background: var(--mustard); }
+.land-return-link:focus-visible { outline: 3px solid var(--red); outline-offset: 4px; }
+body:has(.land-return-link) { padding-bottom: 80px; }

@@ -1,5 +1,7 @@
 import type { Metadata } from 'next';
+import { Suspense } from 'react';
 import AuthProvider from '@/components/auth/AuthProvider';
+import LandReturnLink from '@/components/land/LandReturnLink';
 import './globals.css';
 
 export const metadata: Metadata = {
@@ -17,7 +19,7 @@ export default function RootLayout({
   return (
     <html lang="ko">
       <body>
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>{children}<Suspense fallback={null}><LandReturnLink /></Suspense></AuthProvider>
       </body>
     </html>
   );
