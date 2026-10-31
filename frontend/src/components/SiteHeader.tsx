@@ -141,16 +141,16 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
         </div>
       </nav>
 
-      {/* 로그인은 선택 사항: 비로그인이면 로그인 버튼, 로그인 상태면 프로필(누르면 메뉴 열림) */}
+      {/* 비로그인이면 로그인 버튼, 로그인 상태면 마이페이지로 이동하는 프로필 */}
       <div className="header-account">
         {loading ? null : user ? (
-          <button
+          <Link
             className="header-profile"
-            type="button"
-            aria-label={`${user.displayName} 계정 메뉴 열기${
+            href="/mypage"
+            aria-label={`${user.displayName} 마이페이지로 이동${
               priceAlerts > 0 ? `, 새 가격 변동 알림 ${priceAlerts}개` : ''
             }`}
-            onClick={() => setIsMenuOpen(true)}
+            onClick={() => setIsMenuOpen(false)}
           >
             <Avatar user={user} size={30} />
             <span>{user.displayName}</span>
@@ -159,7 +159,7 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
                 {priceAlerts}
               </b>
             )}
-          </button>
+          </Link>
         ) : (
           <Link className="header-login" href={loginHref(pathname)}>
             로그인
