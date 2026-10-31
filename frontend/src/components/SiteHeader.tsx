@@ -31,7 +31,7 @@ export const menuRoutes: Record<MenuKey, string> = {
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading, logout, alerts } = useAuth();
+  const { user, loading, alerts } = useAuth();
   const priceAlerts = alerts.priceChanges;
   const selectMenu = (menu: MenuKey) => {
     if (onSelectMenu) onSelectMenu(menu);
@@ -89,56 +89,6 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
           </button>
         ))}
 
-        <div className="navigation-account">
-          <div className="navigation-heading">ACCOUNT</div>
-          {user ? (
-            <>
-              <div className="account-profile">
-                <Avatar user={user} size={40} />
-                <div>
-                  <strong>{user.displayName}</strong>
-                  {user.email && <small>{user.email}</small>}
-                </div>
-              </div>
-              <Link
-                className={`navigation-item account-mypage ${pathname === '/mypage' ? 'active' : ''}`}
-                href={priceAlerts > 0 ? '/mypage?tab=likes' : '/mypage'}
-                aria-current={pathname === '/mypage' ? 'page' : undefined}
-                tabIndex={isMenuOpen ? 0 : -1}
-                onClick={() => setIsMenuOpen(false)}
-              >
-                <span>마이페이지</span>
-                {priceAlerts > 0 ? (
-                  <small className="account-alert">가격 변동 {priceAlerts}</small>
-                ) : (
-                  <small>MY</small>
-                )}
-              </Link>
-              <button
-                className="account-logout"
-                type="button"
-                tabIndex={isMenuOpen ? 0 : -1}
-                onClick={async () => {
-                  setIsMenuOpen(false);
-                  toggleRef.current?.focus();
-                  await logout();
-                }}
-              >
-                로그아웃
-              </button>
-            </>
-          ) : (
-            <Link
-              className="account-login"
-              href={loginHref(pathname)}
-              tabIndex={isMenuOpen ? 0 : -1}
-              onClick={() => setIsMenuOpen(false)}
-            >
-              <span>로그인</span>
-              <small>Google 계정으로 간편하게</small>
-            </Link>
-          )}
-        </div>
       </nav>
 
       {/* 비로그인이면 로그인 버튼, 로그인 상태면 마이페이지로 이동하는 프로필 */}
