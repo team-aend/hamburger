@@ -32,6 +32,8 @@ ENV HOSTNAME=0.0.0.0
 # output: 'standalone' 결과물에는 실행에 필요한 node_modules 가 이미 포함되어 있다.
 COPY --from=builder /app/frontend/.next/standalone ./
 COPY --from=builder /app/frontend/.next/static ./frontend/.next/static
+# 이미지·SVG·파비콘 같은 정적 파일. standalone 결과물에는 public 이 안 들어가서 직접 복사해야 한다
+COPY --from=builder /app/frontend/public ./frontend/public
 USER node
 EXPOSE 3000
 CMD ["node", "frontend/server.js"]
