@@ -108,3 +108,17 @@ hamburger/
 | 로그인 시 `SESSION_SECRET` 오류 | `SESSION_SECRET` 이 비었거나 32자 미만 → 1번 표의 명령으로 생성 |
 | 로컬 DB에서 "테이블이 없다" 오류 | 자동 초기화는 **볼륨(로컬 DB 데이터가 저장된 공간)이 비어 있을 때 한 번만** 실행됨. 예전 볼륨이 남아 있거나 새 마이그레이션이 추가된 경우 → `down -v` 로 볼륨을 지우고 다시 띄우거나, `DATABASE_URL="...localhost:5432/hamburger?sslmode=disable" npm run db:migrate` |
 | 코드를 고쳤는데 화면이 그대로 | 이미지를 다시 안 만듦 → `docker compose up --build` |
+
+## QA 서버 (Render)
+
+로컬이 아니라 주소로 같이 확인하는 QA 서버는 저장소 루트의 `render.yaml` 로 만든다.
+
+1. [Render](https://render.com) 로그인 → **New → Blueprint** → `team-aend/hamburger` 선택
+2. 처음 한 번 `DATABASE_URL` 입력 (backend/.env 와 같은 값, **포트 6543**)
+3. 배포가 끝나면 프론트 주소 `https://hamburger-qa-web.onrender.com` 으로 접속
+
+- 이후엔 `main` 에 push 하면 자동으로 다시 배포된다.
+- 무료 플랜이라 15분 동안 접속이 없으면 잠들고, 다음 첫 접속은 1분 정도 걸린다.
+- 서비스 이름이 이미 쓰이고 있어서 주소 뒤에 글자가 붙으면 `render.yaml` 의 `*.onrender.com` 값들을 실제 주소로 고친다.
+- Google 로그인을 쓰려면 백엔드 서비스에 `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` 을 추가하고, Google Cloud Console 의 리디렉션 URI 에 `https://hamburger-qa-web.onrender.com/api/auth/google/callback` 을 등록한다. (QA 는 production 모드라 개발용 로그인은 꺼져 있다)
+
