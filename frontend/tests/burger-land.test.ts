@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LAND_PLACES, landDestination, landWalkPath, stepToward, type LandPoint } from '../src/data/burgerLand';
+import { LAND_KEYS, LAND_PLACES, isLandPath, landDestination, landKeyDirection, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPoint } from '../src/data/burgerLand';
 
 test('each land building enters the existing activity with a return-to-land marker', () => {
   assert.deepEqual(LAND_PLACES.map(landDestination), ['/?from=land', '/game?from=land', '/burger-mbti?from=land', '/ranking?from=land']);
@@ -28,4 +28,36 @@ test('movement respects frame distance, clamps at entrances and handles zero-len
   assert.deepEqual(stepToward([0, 0], [3, 4], 10), [3, 4]);
   assert.deepEqual(stepToward([3, 4], [3, 4], 0), [3, 4]);
   assert.deepEqual(stepToward([0, 0], [3, 4], -1), [0, 0]);
+});
+
+test('keyboard and touch directions move on paths and stop at island and building boundaries', () => {
+  assert.deepEqual(landKeyDirection('', 'ArrowUp'), LAND_KEYS.KeyW);
+  assert.deepEqual(landKeyDirection('', 'D'), LAND_KEYS.KeyD);
+  assert.equal(landKeyDirection('Enter', 'Enter'), undefined);
+  assert.deepEqual(LAND_KEYS.KeyW, LAND_KEYS.ArrowUp);
+  assert.deepEqual(LAND_KEYS.KeyD, LAND_KEYS.ArrowRight);
+  assert.deepEqual(moveOnLand([0, 0], [0, 0], 1), [0, 0]);
+  assert.deepEqual(moveOnLand([0, 0], [1, 0], 0), [0, 0]);
+  const diagonal = moveOnLand([0, 1.6], [1, 1], .2);
+  assert.ok(Math.abs(Math.hypot(diagonal[0], diagonal[1] - 1.6) - .2) < .00001);
+  for (const direction of Object.values(LAND_KEYS)) {
+    const point = moveOnLand([0, 1.6], direction, 30);
+    assert.ok(isLandPath(point));
+    assert.ok(Math.abs(point[0]) <= 5.5 && point[1] >= -5.6 && point[1] <= 5.8);
+  }
+  const blocked = moveOnLand([-4.4, -.8], [0, -1], 3);
+  assert.ok(blocked[1] >= -1.25, 'cannot walk through the arena');
+});
+
+test('every entrance is reachable by manual movement and entry expires when walking away', () => {
+  assert.equal(nearbyLandPlace([0, 1.6]), null);
+  for (const place of LAND_PLACES) {
+    let point: LandPoint = [0, 1.6];
+    point = moveOnLand(point, [0, Math.sign(place.entrance[1] - point[1])], Math.abs(place.entrance[1] - point[1]));
+    point = moveOnLand(point, [Math.sign(place.entrance[0]), 0], Math.abs(place.entrance[0]));
+    assert.ok(Math.hypot(point[0] - place.entrance[0], point[1] - place.entrance[1]) < .001);
+    assert.equal(nearbyLandPlace(point), place.id);
+    const away = moveOnLand(point, [-Math.sign(point[0]), 0], 1.5);
+    assert.equal(nearbyLandPlace(away), null);
+  }
 });

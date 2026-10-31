@@ -61,6 +61,19 @@ html:has(.land-shell), body:has(.land-shell) { min-width: 320px; overflow: hidde
 .land-guide b { font-size: 8px; letter-spacing: .1em; }
 .land-guide i { font-style: normal; }
 .land-guide > span { display: none; }
+.land-controls { display: none; position: absolute; z-index: 12; left: 20px; bottom: 128px; grid-template-columns: repeat(3, 44px); grid-template-rows: 18px 44px 44px; gap: 4px; padding: 8px; border: 1px solid #bdc9b1; border-radius: 16px; background: #fffcf3ed; touch-action: none; user-select: none; }
+.land-controls > span { grid-column: 1 / -1; text-align: center; font-size: 10px; color: #53664c; }
+.land-direction { min-width: 44px; min-height: 44px; border: 1px solid #839879; border-radius: 10px; background: #eef2df; color: #283b30; cursor: pointer; touch-action: none; -webkit-touch-callout: none; }
+.land-direction:active { background: #b6cc9c; }
+.land-direction-up { grid-column: 2; grid-row: 2; }
+.land-direction-left { grid-column: 1; grid-row: 3; }
+.land-direction-down { grid-column: 2; grid-row: 3; }
+.land-direction-right { grid-column: 3; grid-row: 3; }
+@media (pointer: coarse), (max-width: 1099px) {
+  .land-controls { display: grid; }
+  .land-guide { display: none; }
+  .land-place-panel { left: auto; right: 16px; bottom: 118px; width: min(280px, calc(100% - 200px)); max-height: 260px; }
+}
 .land-shell :is(button, a):focus-visible { outline: 3px solid #ba6844; outline-offset: 4px; }
 @media (max-width: 1099px) {
   .land-place-panel { top: 170px; right: 24px; width: 250px; max-height: calc(100% - 300px); padding: 16px; }
@@ -113,7 +126,8 @@ html:has(.land-shell), body:has(.land-shell) { min-width: 320px; overflow: hidde
 }
 @media (max-height: 550px) and (min-width: 761px) {
   .land-heading { top: 90px; }
-  .land-heading p { display: none; }
+  .land-heading p, .land-eyebrow { display: none; }
+  .land-heading h1 { margin: 0; font-size: 24px; }
   .land-place-panel { top: 88px; bottom: 110px; max-height: none; }
   .land-place-art, .land-panel-top, .land-place-copy p, .land-panel-note { display: none; }
 }
@@ -135,3 +149,11 @@ html:has(.land-shell), body:has(.land-shell) { min-width: 320px; overflow: hidde
   .land-place-copy h2 { font-size: 17px; }
 }
 @media (prefers-reduced-motion: reduce) { .land-place-card { transition: none; } }
+@media (max-width: 760px) {
+  .land-controls { left: 12px; bottom: 112px; }
+  .land-place-panel { left: auto; right: 12px; bottom: 112px; width: calc(100% - 188px); padding: 10px; display: block; }
+  .land-place-art, .land-place-copy > small { display: none; }
+  .land-place-copy h2 { font-size: 15px; padding-right: 26px; }
+  .land-arrival { margin: 8px 0; }
+  .land-enter { padding: 8px; font-size: 10px; }
+}

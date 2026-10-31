@@ -44,3 +44,38 @@ export function stepToward(start: LandPoint, target: LandPoint, distance: number
   const ratio = Math.max(0, distance) / length;
   return [start[0] + (target[0] - start[0]) * ratio, start[1] + (target[1] - start[1]) * ratio];
 }
+
+export const LAND_KEYS: Readonly<Record<string, LandPoint>> = {
+  ArrowUp: [0, -1], KeyW: [0, -1], ArrowDown: [0, 1], KeyS: [0, 1],
+  ArrowLeft: [-1, 0], KeyA: [-1, 0], ArrowRight: [1, 0], KeyD: [1, 0],
+};
+
+export function landKeyDirection(code: string, key: string): LandPoint | undefined {
+  return LAND_KEYS[code] ?? LAND_KEYS[key] ?? LAND_KEYS[`Key${key.toUpperCase()}`];
+}
+
+/** Keep the player on the connected paths, clear of buildings and the island edge. */
+export function isLandPath([x, z]: LandPoint): boolean {
+  return (Math.abs(x) <= .55 && z >= -5.6 && z <= 5.8)
+    || (Math.abs(x) <= 5.5 && (Math.abs(z + .8) <= .45 || Math.abs(z - 4.7) <= .45))
+    || Math.hypot(x, z - 1.6) <= 1.25;
+}
+
+export function moveOnLand(start: LandPoint, direction: LandPoint, distance: number): LandPoint {
+  const length = Math.hypot(...direction);
+  if (!length || distance <= 0) return start;
+  // Substeps prevent skipping across a path edge on slow frames.
+  const steps = Math.ceil(distance / .08);
+  const dx = direction[0] / length * distance / steps;
+  const dz = direction[1] / length * distance / steps;
+  let [x, z] = start;
+  for (let step = 0; step < steps; step++) {
+    if (isLandPath([x + dx, z])) x += dx;
+    if (isLandPath([x, z + dz])) z += dz;
+  }
+  return [x, z];
+}
+
+export function nearbyLandPlace(point: LandPoint): LandPlaceId | null {
+  return LAND_PLACES.find((place) => Math.hypot(point[0] - place.entrance[0], point[1] - place.entrance[1]) <= .95)?.id ?? null;
+}

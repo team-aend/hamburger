@@ -1,16 +1,17 @@
 'use client';
 
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { useEffect, useLayoutEffect, useMemo, useRef } from 'react';
+import { useEffect, useLayoutEffect, useMemo, useRef, type RefObject } from 'react';
 import { Group, OrthographicCamera, Shape, Vector3 } from 'three';
-import { LAND_PLACES, landWalkPath, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
+import { LAND_PLACES, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
 import type { LandLabel } from './BurgerLand';
 
 interface Props {
   selected: LandPlaceId | null;
   reducedMotion: boolean;
   onSelect: (id: LandPlaceId) => void;
-  onArrival: (id: LandPlaceId) => void;
+  controls: RefObject<Map<string, LandPoint>>;
+  onNearby: (id: LandPlaceId | null) => void;
   onReady: () => void;
   onUnavailable: () => void;
   onLabels: (labels: LandLabel[]) => void;
@@ -154,43 +155,62 @@ function Village() {
   </group>;
 }
 
-function Character({ selected, reducedMotion, onArrival }: Pick<Props, 'selected' | 'reducedMotion' | 'onArrival'>) {
+function Character({ selected, reducedMotion, controls, onNearby }: Pick<Props, 'selected' | 'reducedMotion' | 'controls' | 'onNearby'>) {
   const group = useRef<Group>(null);
   const path = useRef<LandPoint[]>([]);
-  const destination = useRef<LandPlaceId | null>(null);
+  const proximity = useRef<LandPlaceId | null>(null);
   const { invalidate } = useThree();
   useEffect(() => {
     const place = LAND_PLACES.find((item) => item.id === selected);
     if (!place || !group.current) {
       path.current = [];
-      destination.current = null;
       return;
     }
-    destination.current = place.id;
     if (reducedMotion) {
       group.current.position.set(place.entrance[0], .5, place.entrance[1]);
       path.current = [];
     } else path.current = landWalkPath([group.current.position.x, group.current.position.z], place.entrance);
-    if (!path.current.length) onArrival(place.id);
+    const nearby = nearbyLandPlace([group.current.position.x, group.current.position.z]);
+    proximity.current = nearby;
+    onNearby(nearby);
     invalidate();
-  }, [selected, reducedMotion, onArrival, invalidate]);
+  }, [selected, reducedMotion, onNearby, invalidate]);
+
+  useEffect(() => {
+    const wake = () => invalidate();
+    window.addEventListener('keydown', wake);
+    window.addEventListener('pointerdown', wake);
+    return () => {
+      window.removeEventListener('keydown', wake);
+      window.removeEventListener('pointerdown', wake);
+    };
+  }, [invalidate]);
 
   useFrame((state, delta) => {
     const player = group.current;
+    if (!player) return;
+    const direction: [number, number] = [0, 0];
+    controls.current.forEach(([x, z]) => { direction[0] += x; direction[1] += z; });
+    const manual = controls.current.size > 0;
+    let tapped = false;
+    controls.current.forEach((_, key) => {
+      if (key.startsWith('tap-')) { tapped = true; controls.current.delete(key); }
+    });
+    if (manual) path.current = [];
     const target = path.current[0];
-    if (!player || !target) return;
-    const point = stepToward([player.position.x, player.position.z], target, Math.min(delta, .05) * 5);
-    player.rotation.y = Math.atan2(target[0] - player.position.x, target[1] - player.position.z);
-    player.position.set(point[0], .5 + Math.abs(Math.sin(state.clock.elapsedTime * 12)) * .09, point[1]);
-    if (Math.hypot(point[0] - target[0], point[1] - target[1]) < .01) {
-      path.current.shift();
-      if (!path.current.length && destination.current) {
-        player.position.y = .5;
-        player.rotation.y = Math.PI;
-        onArrival(destination.current);
-      }
+    const start: LandPoint = [player.position.x, player.position.z];
+    const point = manual ? moveOnLand(start, direction, Math.max(tapped ? .12 : 0, Math.min(delta, .05) * 4))
+      : target ? stepToward(start, target, Math.min(delta, .05) * 5) : start;
+    const moving = Math.hypot(point[0] - start[0], point[1] - start[1]) > .0001;
+    if (moving) player.rotation.y = Math.atan2(point[0] - start[0], point[1] - start[1]);
+    player.position.set(point[0], .5 + (moving && !reducedMotion ? Math.abs(Math.sin(state.clock.elapsedTime * 12)) * .09 : 0), point[1]);
+    if (target && !manual && Math.hypot(point[0] - target[0], point[1] - target[1]) < .01) path.current.shift();
+    const nearby = nearbyLandPlace(point);
+    if (proximity.current !== nearby) {
+      proximity.current = nearby;
+      onNearby(nearby);
     }
-    invalidate();
+    if (manual || path.current.length || moving) invalidate();
   });
 
   return <group ref={group} position={[0, .5, 1.6]}>
@@ -234,7 +254,7 @@ export default function LandScene(props: Props) {
     <directionalLight position={[8, 7, -8]} intensity={.65} color="#cbe8e8" />
     <Village />
     {LAND_PLACES.map((place) => <Landmark key={place.id} place={place} selected={props.selected === place.id} onSelect={props.onSelect} />)}
-    <Character selected={props.selected} reducedMotion={props.reducedMotion} onArrival={props.onArrival} />
+    <Character selected={props.selected} reducedMotion={props.reducedMotion} controls={props.controls} onNearby={props.onNearby} />
     <Viewport onLabels={props.onLabels} onReady={props.onReady} onUnavailable={props.onUnavailable} />
   </Canvas>;
 }
