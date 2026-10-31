@@ -25,7 +25,7 @@ Docker 구성은 **빌드된 결과물을 실행**하기 때문에 코드를 고
 
    | 항목 | 채우는 법 | 필수 |
    |---|---|---|
-   | `DATABASE_URL` | `[YOUR-PASSWORD]` 를 Supabase DB 비밀번호로 교체 (대괄호까지 삭제). `!` → `%21`, `@` → `%40` | ✅ |
+   | `DATABASE_URL` | `[YOUR-PASSWORD]` 를 Supabase DB 비밀번호로 교체 (대괄호까지 삭제). `!` → `%21`, `@` → `%40`. 포트는 **6543** (Transaction Pooler) | ✅ |
    | `SESSION_SECRET` | `node -e "console.log(require('crypto').randomBytes(32).toString('base64url'))"` 결과 붙여넣기 | ✅ (로그인) |
    | `DEV_LOGIN` | `true` 면 Google 설정 없이 "테스트 계정으로 로그인" 사용 가능 | 선택 |
    | `GOOGLE_*` | Google 로그인 쓸 때만 | 선택 |

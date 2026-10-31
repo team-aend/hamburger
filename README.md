@@ -90,7 +90,7 @@ cp frontend/.env.example frontend/.env
 
 | 변수 | 위치 | 설명 |
 | --- | --- | --- |
-| `DATABASE_URL` | backend | Supabase PostgreSQL 접속 주소 (Session Pooler 주소 사용) |
+| `DATABASE_URL` | backend | Supabase PostgreSQL 접속 주소 (**Transaction Pooler, 포트 6543** 사용 — 5432는 동시 연결 15개 제한으로 여러 서버가 켜지면 막힘) |
 | `SESSION_SECRET` | backend | 세션 쿠키 서명용 비밀값 (32자 이상) |
 | `GOOGLE_CLIENT_ID` / `GOOGLE_CLIENT_SECRET` / `GOOGLE_REDIRECT_URI` | backend | Google OAuth 설정 |
 | `DEV_LOGIN` | backend | `true`면 Google 설정 없이 테스트 계정 로그인 가능 (운영 환경에서는 항상 꺼짐) |
