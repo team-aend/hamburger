@@ -59,7 +59,7 @@ export default function ProductDetailView({ product }: { product: ProductDetail 
 
       <div className="pd-content">
         <nav className="pd-breadcrumb" aria-label="위치">
-          <Link href="/recommend">버거 검색</Link>
+          <Link href="/recommend">햄버거 검색</Link>
           <span aria-hidden="true">/</span>
           <span>{product.brand.name}</span>
           <span aria-hidden="true">/</span>

@@ -585,7 +585,6 @@ export default function RecommendPage() {
             {/* 1. 브랜드 */}
             <FilterSection
               title="1. 브랜드"
-              badge={`DB ${metadata?.brands.length ?? 0}개`}
               summary={
                 selectedBrands.length === 0
                   ? '전체 브랜드 선택됨'
