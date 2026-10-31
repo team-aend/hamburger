@@ -5,6 +5,10 @@ import brandsRouter from './brands.js';
 import authRouter from './auth.js';
 import likesRouter from './likes.js';
 import meRouter from './me.js';
+import reviewsRouter from './reviews.js';
+import { createProductsRouter } from '../products/composition.js';
+import { createSavedSearchesRouter } from '../savedSearches/composition.js';
+
 
 const router = Router();
 
@@ -27,6 +31,9 @@ router.use('/brands', brandsRouter);
 router.use('/likes', likesRouter);
 router.use('/me', meRouter);
 router.use('/worldcup', worldcupRouter);
+router.use('/reviews', reviewsRouter);
+router.use('/products', createProductsRouter());
+router.use('/saved-searches', createSavedSearchesRouter());
 router.use('/recommend', recommendRouter);
 
 export default router;

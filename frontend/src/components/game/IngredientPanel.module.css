@@ -1,0 +1,103 @@
+.grid {
+  display: grid;
+  grid-template-columns: repeat(5, minmax(0, 1fr));
+  gap: 10px;
+}
+
+.button {
+  min-width: 0;
+  min-height: 72px;
+  padding: 10px 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  border: 2px solid var(--ink);
+  border-radius: 10px;
+  background: var(--paper);
+  box-shadow: 3px 3px 0 var(--ink);
+  cursor: pointer;
+  touch-action: manipulation;
+  transition: transform 0.1s ease, box-shadow 0.1s ease, background 0.15s ease;
+}
+
+.button:hover {
+  background: #fff0be;
+}
+
+.button {
+  position: relative;
+}
+
+.button:active,
+.pressed {
+  transform: translate(2px, 2px);
+  box-shadow: 1px 1px 0 var(--ink);
+}
+
+.pressed {
+  background: var(--mustard);
+}
+
+/* 키보드 단축키 표시 (마우스·키보드가 있는 기기에서만) */
+.key {
+  position: absolute;
+  top: 5px;
+  left: 6px;
+  min-width: 20px;
+  height: 20px;
+  padding: 0 4px;
+  display: grid;
+  place-items: center;
+  border: 1.5px solid var(--ink);
+  border-radius: 5px;
+  background: var(--cream);
+  box-shadow: 0 2px 0 var(--ink);
+  font-family: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+@media (hover: none), (pointer: coarse) {
+  .key {
+    display: none;
+  }
+}
+
+.emoji {
+  font-size: 26px;
+  line-height: 1;
+}
+
+.name {
+  max-width: 100%;
+  font-size: 13px;
+  font-weight: 800;
+  word-break: keep-all;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .grid {
+    gap: 6px;
+  }
+
+  .button {
+    min-height: 52px;
+    padding: 5px 2px;
+    gap: 2px;
+    border-width: 1.5px;
+    box-shadow: 2px 2px 0 var(--ink);
+  }
+
+  .emoji {
+    font-size: 19px;
+  }
+
+  .name {
+    font-size: 10px;
+    line-height: 1.2;
+  }
+}

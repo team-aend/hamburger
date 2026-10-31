@@ -1,4 +1,5 @@
 import type { Product } from '@/types/product';
+import type { ReviewsSummaryMap } from '@/types/review';
 import ProductCard from './ProductCard';
 import styles from './ProductGrid.module.css';
 
@@ -11,6 +12,8 @@ interface ProductGridProps {
   likedIds: Set<number>;
   pendingLikeIds: Set<number>;
   onToggleLike: (productId: number) => void;
+  reviewsSummary?: ReviewsSummaryMap;
+  onOpenReviews?: (product: Product) => void;
 }
 
 export default function ProductGrid({
@@ -22,6 +25,8 @@ export default function ProductGrid({
   likedIds,
   pendingLikeIds,
   onToggleLike,
+  reviewsSummary,
+  onOpenReviews,
 }: ProductGridProps) {
   if (products.length === 0) {
     return (
@@ -47,6 +52,8 @@ export default function ProductGrid({
           likeCount={likeCounts[product.id] ?? 0}
           likePending={pendingLikeIds.has(product.id)}
           onToggleLike={onToggleLike}
+          reviewSummary={reviewsSummary?.[product.id]}
+          onOpenReviews={onOpenReviews}
         />
       ))}
     </div>

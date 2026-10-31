@@ -10,11 +10,12 @@ import type { WorldcupProduct } from '@/lib/worldcupSession';
 import { MAX_COMPARE_COUNT } from '@/types/product';
 import './mypage.css';
 
-type TabKey = 'likes' | 'worldcup' | 'account';
+type TabKey = 'likes' | 'worldcup' | 'taste' | 'account';
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'likes', label: '좋아요한 버거' },
   { key: 'worldcup', label: '월드컵 기록' },
+  { key: 'taste', label: '취향 리포트' },
   { key: 'account', label: '회원 정보' },
 ];
 
@@ -30,9 +31,19 @@ interface Profile {
   stats: { likes: number; worldcups: number };
 }
 
+interface PriceChange {
+  previousPrice: number;
+  currentPrice: number;
+  changedAt: string;
+  /** 마이페이지에서 마지막으로 확인한 뒤에 바뀌었는지 */
+  isNew: boolean;
+}
+
 interface LikedItem {
   productId: number;
   likedAt: string;
+  /** 좋아요 후 단품 매장가가 바뀌었으면 값이 있다 */
+  priceChange: PriceChange | null;
   product: {
     id: number;
     name: string;
@@ -188,6 +199,7 @@ function MyPageContent() {
       <div id={`mp-panel-${tab}`} role="tabpanel" aria-labelledby={`mp-tab-${tab}`} className="mp-panel">
         {tab === 'likes' && <LikesTab onChanged={loadProfile} />}
         {tab === 'worldcup' && <WorldcupTab />}
+        {tab === 'taste' && <TasteTab name={user.displayName} />}
         {tab === 'account' && profile && (
           <AccountTab
             profile={profile}
@@ -207,6 +219,7 @@ function MyPageContent() {
 // ── 좋아요한 버거 ──────────────────────────────────────────────
 
 function LikesTab({ onChanged }: { onChanged: () => void }) {
+  const { refresh } = useAuth();
   const [items, setItems] = useState<LikedItem[] | null>(null);
   const [error, setError] = useState<string | null>(null);
   const [pendingId, setPendingId] = useState<number | null>(null);
@@ -215,9 +228,16 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
   useEffect(() => {
     fetch('/api/me/likes', { cache: 'no-store' })
       .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
-      .then((data: { items: LikedItem[] }) => setItems(data.items))
+      .then(async (data: { items: LikedItem[] }) => {
+        setItems(data.items);
+        // 새 가격 변동을 보여줬으면 확인 처리 → 헤더 알림 배지가 사라진다. (이번 화면의 NEW 표시는 유지)
+        if (data.items.some((item) => item.priceChange?.isNew)) {
+          await fetch('/api/me/price-alerts/seen', { method: 'POST' }).catch(() => undefined);
+          await refresh();
+        }
+      })
       .catch(() => setError('좋아요 목록을 불러오지 못했습니다.'));
-  }, []);
+  }, [refresh]);
 
   const unlike = async (productId: number) => {
     setPendingId(productId);
@@ -248,8 +268,8 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
     return (
       <div className="mp-empty">
         <h3>아직 좋아요한 버거가 없어요.</h3>
-        <p>가격 비교 화면에서 마음에 드는 버거에 ♥를 눌러 보세요.</p>
-        <Link href="/compare">가격 비교 보러 가기</Link>
+        <p>햄버거 비교 화면에서 마음에 드는 버거에 ♥를 눌러 보세요.</p>
+        <Link href="/compare">햄버거 비교 보러 가기</Link>
       </div>
     );
   }
@@ -277,8 +297,10 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
       </div>
       {error && <p className="mp-error" role="alert">{error}</p>}
 
+      <PriceChangeBanner items={items} />
+
       <div className="mp-grid">
-        {items.map(({ productId, likedAt, product }) => {
+        {items.map(({ productId, likedAt, product, priceChange }) => {
           const inCompare = compareIds.includes(productId);
           return (
             <article key={productId} className={`mp-card ${inCompare ? 'selected' : ''}`}>
@@ -286,7 +308,10 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
                 {product ? (
                   <>
                     <small className="mp-card-brand">{product.brand.name}</small>
-                    <h3 className="mp-card-name">{product.name}</h3>
+                    <h3 className="mp-card-name">
+                      <Link href={`/products/${productId}`}>{product.name}</Link>
+                    </h3>
+                    {priceChange && <PriceChangeTag change={priceChange} />}
                     <dl className="mp-card-prices">
                       <div>
                         <dt>단품</dt>
@@ -341,6 +366,170 @@ function LikesTab({ onChanged }: { onChanged: () => void }) {
   );
 }
 
+function PriceChangeTag({ change }: { change: PriceChange }) {
+  const diff = change.currentPrice - change.previousPrice;
+  const up = diff > 0;
+  return (
+    <p className={`mp-price-change ${up ? 'up' : 'down'}`}>
+      <span aria-hidden="true">{up ? '▲' : '▼'}</span>
+      좋아요 후 {Math.abs(diff).toLocaleString('ko-KR')}원 {up ? '올랐어요' : '내렸어요'}
+      <small>
+        {change.previousPrice.toLocaleString('ko-KR')}원 → {change.currentPrice.toLocaleString('ko-KR')}원
+      </small>
+      {change.isNew && <b className="mp-new">NEW</b>}
+    </p>
+  );
+}
+
+/** 좋아요한 버거 중 가격이 바뀐 버거 요약 (가격 변동 알림) */
+function PriceChangeBanner({ items }: { items: LikedItem[] }) {
+  const changed = items.filter((item) => item.priceChange && item.product);
+  if (changed.length === 0) return null;
+  const newCount = changed.filter((item) => item.priceChange!.isNew).length;
+  return (
+    <section className="mp-price-alert" aria-labelledby="mp-price-alert-title">
+      <h3 id="mp-price-alert-title">
+        🔔 좋아요한 버거 중 {changed.length}개의 가격이 바뀌었어요
+        {newCount > 0 && <small>새 소식 {newCount}개</small>}
+      </h3>
+      <ul>
+        {changed.map(({ productId, product, priceChange }) => {
+          const diff = priceChange!.currentPrice - priceChange!.previousPrice;
+          return (
+            <li key={productId}>
+              <Link href={`/products/${productId}`}>{product!.name}</Link>
+              <span className={diff > 0 ? 'up' : 'down'}>
+                {diff > 0 ? '▲' : '▼'} {Math.abs(diff).toLocaleString('ko-KR')}원
+              </span>
+              <small>{formatDate(priceChange!.changedAt)}</small>
+            </li>
+          );
+        })}
+      </ul>
+    </section>
+  );
+}
+
+// ── 취향 리포트 ────────────────────────────────────────────────
+
+interface TasteReport {
+  enough: boolean;
+  sources: { likes: number; worldcupWins: number; highRatings: number };
+  patties: { label: string; share: number }[];
+  brands: { label: string; share: number }[];
+  averagePrice: number | null;
+  priceBand: string | null;
+  averageCalories: number | null;
+  summary: string | null;
+  recommendations: { productId: string; name: string; brandName: string; singlePrice: number | null; reasons: string[] }[];
+}
+
+/** 막대 하나에 비율(%)을 글자로 함께 적어, 색 없이도 읽을 수 있게 한다. */
+function ShareBars({ title, items }: { title: string; items: { label: string; share: number }[] }) {
+  if (items.length === 0) return null;
+  return (
+    <div className="mp-taste-bars">
+      <h4>{title}</h4>
+      <ul>
+        {items.map((item) => (
+          <li key={item.label}>
+            <span className="mp-taste-label">{item.label}</span>
+            <span className="mp-champion-bar" aria-hidden="true">
+              <i style={{ width: `${item.share}%` }} />
+            </span>
+            <strong>{item.share}%</strong>
+          </li>
+        ))}
+      </ul>
+    </div>
+  );
+}
+
+function TasteTab({ name }: { name: string }) {
+  const [report, setReport] = useState<TasteReport | null>(null);
+  const [error, setError] = useState(false);
+
+  useEffect(() => {
+    fetch('/api/me/taste', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : Promise.reject(new Error())))
+      .then(setReport)
+      .catch(() => setError(true));
+  }, []);
+
+  if (error) return <p className="mp-error" role="alert">취향 리포트를 불러오지 못했습니다.</p>;
+  if (!report) return <p className="mp-state">취향을 분석하는 중...</p>;
+
+  const { sources } = report;
+  const basis = `좋아요 ${sources.likes}개 · 월드컵 우승 ${sources.worldcupWins}회 · 높은 별점 ${sources.highRatings}개`;
+
+  if (!report.enough) {
+    return (
+      <div className="mp-empty">
+        <h3>취향을 알려면 기록이 조금 더 필요해요.</h3>
+        <p>
+          좋아요를 3개 이상 누르거나, 월드컵을 2번 이상 완주하면 취향 리포트가 만들어져요.
+          <br />
+          지금까지: {basis}
+        </p>
+        <Link href="/">월드컵 하러 가기</Link>
+      </div>
+    );
+  }
+
+  return (
+    <div className="mp-taste">
+      <section className="mp-taste-hero" aria-labelledby="mp-taste-title">
+        <span className="winner-label">MY BURGER TASTE</span>
+        <h3 id="mp-taste-title">
+          {name}님은
+          <br />
+          <strong>{report.summary}</strong>
+        </h3>
+        <p>{basis}을 바탕으로 분석했어요.</p>
+      </section>
+
+      <dl className="mp-taste-stats">
+        <div>
+          <dt>자주 고르는 가격대</dt>
+          <dd>{report.priceBand ?? '-'}</dd>
+          {report.averagePrice !== null && <small>평균 {report.averagePrice.toLocaleString('ko-KR')}원</small>}
+        </div>
+        <div>
+          <dt>평균 열량</dt>
+          <dd>{report.averageCalories !== null ? `${report.averageCalories.toLocaleString('ko-KR')}kcal` : '-'}</dd>
+        </div>
+      </dl>
+
+      <div className="mp-taste-grid">
+        <ShareBars title="좋아하는 패티" items={report.patties} />
+        <ShareBars title="좋아하는 브랜드" items={report.brands} />
+      </div>
+
+      {report.recommendations.length > 0 && (
+        <section aria-labelledby="mp-taste-reco-title">
+          <h3 id="mp-taste-reco-title" className="mp-section-title mp-history-title">
+            취향 저격 버거 <small>아직 고르지 않은 버거 중 취향에 맞는 버거</small>
+          </h3>
+          <ul className="mp-taste-reco">
+            {report.recommendations.map((item) => (
+              <li key={item.productId}>
+                <Link href={`/products/${item.productId}`}>
+                  <small>{item.brandName}</small>
+                  <strong>{item.name}</strong>
+                  <span className="mp-taste-price">{formatPrice(orUndefined(item.singlePrice))}</span>
+                  <span className="mp-taste-reasons">
+                    {item.reasons.map((reason) => <em key={reason}>{reason}</em>)}
+                  </span>
+                </Link>
+              </li>
+            ))}
+          </ul>
+        </section>
+      )}
+    </div>
+  );
+}
+
 // ── 월드컵 기록 ────────────────────────────────────────────────
 
 function WorldcupTab() {
@@ -378,7 +567,9 @@ function WorldcupTab() {
             🍔
           </div>
           <small>{favoriteBurger.brandName}</small>
-          <h3>{favoriteBurger.name}</h3>
+          <h3>
+            <Link className="mp-product-link" href={`/products/${favoriteBurger.productId}`}>{favoriteBurger.name}</Link>
+          </h3>
           <p>
             <strong>{favorite.count}회</strong> 우승시킨 최애 버거
           </p>
@@ -395,7 +586,7 @@ function WorldcupTab() {
                   <span className="mp-burger-icon" aria-hidden="true">
                     🍔
                   </span>
-                  <span className="mp-champion-name">{burger.name}</span>
+                  <Link className="mp-champion-name mp-product-link" href={`/products/${burger.productId}`}>{burger.name}</Link>
                   <span className="mp-champion-bar" aria-hidden="true">
                     <i style={{ width: `${(count / favorite.count) * 100}%` }} />
                   </span>
@@ -432,7 +623,9 @@ function WorldcupTab() {
                     </span>
                     <div>
                       <small>{burger.brandName}</small>
-                      <strong>{burger.name}</strong>
+                      <strong>
+                        <Link className="mp-product-link" href={`/products/${burger.productId}`}>{burger.name}</Link>
+                      </strong>
                     </div>
                   </div>
                 </th>

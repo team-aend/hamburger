@@ -224,7 +224,7 @@ async function fetchDatasetFromSupabase(): Promise<CachedDataset> {
       ),
       pool.query('SELECT id, name, slug FROM tags ORDER BY id'),
       pool.query(
-        'SELECT id, brand_id, category_id, name, slug, description, status, is_limited FROM products ORDER BY id'
+        'SELECT id, brand_id, category_id, name, slug, description, image_url, status, is_limited FROM products ORDER BY id'
       ),
       pool.query(
         'SELECT id, product_id, name, variant_type, is_default, is_active FROM product_variants ORDER BY id'
@@ -291,6 +291,7 @@ async function fetchDatasetFromSupabase(): Promise<CachedDataset> {
             name: r.name,
             slug: r.slug,
             description: r.description ?? '',
+            imageUrl: r.image_url ?? null,
             status: r.status,
             isLimited: Boolean(r.is_limited),
           }))
@@ -420,8 +421,56 @@ async function fetchDatasetFromSupabase(): Promise<CachedDataset> {
 }
 
 /**
+ * DB의 products.image_url을 조회해 캐시된 상품 목록의 imageUrl에 반영한다.
+ * 관리자에서 이미지를 등록·변경했을 때 10분 캐시 만료를 기다리지 않고 즉시 반영되도록 한다.
+ */
+async function syncProductImagesFromDb(dataset: CachedDataset): Promise<void> {
+  try {
+    const pool = getDbPool();
+    const { rows } = await pool.query<{
+      id: string;
+      name: string;
+      slug: string;
+      image_url: string | null;
+    }>('SELECT id, name, slug, image_url FROM products');
+    if (rows.length === 0) return;
+
+    const norm = (s: string) => s.toLowerCase().replace(/[\s-_]/g, '');
+    const byId = new Map<number, string | null>();
+    const bySlug = new Map<string, string | null>();
+    const byName = new Map<string, string | null>();
+
+    for (const r of rows) {
+      const url = r.image_url?.trim() || null;
+      byId.set(Number(r.id), url);
+      bySlug.set(norm(r.slug), url);
+      byName.set(norm(r.name), url);
+    }
+
+    const resolveUrl = (p: Product) => {
+      // A matched NULL clears the old image instead of falling through to another match.
+      const slug = norm(p.slug);
+      if (bySlug.has(slug)) return bySlug.get(slug);
+      const name = norm(p.name);
+      if (byName.has(name)) return byName.get(name);
+      if (byId.has(p.id)) return byId.get(p.id);
+      return p.imageUrl;
+    };
+
+    for (const p of dataset.products) {
+      p.imageUrl = resolveUrl(p);
+    }
+    for (const ep of dataset.baseEnrichedProducts) {
+      ep.imageUrl = resolveUrl(ep);
+    }
+  } catch {
+    // DB 이미지 조회 실패 시 기존 캐시 유지
+  }
+}
+
+/**
  * Node.js 인메모리 캐시 조회 (Singleflight 지원)
- * - 캐시가 유효하면 DB 쿼리 없이 0ms 반환
+ * - 캐시가 유효하면 전체 데이터를 재조회하지 않고 상품 이미지만 DB 최신값 반영
  * - 동시 다발적인 요청이 들어와도 inFlightPromise를 공유하여 DB는 딱 1번만 조회
  * - forceRefresh=true 전달 시 캐시 즉시 무효화 후 재적재
  */
@@ -432,6 +481,7 @@ export async function getCachedDataset(options?: {
   const now = Date.now();
 
   if (!forceRefresh && memoryCache && memoryCache.expiresAt > now) {
+    await syncProductImagesFromDb(memoryCache);
     return { dataset: memoryCache, cacheHit: true };
   }
 
@@ -442,7 +492,8 @@ export async function getCachedDataset(options?: {
 
   if (!inFlightPromise) {
     inFlightPromise = fetchDatasetFromSupabase()
-      .then((fresh) => {
+      .then(async (fresh) => {
+        await syncProductImagesFromDb(fresh);
         memoryCache = fresh;
         return fresh;
       })

@@ -1,0 +1,270 @@
+/* 손님(왼쪽 아래) 오른쪽에 말풍선 */
+.card {
+  min-width: 0;
+  height: 100%;
+  display: flex;
+  flex-direction: row-reverse;
+  align-items: flex-end;
+  gap: 14px;
+}
+
+.bubble {
+  position: relative;
+  min-width: 0;
+  height: 100%;
+  flex: 1;
+  padding: 16px 18px;
+  display: flex;
+  flex-direction: column;
+  background: var(--paper);
+  border: 2px solid var(--ink);
+  border-radius: 18px;
+  box-shadow: 4px 4px 0 rgba(27, 25, 22, 0.25);
+  animation: bubbleIn 0.32s 0.12s ease-out both;
+}
+
+/* 말풍선 꼬리 (왼쪽 아래 손님 쪽을 가리킴) */
+.bubble::before,
+.bubble::after {
+  content: '';
+  position: absolute;
+  border-style: solid;
+}
+
+.bubble::before {
+  bottom: 18px;
+  left: -16px;
+  border-width: 0 16px 14px 0;
+  border-color: transparent var(--ink) transparent transparent;
+}
+
+.bubble::after {
+  bottom: 20px;
+  left: -11px;
+  border-width: 0 12px 10px 0;
+  border-color: transparent var(--paper) transparent transparent;
+}
+
+.heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+}
+
+.eyebrow {
+  color: var(--red);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: 0.16em;
+}
+
+.difficulty {
+  padding: 3px 8px;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.easy {
+  background: #d9ecc9;
+}
+
+.normal {
+  background: var(--mustard);
+}
+
+.hard {
+  background: var(--red);
+  color: white;
+}
+
+.title {
+  margin-top: 6px;
+  font-family: 'Black Han Sans', sans-serif;
+  font-size: 26px;
+  font-weight: 400;
+  letter-spacing: -0.5px;
+}
+
+.please {
+  color: var(--red);
+}
+
+.body {
+  flex: 1;
+  margin-top: 10px;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 0.9fr);
+  align-items: end;
+  gap: 12px;
+}
+
+.steps {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+  list-style: none;
+}
+
+.steps li {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  font-weight: 700;
+}
+
+.steps b {
+  flex: none;
+  width: 20px;
+  height: 20px;
+  display: grid;
+  place-items: center;
+  border-radius: 50%;
+  background: var(--ink);
+  color: var(--paper);
+  font-size: 10px;
+}
+
+/* 손님: 사람 캐릭터 대신 동그란 머리 + 어깨만 있는 단순한 실루엣 */
+.customer {
+  position: relative;
+  flex: none;
+  width: 64px;
+  height: 64px;
+  animation: customerIn 0.32s ease-out both;
+}
+
+.customer::before {
+  content: '';
+  position: absolute;
+  z-index: 1;
+  top: 0;
+  left: 50%;
+  width: 36px;
+  height: 36px;
+  transform: translateX(-50%);
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background:
+    radial-gradient(circle at 36% 48%, var(--ink) 0 2.5px, transparent 3px),
+    radial-gradient(circle at 64% 48%, var(--ink) 0 2.5px, transparent 3px),
+    var(--customer);
+}
+
+.customer::after {
+  content: '';
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  width: 64px;
+  height: 32px;
+  transform: translateX(-50%);
+  border: 2px solid var(--ink);
+  border-bottom: 0;
+  border-radius: 32px 32px 0 0;
+  background: var(--customer);
+  filter: brightness(0.88);
+}
+
+@keyframes customerIn {
+  from {
+    opacity: 0;
+    transform: translateX(-24px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@keyframes bubbleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .bubble,
+  .customer {
+    animation: none;
+  }
+}
+
+@media (max-width: 700px) {
+  .card {
+    gap: 12px;
+  }
+
+  .bubble {
+    padding: 10px 12px;
+    border-radius: 14px;
+  }
+
+  .bubble::before {
+    bottom: 12px;
+    left: -14px;
+    border-width: 0 14px 12px 0;
+  }
+
+  .bubble::after {
+    bottom: 14px;
+    left: -9px;
+    border-width: 0 10px 8px 0;
+  }
+
+  .customer {
+    width: 44px;
+    height: 44px;
+    margin: 0;
+  }
+
+  .customer::before {
+    width: 24px;
+    height: 24px;
+  }
+
+  .customer::after {
+    width: 42px;
+    height: 22px;
+  }
+
+  .title {
+    font-size: 19px;
+  }
+
+  .body {
+    margin-top: 6px;
+    grid-template-columns: 96px minmax(0, 1fr);
+    align-items: center;
+  }
+
+  /* 모바일에서는 세로 목록 대신 번호 칩을 1번(아래빵)부터 줄바꿈해서 보여준다. */
+  .steps {
+    flex-direction: row;
+    flex-wrap: wrap;
+    gap: 4px;
+  }
+
+  .steps li {
+    padding: 2px 7px 2px 2px;
+    gap: 4px;
+    border: 1px solid var(--line);
+    border-radius: 999px;
+    background: var(--cream);
+    font-size: 11px;
+  }
+
+  .steps b {
+    width: 16px;
+    height: 16px;
+    font-size: 9px;
+  }
+}

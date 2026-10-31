@@ -26,9 +26,13 @@ async function findWorkingPool(): Promise<{ pool: pg.Pool; url: string }> {
     throw new Error('DATABASE_URL이 설정되어 있지 않습니다.');
   }
 
+  const rejectUnauthorized =
+    process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== undefined
+      ? process.env.DATABASE_SSL_REJECT_UNAUTHORIZED === 'true'
+      : Boolean(process.env.DATABASE_SSL_CA);
   const pool = new Pool({
     connectionString: url,
-    ssl: { rejectUnauthorized: true, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
+    ssl: { rejectUnauthorized, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
     connectionTimeoutMillis: 5000,
   });
 

@@ -35,7 +35,7 @@ export interface Product {
   name: string;
   slug: string;
   description: string;
-  imageUrl?: string;
+  imageUrl?: string | null;
   status: 'ACTIVE' | 'DISCONTINUED' | 'UPCOMING' | 'TEMPORARY';
   isLimited: boolean;
 }

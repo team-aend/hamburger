@@ -1,0 +1,51 @@
+{
+  "name": "빅맥",
+  "brandSlug": "mcdonalds",
+  "productSlug": "big-mac",
+  "publicUrl": "/images/burgers/mcdonalds-big-mac-ai.png",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "generatedOn": "2026-10-17",
+  "sourceUrls": [
+    "https://www.mcdonalds.co.kr/kor/menu/detail/178/3/16",
+    "https://www.mcdonalds.co.kr/upload/2025/08/%EB%B9%85%EB%A7%A5%C2%AE_%EC%84%B8%ED%8A%B8.png",
+    "https://www.mcdonalds.co.kr/kor/menu/information/origin"
+  ],
+  "referenceVerification": {
+    "method": "Read official Korean menu description and visually inspected the rendered official product photo in the browser.",
+    "observedIngredients": [
+      "쇠고기 패티 2장",
+      "참깨 윗번·중간번·아랫번의 3단번",
+      "잘게 썬 양상추",
+      "다진 양파",
+      "피클",
+      "노란 치즈",
+      "빅맥 소스"
+    ],
+    "observedTopToBottom": [
+      "참깨 윗번",
+      "윗 쇠고기 패티",
+      "양상추·양파·피클·빅맥 소스",
+      "중간번",
+      "아랫 쇠고기 패티",
+      "치즈·양상추·소스",
+      "아랫번"
+    ],
+    "uncertainties": [
+      "공식 설명은 패티 2장과 치즈·양상추·양파·피클·소스를 명시한다. 층 순서는 공식 사진을 관찰했다.",
+      "소스 배합·정확한 양과 패티 실측 두께는 공개 사진만으로 확인할 수 없어 시각적 추정이다."
+    ]
+  },
+  "prompt": "Use case: product-mockup. Asset type: original AI-generated burger cutout for a Korean burger tournament web application.\nPrimary request: create one photorealistic Korean McDonald's Big Mac burger, informed by the official Korean menu photo visually inspected at https://www.mcdonalds.co.kr/kor/menu/detail/178/3/16. Recreate the recognizable ingredient structure with new photography, not a pasted official photo.\nSubject accuracy: EXACTLY TWO thin, browned, flat griddled round beef patties, NOT thick gourmet patties. EXACTLY THREE bread layers: rounded golden sesame-seed top bun, one distinct horizontal lightly toasted middle club bun, and flat bottom bun. Match this visible top-to-bottom stack: sesame crown, upper beef patty, finely shredded iceberg lettuce with tiny diced white onion and green crinkle-cut pickle slices and pale tan Big Mac sauce, middle club bun, lower beef patty, one soft yellow American cheese slice with corners draping, more shredded iceberg/onion/sauce, bottom bun. Compact fast-food proportions, the two thin beef patties and middle bun unmistakable. No tomato, bacon, chicken, fried patty or additional meat.\nStyle/medium: high-quality realistic studio food product photograph with natural toasted bread, lightly browned beef texture, crisp fresh pale-green lettuce, realistic sauce, consistent with the project's existing clean bright Mom's Touch thigh burger cutout.\nComposition: single complete assembled burger centered on a square canvas, nearly straight-on with a very slight three-quarter angle and tiny view of the crown; burger occupies about 85% of width and stays entirely within frame with clean transparent margins.\nLighting: soft bright neutral studio light, crisp ingredient detail, realistic appetizing color, no heavy shadow.\nScene/backdrop: genuinely transparent alpha background, no surface.\nConstraints: no text, watermark, logo, packaging, plate, fries, drink, props, hands or extra items. Do not create an exploded view or cut burger. Preserve actual alpha transparency.",
+  "validation": {
+    "format": "PNG",
+    "dimensions": [
+      1254,
+      1254
+    ],
+    "mode": "RGBA",
+    "transparentCorners": true,
+    "visualInspection": "패티 개수·주요 재료·층 순서·로고/텍스트 없음·전체 버거 구도를 검수했다. 배경 후광이나 바닥은 보이지 않는다.",
+    "note": "AI 재현 이미지이며 실제 상품의 두께·형상·질감과 완전히 동일함을 보장하지 않는다."
+  }
+}

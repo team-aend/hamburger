@@ -1,0 +1,67 @@
+.stage {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  width: 100%;
+  /* 새 층이 위에서 떨어질 때 잘리지 않도록 자르는 기준은 stack 이 아니라 stage 에 둔다. */
+  overflow: hidden;
+}
+
+.large {
+  --unit: 10px;
+  height: 280px;
+}
+
+.small {
+  --unit: 6px;
+  height: 150px;
+}
+
+/* 배열의 첫 번째 재료가 화면 맨 아래에 오도록 column-reverse 로 쌓는다. */
+.stack {
+  width: calc(var(--unit) * 24);
+  max-width: 88%;
+  min-height: 0;
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  justify-content: flex-start;
+  padding: 0 4%;
+}
+
+.plate {
+  flex: none;
+  width: calc(var(--unit) * 30);
+  max-width: 100%;
+  height: calc(var(--unit) * 1.2);
+  margin-top: 2px;
+  border: 2px solid var(--ink);
+  border-radius: 50%;
+  background: var(--paper);
+}
+
+.empty {
+  position: absolute;
+  inset: 0 0 calc(var(--unit) * 3);
+  display: grid;
+  place-items: center;
+  padding: 0 24px;
+  color: #827a6d;
+  font-size: 14px;
+  font-weight: 700;
+  text-align: center;
+}
+
+@media (max-width: 700px) {
+  .large {
+    --unit: 6.5px;
+    height: 160px;
+  }
+
+  .small {
+    --unit: 4px;
+    height: 96px;
+  }
+}

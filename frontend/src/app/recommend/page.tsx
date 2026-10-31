@@ -1,6 +1,9 @@
 'use client';
 
+import Link from 'next/link';
 import SiteHeader from '@/components/SiteHeader';
+import BurgerImage from '@/components/product/BurgerImage';
+import SavedSearchesBar, { type SearchFilters } from '@/components/recommend/SavedSearchesBar';
 import './recommend.css';
 
 import { useEffect, useState, useCallback, useRef } from 'react';
@@ -50,6 +53,7 @@ interface RecommendedBurger {
   name: string;
   slug: string;
   description: string;
+  imageUrl?: string | null;
   brand: Brand;
   ingredients: Ingredient[];
   tags: Tag[];
@@ -358,6 +362,20 @@ export default function RecommendPage() {
     if (preset.variant) setVariantType(preset.variant);
   };
 
+  // 저장해 둔 "내 조건" 적용
+  const applySavedFilters = (filters: SearchFilters) => {
+    setKeyword(filters.keyword);
+    setSelectedBrands(filters.brands);
+    setIncludeIngredients(filters.includeIngredients);
+    setExcludeIngredients(filters.excludeIngredients);
+    setMinPrice(filters.minPrice);
+    setMaxPrice(filters.maxPrice);
+    setPriceChannel(filters.priceChannel);
+    setMaxCalories(filters.maxCalories);
+    setVariantType(filters.variantType);
+    setSortBy(filters.sortBy);
+  };
+
   // 조건 전체 초기화
   const resetAllFilters = () => {
     setKeyword('');
@@ -498,6 +516,22 @@ export default function RecommendPage() {
             ↺ 조건 전체 해제
           </button>
         </div>
+
+        <SavedSearchesBar
+          current={{
+            keyword,
+            brands: selectedBrands,
+            includeIngredients,
+            excludeIngredients,
+            minPrice,
+            maxPrice,
+            priceChannel,
+            maxCalories,
+            variantType,
+            sortBy,
+          }}
+          onApply={applySavedFilters}
+        />
 
         <div className="rc-layout">
           {/* 좌측: 조건 선택 필터 패널 (아코디언 구조) */}
@@ -917,9 +951,19 @@ export default function RecommendPage() {
 
                   return (
                     <article key={burger.id} className="rc-card">
+                      <Link className="rc-card-visual" href={`/products/${burger.id}`} aria-label={`${burger.name} 상세 보기`}>
+                        <BurgerImage
+                          src={burger.imageUrl}
+                          alt={burger.name}
+                          className="rc-card-image"
+                          fallback={<span className="rc-card-placeholder" aria-hidden="true">🍔</span>}
+                        />
+                      </Link>
                       <div className="rc-card-body">
                         <small className="rc-card-brand">{burger.brand.name}</small>
-                        <h3 className="rc-card-name">{burger.name}</h3>
+                        <h3 className="rc-card-name">
+                          <Link href={`/products/${burger.id}`}>{burger.name}</Link>
+                        </h3>
                         <p className="rc-card-desc">{burger.description}</p>
 
                         {/* 들어있는 재료 태그 목록 */}
@@ -1042,9 +1086,15 @@ export default function RecommendPage() {
                     : `전체 ${randomTotalCandidates}개 중`}
                 </p>
 
-                <div className="rc-modal-visual" aria-hidden="true">
-                  <span className="crown">♛</span>
-                  <b>🍔</b>
+                <div className="rc-modal-visual">
+                  <span className="crown" aria-hidden="true">♛</span>
+                  <BurgerImage
+                    src={randomPicked.imageUrl}
+                    alt={randomPicked.name}
+                    className="rc-modal-image"
+                    loading="eager"
+                    fallback={<b aria-hidden="true">🍔</b>}
+                  />
                 </div>
 
                 <div className="rc-modal-copy">

@@ -5,7 +5,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { useEffect, useRef, useState } from 'react';
 import { loginHref, useAuth, type AuthUser } from '@/components/auth/AuthProvider';
 
-type MenuKey = 'worldcup' | 'recommend' | 'compare';
+export type MenuKey = 'worldcup' | 'recommend' | 'compare' | 'game' | 'test';
 
 type SiteHeaderProps = {
   activeMenu?: MenuKey;
@@ -15,19 +15,24 @@ type SiteHeaderProps = {
 const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
   { key: 'worldcup', label: '햄버거 월드컵', badge: 'PLAY' },
   { key: 'recommend', label: '버거 검색 · 추천' },
-  { key: 'compare', label: '가격 비교' },
+  { key: 'compare', label: '햄버거 비교' },
+  { key: 'game', label: '햄버거 쌓기', badge: 'GAME' },
+  { key: 'test', label: '버거 심리테스트', badge: 'TEST' },
 ];
 
-const menuRoutes: Record<MenuKey, string> = {
+export const menuRoutes: Record<MenuKey, string> = {
   worldcup: '/',
   recommend: '/recommend',
   compare: '/compare',
+  game: '/game',
+  test: '/burger-mbti',
 };
 
 export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps) {
   const router = useRouter();
   const pathname = usePathname();
-  const { user, loading, logout } = useAuth();
+  const { user, loading, logout, alerts } = useAuth();
+  const priceAlerts = alerts.priceChanges;
   const selectMenu = (menu: MenuKey) => {
     if (onSelectMenu) onSelectMenu(menu);
     else router.push(menuRoutes[menu]);
@@ -97,13 +102,17 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
               </div>
               <Link
                 className={`navigation-item account-mypage ${pathname === '/mypage' ? 'active' : ''}`}
-                href="/mypage"
+                href={priceAlerts > 0 ? '/mypage?tab=likes' : '/mypage'}
                 aria-current={pathname === '/mypage' ? 'page' : undefined}
                 tabIndex={isMenuOpen ? 0 : -1}
                 onClick={() => setIsMenuOpen(false)}
               >
                 <span>마이페이지</span>
-                <small>MY</small>
+                {priceAlerts > 0 ? (
+                  <small className="account-alert">가격 변동 {priceAlerts}</small>
+                ) : (
+                  <small>MY</small>
+                )}
               </Link>
               <button
                 className="account-logout"
@@ -138,11 +147,18 @@ export default function SiteHeader({ activeMenu, onSelectMenu }: SiteHeaderProps
           <button
             className="header-profile"
             type="button"
-            aria-label={`${user.displayName} 계정 메뉴 열기`}
+            aria-label={`${user.displayName} 계정 메뉴 열기${
+              priceAlerts > 0 ? `, 새 가격 변동 알림 ${priceAlerts}개` : ''
+            }`}
             onClick={() => setIsMenuOpen(true)}
           >
             <Avatar user={user} size={30} />
             <span>{user.displayName}</span>
+            {priceAlerts > 0 && (
+              <b className="header-alert-badge" aria-hidden="true">
+                {priceAlerts}
+              </b>
+            )}
           </button>
         ) : (
           <Link className="header-login" href={loginHref(pathname)}>

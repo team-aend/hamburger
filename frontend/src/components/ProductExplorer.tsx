@@ -9,20 +9,98 @@ import ProductSort from '@/components/filter/ProductSort';
 import SearchBar from '@/components/filter/SearchBar';
 import ProductGrid from '@/components/product/ProductGrid';
 import SiteHeader from '@/components/SiteHeader';
+import ReviewModal from '@/components/review/ReviewModal';
 import { useProductFilters } from '@/hooks/useProductFilters';
 import { useProductLikes } from '@/hooks/useProductLikes';
+import { useProductReviews } from '@/hooks/useProductReviews';
+import { BRANDS } from '@/data/brands';
 import {
   MAX_COMPARE_COUNT,
   MIN_COMPARE_COUNT,
+  type Brand,
   type Product,
 } from '@/types/product';
 import styles from './ProductExplorer.module.css';
 
-interface ProductExplorerProps {
-  products: Product[];
+export interface DbProductImage {
+  id: number;
+  name: string;
+  slug: string;
+  imageUrl: string | null;
 }
 
-export default function ProductExplorer({ products }: ProductExplorerProps) {
+export function mergeProductImages(products: Product[], dbImages: DbProductImage[]): Product[] {
+  if (!Array.isArray(dbImages) || dbImages.length === 0) return products;
+  const norm = (s: string) => s.toLowerCase().replace(/[\s-_]/g, '');
+  const bySlug = new Map<string, string>();
+  const byName = new Map<string, string>();
+  const byId = new Map<number, string>();
+
+  for (const item of dbImages) {
+    if (!item.imageUrl) continue;
+    bySlug.set(norm(item.slug), item.imageUrl);
+    byName.set(norm(item.name), item.imageUrl);
+    byId.set(Number(item.id), item.imageUrl);
+  }
+
+  return products.map((p) => {
+    const dbUrl = bySlug.get(norm(p.slug)) ?? byName.get(norm(p.name)) ?? byId.get(p.id);
+    return {
+      ...p,
+      imageUrl: dbUrl || p.imageUrl,
+    };
+  });
+}
+
+interface ProductExplorerProps {
+  products: Product[];
+  initialBrands?: Brand[];
+  /** 상품 목록 조회 실패 안내 문구 */
+  loadError?: string;
+}
+
+export default function ProductExplorer({
+  products: initialProducts,
+  initialBrands,
+  loadError,
+}: ProductExplorerProps) {
+  const [products, setProducts] = useState<Product[]>(initialProducts);
+  const [brands, setBrands] = useState<Brand[]>(
+    initialBrands && initialBrands.length > 0 ? initialBrands : BRANDS
+  );
+
+  useEffect(() => {
+    let ignore = false;
+    fetch('/api/brands')
+      .then((res) => {
+        if (!res.ok) throw new Error('브랜드 목록을 불러오지 못했습니다.');
+        return res.json();
+      })
+      .then((data: { brands?: Brand[] }) => {
+        if (!ignore && data.brands && Array.isArray(data.brands) && data.brands.length > 0) {
+          setBrands(data.brands);
+        }
+      })
+      .catch((err) => {
+        console.warn('DB 브랜드 목록 조회 실패 (fallback 유지):', err);
+      });
+
+    fetch('/api/products/images', { cache: 'no-store' })
+      .then((res) => (res.ok ? res.json() : Promise.reject()))
+      .then((data: { items?: DbProductImage[] }) => {
+        if (!ignore && Array.isArray(data.items)) {
+          setProducts((prev) => mergeProductImages(prev, data.items!));
+        }
+      })
+      .catch(() => {
+        // DB 이미지 조회 실패 시 기본 이미지(placeholder) 유지
+      });
+
+    return () => {
+      ignore = true;
+    };
+  }, []);
+
   const {
     searchKeyword,
     setSearchKeyword,
@@ -43,6 +121,22 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
     toggleLike,
     error: likeError,
   } = useProductLikes(products.map((product) => product.id));
+
+  const {
+    summaries: reviewsSummary,
+    activeProductId,
+    activeReviews,
+    activeSummary,
+    isLoadingReviews,
+    openReviewsForProduct,
+    closeReviews,
+    submitReview,
+    deleteReview,
+  } = useProductReviews(products.map((product) => product.id));
+
+  const activeReviewProduct = activeProductId
+    ? products.find((p) => p.id === activeProductId) ?? null
+    : null;
 
   const [selectedProducts, setSelectedProducts] = useState<Product[]>([]);
   const [showComparison, setShowComparison] = useState(false);
@@ -138,7 +232,7 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
         }`}
       >
         <div className="compare-heading">
-          <span className="eyebrow">BURGER PICK · PRICE COMPARE</span>
+          <span className="eyebrow">BURGER PICK · BURGER COMPARE</span>
           <h1>
             같은 값이면,
             <br />
@@ -147,16 +241,9 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           <p>여러 브랜드의 햄버거를 한 화면에서 찾고, 최대 4개까지 가격과 영양정보를 비교해 보세요.</p>
         </div>
 
-        <aside className="compare-notice">
-          <strong>샘플 데이터</strong>
-          <span>
-            화면 미리보기용 가격·영양정보입니다. 실제 판매 가격과 다를 수 있습니다.
-          </span>
-        </aside>
-
         <section className={styles.filters} aria-label="검색 및 필터">
           <SearchBar value={searchKeyword} onChange={setSearchKeyword} />
-          <BrandFilter value={selectedBrand} onChange={setSelectedBrand} />
+          <BrandFilter brands={brands} value={selectedBrand} onChange={setSelectedBrand} />
           <PattyFilter value={selectedPattyType} onChange={setSelectedPattyType} />
         </section>
 
@@ -166,6 +253,12 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           </p>
           <ProductSort value={sortType} onChange={setSortType} />
         </div>
+
+        {loadError && (
+          <p className={styles.likeError} role="alert">
+            {loadError}
+          </p>
+        )}
 
         {likeError && (
           <p className={styles.likeError} role="alert">
@@ -182,6 +275,8 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           likedIds={likedIds}
           pendingLikeIds={pendingLikeIds}
           onToggleLike={toggleLike}
+          reviewsSummary={reviewsSummary}
+          onOpenReviews={(p) => openReviewsForProduct(p.id)}
         />
 
         {showComparison && selectedProducts.length >= MIN_COMPARE_COUNT && (
@@ -199,7 +294,11 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
                 닫기
               </button>
             </div>
-            <CompareTable products={selectedProducts} />
+            <CompareTable
+              products={selectedProducts}
+              reviewsSummary={reviewsSummary}
+              onOpenReviews={(p) => openReviewsForProduct(p.id)}
+            />
           </section>
         )}
       </div>
@@ -211,6 +310,22 @@ export default function ProductExplorer({ products }: ProductExplorerProps) {
           onReset={resetCompare}
           onCompare={() => setShowComparison(true)}
           notice={notice}
+        />
+      )}
+
+      {activeReviewProduct && (
+        <ReviewModal
+          product={activeReviewProduct}
+          summary={activeSummary}
+          reviews={activeReviews}
+          isLoading={isLoadingReviews}
+          onClose={closeReviews}
+          onSubmit={async (input) => {
+            await submitReview(activeReviewProduct.id, input);
+          }}
+          onDelete={async (reviewId) => {
+            await deleteReview(reviewId, activeReviewProduct.id);
+          }}
         />
       )}
 

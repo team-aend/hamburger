@@ -688,7 +688,34 @@ body:has(.recommend-shell) {
   box-shadow: 7px 8px 0 var(--ink);
 }
 
+.rc-card-visual {
+  display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
+  place-items: center;
+  flex-shrink: 0;
+  height: 180px;
+  margin: 14px 14px 0;
+  overflow: hidden;
+  border-radius: 6px;
+  background: var(--mustard);
+}
+
+.rc-card-image {
+  width: 100%;
+  height: 100%;
+  min-width: 0;
+  min-height: 0;
+  padding: 10px;
+  object-fit: contain;
+}
+
+.rc-card-placeholder {
+  font-size: 56px;
+  line-height: 1;
+}
+
 .rc-card-body {
+  flex: 1;
   padding: 18px 18px 0;
 }
 
@@ -901,13 +928,24 @@ body:has(.recommend-shell) {
 
 .rc-modal-visual {
   position: relative;
-  height: 150px;
+  height: 210px;
   margin-top: 14px;
   display: grid;
+  grid-template: minmax(0, 1fr) / minmax(0, 1fr);
   place-items: center;
   border: 2px solid var(--ink);
   border-radius: 8px;
   background: var(--mustard);
+  overflow: hidden;
+}
+
+.rc-modal-image {
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  padding: 36px 16px 10px;
+  object-fit: contain;
+  filter: drop-shadow(0 8px 5px rgba(35, 22, 10, 0.2));
 }
 
 .rc-modal-visual b {
@@ -917,6 +955,8 @@ body:has(.recommend-shell) {
 }
 
 .rc-modal-visual .crown {
+  position: absolute;
+  z-index: 1;
   top: 6px;
   font-size: 40px;
   color: var(--paper);
@@ -1049,5 +1089,120 @@ body:has(.recommend-shell) {
   .recommend-shell .site-footer {
     gap: 12px;
     font-size: 8px;
+  }
+}
+
+/* 버거 이름 → 상품 상세 링크 */
+.rc-card-name a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.rc-card-name a:hover {
+  color: var(--red);
+  text-decoration: underline;
+}
+
+
+/* ── 내 조건 (저장한 검색 조건) ── */
+.rc-saved {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+  margin: -16px 0 32px;
+  padding: 12px 20px;
+  background: var(--paper);
+  border: 1px dashed #827a6d;
+  border-radius: 8px;
+}
+
+.rc-saved-chip {
+  display: inline-flex;
+  align-items: stretch;
+  overflow: hidden;
+  border: 1.5px solid var(--ink);
+  border-radius: 999px;
+  background: #fff0be;
+}
+
+.rc-saved-chip button {
+  padding: 7px 12px;
+  border: 0;
+  background: transparent;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rc-saved-chip button:hover {
+  background: var(--mustard);
+}
+
+.rc-saved-chip .rc-saved-remove {
+  padding: 7px 10px;
+  border-left: 1px solid var(--line);
+  color: #655e55;
+}
+
+.rc-saved-form {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 8px;
+}
+
+.rc-saved-form input {
+  min-width: 200px;
+  min-height: 36px;
+  padding: 6px 12px;
+  border: 1.5px solid #827a6d;
+  border-radius: 6px;
+  background: var(--paper);
+  color: var(--ink);
+  font: inherit;
+  font-size: 13px;
+}
+
+.rc-saved-form button[type='submit'] {
+  min-height: 36px;
+  padding: 0 14px;
+  border: 2px solid var(--ink);
+  border-radius: 6px;
+  background: var(--red);
+  color: white;
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.rc-saved-form button[type='submit']:disabled {
+  border-style: dashed;
+  border-color: #827a6d;
+  background: #e4dccb;
+  color: #827a6d;
+  cursor: not-allowed;
+}
+
+.rc-saved-hint {
+  color: #71695f;
+  font-size: 12px;
+}
+
+.rc-saved-message {
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.rc-saved-message.ok {
+  color: var(--green);
+}
+
+.rc-saved-message.error {
+  color: var(--red-dark);
+}
+
+@media (max-width: 700px) {
+  .rc-saved-form input {
+    min-width: 0;
+    flex: 1;
   }
 }

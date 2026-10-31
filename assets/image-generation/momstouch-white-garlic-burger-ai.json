@@ -1,0 +1,26 @@
+{
+  "name": "화이트갈릭버거",
+  "brandSlug": "momstouch",
+  "productSlug": "white-garlic-burger",
+  "officialUrl": "https://momstouch.co.kr/menu/view.php?idx=92",
+  "verifiedIngredients": [
+    "참깨 번",
+    "통가슴살 튀김 패티 1장",
+    "프리미엄 더블햄",
+    "화이트 갈릭소스",
+    "양파",
+    "피클",
+    "공식 사진에 보이는 흰색 치즈 한 장"
+  ],
+  "uncertainties": [
+    "공식 사진에서 양상추가 보이지 않아 추가하지 않음",
+    "흰색 치즈의 종류와 소스의 상세 배합은 공식 설명에서 확인하지 못함",
+    "생성 이미지로 실제 패티의 모양·두께·질감은 차이가 있을 수 있음"
+  ],
+  "publicUrl": "/images/burgers/momstouch-white-garlic-burger-ai.png",
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceReviewMethod": "공식 홈페이지를 브라우저로 열어 제품 설명과 상품 사진을 직접 확인함. 공식 이미지는 배포 파일로 저장하지 않음.",
+  "prompt": "Use case: product-mockup. Asset type: transparent PNG burger image for Korean burger tournament. Create one original photorealistic studio food cutout depicting Mom's Touch 화이트갈릭버거 (White Garlic Burger), following the actual visible official menu photo inspected at https://momstouch.co.kr/menu/view.php?idx=92. IMPORTANT this is the original chicken BREAST White Garlic Burger, not White Garlic Thigh Burger. One complete burger centered, square canvas, nearly front view with a subtle three-quarter angle, entire burger inside frame with transparent margins, realistic clean catalog lighting. Exact layers top to bottom: glossy golden sesame-seed bun; green crinkle-cut pickle slices; thick white onion rings with a little white sauce; TWO thin pink folded deli ham slices with smoothly curled edges, clearly ham and NOT brown strip bacon; creamy white garlic sauce; ONE pale ivory square cheese slice with a visible corner; ONE thick compact whole chicken BREAST fillet fried in golden craggy flaky crispy breading; a white garlic sauce layer; lightly toasted bottom bun. No lettuce (the official photo has none), no tomato, no egg, no beef, no second chicken patty, no middle bun, no orange cheese sauce. Match the tall substantial stack while keeping natural proportions. Newly generated photographic depiction, not a copy of the official photo. True transparent alpha background, no floor or backdrop. No plate, wrapper, packaging, text, logo, watermark, fries, or other object."
+}

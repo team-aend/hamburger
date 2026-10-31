@@ -3,6 +3,7 @@ import { loadBackendEnvironment } from './environment.js';
 
 loadBackendEnvironment();
 
+
 export function getDatabaseUrl(): string {
   if (!isDbConfigured()) {
     throw new Error('DATABASE_URL 환경변수가 설정되지 않았거나 유효하지 않습니다. backend/.env 파일에 실제 DB 접속 주소를 설정해 주세요.');
@@ -21,9 +22,13 @@ export function getDbPool(): pg.Pool {
   if (!poolInstance) {
     const connectionString = getDatabaseUrl();
     if (!connectionString) throw new Error('DATABASE_URL이 설정되어 있지 않습니다.');
+    const rejectUnauthorized =
+      process.env.DATABASE_SSL_REJECT_UNAUTHORIZED !== undefined
+        ? process.env.DATABASE_SSL_REJECT_UNAUTHORIZED === 'true'
+        : Boolean(process.env.DATABASE_SSL_CA);
     poolInstance = new pg.Pool({
       connectionString,
-      ssl: { rejectUnauthorized: true, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
+      ssl: { rejectUnauthorized, ...(process.env.DATABASE_SSL_CA ? { ca: process.env.DATABASE_SSL_CA } : {}) },
       max: 15,
       connectionTimeoutMillis: 5000,
       idleTimeoutMillis: 60_000,

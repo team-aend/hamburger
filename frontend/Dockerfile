@@ -17,6 +17,9 @@ ENV NEXT_TELEMETRY_DISABLED=1
 # 따라서 런타임 환경변수가 아니라 build arg 로 넘겨야 한다.
 ARG NEXT_PUBLIC_API_URL=http://localhost:4000
 ENV NEXT_PUBLIC_API_URL=$NEXT_PUBLIC_API_URL
+# 공유 미리보기 이미지(og:image)의 절대 주소 기준. 배포할 땐 실제 도메인으로 넘긴다.
+ARG NEXT_PUBLIC_SITE_URL=http://localhost:3000
+ENV NEXT_PUBLIC_SITE_URL=$NEXT_PUBLIC_SITE_URL
 COPY --from=deps /app ./
 COPY frontend ./frontend
 RUN npm run build --workspace=frontend

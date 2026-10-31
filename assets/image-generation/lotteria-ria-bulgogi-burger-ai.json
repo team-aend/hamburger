@@ -1,0 +1,26 @@
+{
+  "name": "리아 불고기버거",
+  "brandSlug": "lotteria",
+  "productSlug": "ria-bulgogi-burger",
+  "officialUrl": "https://www.lotteeatz.com/shopping/mobileGift",
+  "officialImageUrl": "https://img.lotteeatz.com/upload/coupon/2026/05/27/20260527085334197_7.png/dims/resize/x360",
+  "verifiedIngredients": [
+    "공식 현재 표시명 리아 불고기",
+    "참깨 번",
+    "불고기 패티 1장",
+    "불고기 소스",
+    "양상추",
+    "양파",
+    "공식 사진에 보이는 흰 소스"
+  ],
+  "uncertainties": [
+    "패티 육류 배합과 소스 상세 배합은 해당 공식 상품권 사진에서 확인할 수 없어 순쇠고기 등의 표현을 사용하지 않음",
+    "공식 사진의 외형을 참고한 신규 생성 이미지로 실제 패티와 완전히 같지는 않음"
+  ],
+  "publicUrl": "/images/burgers/lotteria-ria-bulgogi-burger-ai.png",
+  "createdAt": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceReviewMethod": "공식 홈페이지를 브라우저로 열어 제품 설명과 상품 사진을 직접 확인함. 공식 이미지는 배포 파일로 저장하지 않음.",
+  "prompt": "Use case: product-mockup. Asset type: transparent PNG single burger product image for a Korean hamburger tournament. Generate an original photorealistic studio food cutout depicting LOTTERIA Korea 리아 불고기 (Ria Bulgogi Burger), following the official LOTTE EATZ photo I visually checked at https://www.lotteeatz.com/shopping/mobileGift and https://img.lotteeatz.com/upload/coupon/2026/05/27/20260527085334197_7.png/dims/resize/x360. ONE complete standard-size burger on a square canvas, centered, entire object inside frame with small transparent margins, near-frontal view with a subtle three-quarter angle. Exact visible layers from top to bottom: golden-brown gently domed sesame-seed top bun with sparse small sesame seeds; smooth creamy white mayonnaise sauce; visible white onion ring strips/slices in a flat layer; a generous ruffled pile of bright and dark green lettuce; EXACTLY ONE browned round bulgogi-style ground-meat patty, slightly irregular textured browned surface, medium-thickness, glossy dark sweet soy-bulgogi sauce on and around the patty; soft toasted golden bottom bun. It is a griddled seasoned ground-meat patty, never fried or breaded and never sliced steak. Do not claim or visually add a different meat composition; match visible cooked surface. No tomato, cheese, pickles, bacon, ham, chicken, egg, second patty or middle bun. Moderate realistic proportions, appetizing clean catalog photography, soft diffuse lighting, natural food textures, no dramatic steam. Newly generated depiction, not copied official photo. Actual transparent alpha background; no backdrop, halo, vignette, brown haze, floor, plate, wrapping, packaging, text, logo, watermark, fries or any other objects."
+}

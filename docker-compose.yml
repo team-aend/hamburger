@@ -30,6 +30,7 @@ services:
         # 브라우저가 아니라 Next 서버가 프록시할 주소라서 compose 서비스명을 쓴다.
         # 빌드 시점에 이미지에 고정되므로 값을 바꾸면 재빌드가 필요하다.
         NEXT_PUBLIC_API_URL: http://backend:4000
+        NEXT_PUBLIC_SITE_URL: http://localhost:3000
     ports:
       - '3000:3000'
     depends_on:

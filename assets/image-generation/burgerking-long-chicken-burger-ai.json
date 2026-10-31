@@ -1,0 +1,31 @@
+{
+  "productName": "롱치킨버거",
+  "brandSlug": "burgerking",
+  "productSlug": "long-chicken-burger",
+  "assetPath": "frontend/public/images/burgers/burgerking-long-chicken-burger-ai.png",
+  "publicUrl": "/images/burgers/burgerking-long-chicken-burger-ai.png",
+  "createdOn": "2026-10-17",
+  "creationMethod": "built-in image_gen",
+  "isOfficialPhoto": false,
+  "referenceSources": [
+    {
+      "pageUrl": "https://www.burgerking.co.kr/menu/main",
+      "imageUrl": "https://mob-prd.burgerking.co.kr/images/menu/web/main/2026/06/01/db0cc305-f7e3-4feb-a5e3-740ded880c2a.png",
+      "inspectedVisually": true
+    }
+  ],
+  "patty": "one long breaded chicken patty",
+  "observedIngredients": [
+    "길쭉한 참깨번",
+    "길쭉한 튀김 치킨 패티 1장",
+    "양상추",
+    "흰 마요 소스"
+  ],
+  "limitations": [
+    "공식 사진과 메뉴 설명을 참고한 AI 재구성 이미지이며 실제 제품 사진이 아닙니다.",
+    "패티 종류·개수와 보이는 주요 재료를 맞췄지만 실물의 크기·형태·배합까지 동일함을 보장하지 않습니다.",
+    "공식 사진에서 긴 치킨 패티 1장을 확인했으며 정확한 닭 부위는 확인하지 못했습니다."
+  ],
+  "prompt": "Use case: product-mockup. Create one NEW photorealistic catalogue cutout for a Korean burger comparison website, closely matching the observed ingredient composition and exterior of the named Korean Burger King product. Genuinely transparent background with alpha, no grey rectangle, no painted checkerboard. One assembled intact burger only, entire silhouette visible, centered with at least 10% clear margin, near-frontal subtle three-quarter view at filling level, softly lit realistic food textures and normal fast-food proportions. Keep the same clean catalogue style as the already approved crispy chicken burger. No text, logos, watermark, packaging, plate, fries, drinks, hands, duplicate burger, floating ingredients, exaggerated tower. This is an AI reconstruction, not an official photo.\nSubject: current Korean LONG CHICKEN BURGER (롱치킨버거). Its most important identifier is the HORIZONTALLY ELONGATED OBLONG sesame bun, approximately twice as wide as its total height, like a short long sandwich, NOT a round burger. EXACTLY ONE long fairly flat golden breaded CHICKEN patty extending across almost the full bun width, evenly crisp crumb coating rather than a bulky craggy thigh fillet. Bottom to top: toasted long bottom bun, a visible modest layer of white mayonnaise, one long golden breaded chicken patty, a layer of crinkled green lettuce, thin white mayonnaise under the elongated softly domed golden sesame top bun with a shallow lengthwise baking crease. Compact low silhouette. NO tomato, cheese, onion, pickle, beef, bacon, egg, second patty or middle bun.",
+  "transparentBackground": true
+}

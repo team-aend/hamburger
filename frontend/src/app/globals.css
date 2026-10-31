@@ -214,7 +214,7 @@ html:has(.ranking-shell), body:has(.ranking-shell) { min-width:320px; }
 .round-option:disabled:hover { border-color:var(--line); }
 .start-button:disabled:hover { background:var(--red); }
 .worldcup-options-status button:focus-visible { outline:3px solid var(--red); outline-offset:3px; }
-/* ── 가격 비교 화면 (.compare-shell) ──────────────────────────────
+/* ── 햄버거 비교 화면 (.compare-shell) ──────────────────────────────
    랭킹 페이지와 동일하게 worldcup-shell 위에 얹고, 폭 제한만 모바일까지 푼다.
    색/테두리/그림자/폰트는 전역 토큰(--paper, --ink, --red, --mustard)을 그대로 쓴다. */
 html:has(.compare-shell),
@@ -241,28 +241,14 @@ body:has(.compare-shell) {
   font-weight: 400;
 }
 
+.compare-heading {
+  margin-bottom: 32px;
+}
+
 .compare-heading p {
   margin-top: 18px;
   color: #655e55;
   line-height: 1.7;
-}
-
-.compare-notice {
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  margin: 28px 0 32px;
-  padding: 16px 20px;
-  background: var(--paper);
-  border: 1px dashed #827a6d;
-  border-radius: 8px;
-  font-size: 13px;
-  line-height: 1.7;
-}
-
-.compare-notice strong {
-  flex-shrink: 0;
-  color: var(--red-dark);
 }
 
 .compare-shell :is(input, select):focus-visible,
@@ -301,12 +287,6 @@ body:has(.compare-shell) {
 
   .compare-content {
     padding: 32px 0;
-  }
-
-  .compare-notice {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 4px;
   }
 }
 
@@ -381,3 +361,35 @@ body:has(.compare-shell) {
   .final-rankings-heading { align-items: flex-start; flex-direction: column; gap: 0; }
   .final-rankings .ranking-table { min-width: 560px; }
 }
+
+/* 가격 변동 알림 배지 (헤더 프로필 / 메뉴의 마이페이지) */
+.header-profile { position:relative; }
+.header-alert-badge { min-width:20px; height:20px; padding:0 6px; display:grid; place-items:center; border:1.5px solid var(--ink); border-radius:999px; background:var(--red); color:white; font-size:11px; font-weight:800; line-height:1; }
+.navigation-item small.account-alert { background:var(--red); font-size:10px; letter-spacing:0; }
+
+/* 버거 이름 → 상품 상세 링크 */
+.ranking-product-link { color:inherit; text-decoration:none; }
+.ranking-product-link:hover { color:var(--red); text-decoration:underline; }
+
+/* 월드컵 결과 공유 */
+.share-result { display:flex; flex-wrap:wrap; align-items:center; gap:10px 14px; margin-top:16px; }
+.share-result-button { padding:12px 18px; display:inline-flex; align-items:center; gap:8px; border:2px solid var(--ink); border-radius:8px; background:var(--mustard); font-size:14px; font-weight:800; cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:.15s ease; }
+.share-result-button:hover { transform:translate(1px,1px); box-shadow:2px 2px 0 var(--ink); }
+.share-result-button:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.share-result-status { color:#655e55; font-size:13px; font-weight:700; }
+
+/* 랭킹 페이지 넘김 (랭킹 화면 · 월드컵 결과 아래 랭킹 공통) */
+.ranking-pagination { display:flex; align-items:center; justify-content:center; gap:16px; margin:24px 0 8px; }
+.ranking-pagination button { min-width:96px; padding:10px 16px; display:inline-flex; align-items:center; justify-content:center; gap:8px; border:1.5px solid var(--ink); border-radius:8px; background:var(--paper); color:var(--ink); font-size:13px; font-weight:800; cursor:pointer; box-shadow:3px 3px 0 var(--ink); transition:.15s ease; }
+.ranking-pagination button:hover:not(:disabled) { background:var(--mustard); transform:translate(1px,1px); box-shadow:2px 2px 0 var(--ink); }
+.ranking-pagination button:disabled { border-style:dashed; border-color:#827a6d; background:transparent; color:#a39b8e; box-shadow:none; cursor:not-allowed; }
+.ranking-pagination button:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.ranking-page-count { min-width:64px; text-align:center; color:#655e55; font-size:14px; font-weight:700; }
+.ranking-page-count strong { font-family:'Black Han Sans',sans-serif; font-size:22px; font-weight:400; color:var(--ink); }
+
+/* 랭킹 상단 검색·정렬·범위 조건 (같은 줄, 같은 입력 스타일) */
+.ranking-controls-top { margin-bottom:36px; }
+.ranking-controls select { cursor:pointer; }
+.ranking-retry { margin:-20px 0 28px; padding:10px 18px; border:1.5px solid var(--ink); border-radius:8px; background:var(--mustard); color:var(--ink); font-size:13px; font-weight:800; cursor:pointer; }
+.ranking-retry:focus-visible { outline:3px solid var(--red); outline-offset:4px; }
+.ranking-controls-top label:last-child select { min-width:120px; }
