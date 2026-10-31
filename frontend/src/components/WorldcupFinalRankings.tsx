@@ -45,7 +45,9 @@ export default function WorldcupFinalRankings({ sessionId, winnerProductId }: {
       : error ? <div role="alert"><p>랭킹을 불러오지 못했습니다. 다시 시도해 주세요.</p><button type="button" className="reset-button" onClick={() => setRetry((value) => value + 1)}>다시 조회하기</button></div>
       : data && <>
         <p className="ranking-count">월드컵 {data.completedSessionCount.toLocaleString()}회 · 버거 {data.totalCount.toLocaleString()}개</p>
-        {data.items.length ? <div className="final-rankings-table"><table className="ranking-table">
+        {data.items.length ? <>
+        <p className="final-rankings-scroll-hint" id="final-rankings-scroll-hint">표를 좌우로 밀어 전체 기록을 확인하세요.</p>
+        <div className="final-rankings-table" role="region" aria-label="월드컵 최종 우승 랭킹 기록" aria-describedby="final-rankings-scroll-hint" tabIndex={0}><table className="ranking-table">
           <caption className="visually-hidden">최종 우승 횟수 내림차순 랭킹</caption>
           <thead><tr><th scope="col">순위</th><th scope="col">버거</th><th scope="col">우승 횟수</th><th scope="col">참가 횟수</th><th scope="col">대결 승률</th></tr></thead>
           <tbody>{data.items.map((item) => <tr key={item.productId} className={item.productId === winnerProductId ? 'my-worldcup-winner' : undefined}>
@@ -53,7 +55,7 @@ export default function WorldcupFinalRankings({ sessionId, winnerProductId }: {
             <th scope="row"><div className="ranking-burger"><span aria-hidden="true" style={{ overflow: 'hidden' }}>{item.imageUrl ? <img src={item.imageUrl} alt={item.name} style={{ width: '100%', height: '100%', objectFit: 'cover', borderRadius: 8 }} /> : '🍔'}</span><div><small>{item.brandName}</small><strong>{item.name}</strong>{item.productId === winnerProductId && <small className="final-winner-label">이번 월드컵 우승</small>}{item.status !== 'ACTIVE' && <small>판매 중단</small>}</div></div></th>
             <td>{item.championships.toLocaleString()}회</td><td>{item.appearances.toLocaleString()}회</td><td>{item.winRate === null ? '—' : `${item.winRate.toFixed(1)}%`}</td>
           </tr>)}</tbody>
-        </table></div> : <p>조회된 랭킹이 없습니다.</p>}
+        </table></div></> : <p>조회된 랭킹이 없습니다.</p>}
         <nav className="final-rankings-pagination ranking-pagination" aria-label="최종 우승 랭킹 페이지">
           <button type="button" disabled={page === 1} onClick={() => setPage((value) => value - 1)}><span aria-hidden="true">←</span> 이전</button>
           <span className="ranking-page-count"><strong>{page}</strong> / {Math.max(1, Math.ceil(data.totalCount / data.pageSize))}</span>

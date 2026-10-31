@@ -193,37 +193,7 @@ export default function RecommendPage() {
   const metadataLoadedRef = useRef<boolean>(false);
   const abortControllerRef = useRef<AbortController | null>(null);
 
-  // 1. 수동 DB/캐시 강제 동기화 버튼 핸들러 (?refresh=true로 Node.js 인메모리 캐시 갱신)
-  const fetchFiltersAndBrands = useCallback(async () => {
-    setLoading(true);
-    try {
-      const params = buildFilterParams();
-      params.set('includeFilters', 'true');
-      params.set('refresh', 'true');
-
-      const res = await fetch(`/api/recommend?${params.toString()}`);
-      if (!res.ok) {
-        throw new Error('Supabase DB 동기화에 실패했습니다.');
-      }
-      const data = await res.json();
-      if (data.filters) {
-        setMetadata(data.filters);
-        metadataLoadedRef.current = true;
-      }
-      setItems(data.items || []);
-      setError(null);
-    } catch (err) {
-      setError(
-        err instanceof Error
-          ? err.message
-          : '백엔드 서버(Port 4000) 연결을 확인해 주세요.'
-      );
-    } finally {
-      setLoading(false);
-    }
-  }, [buildFilterParams]);
-
-  // 2. 초기 진입(필터 메타데이터 + 추천 결과 1회 통합 호출) 및 조건 변경 시 맞춤 추천 메뉴 조회
+  // 초기 진입(필터 메타데이터 + 추천 결과 1회 통합 호출) 및 조건 변경 시 맞춤 추천 메뉴 조회
   const fetchRecommendations = useCallback(async () => {
     if (abortControllerRef.current) {
       abortControllerRef.current.abort();
@@ -596,15 +566,6 @@ export default function RecommendPage() {
               isOpen={openSections.brand}
               onToggle={() => toggleSection('brand')}
             >
-              <div className="rc-section-tools">
-                <button
-                  type="button"
-                  onClick={() => fetchFiltersAndBrands()}
-                  className="rc-mini-button"
-                >
-                  ↻ Supabase DB 브랜드 동기화
-                </button>
-              </div>
               <div className="rc-chip-group">
                 <button
                   type="button"

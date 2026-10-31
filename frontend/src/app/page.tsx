@@ -2,11 +2,13 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import SiteHeader, { menuRoutes, type MenuKey } from '@/components/SiteHeader';
 import ShareResultButton from '@/components/worldcup/ShareResultButton';
+import BurgerSpecDialog from '@/components/worldcup/BurgerSpecDialog';
 import WorldcupFinalRankings from '@/components/WorldcupFinalRankings';
 import { getWorldcupSession, startWorldcupSession, voteWorldcup, type WorldcupProduct, type WorldcupRoundSize, type WorldcupSession } from '@/lib/worldcupSession';
+import './worldcup.css';
 
 type WorldcupOptions = {
   eligibleProductCount: number;
@@ -178,7 +180,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="worldcup-shell">
+    <main className="worldcup-shell worldcup-home">
       <SiteHeader activeMenu="worldcup" onSelectMenu={navigate} />
       {error && <div className="worldcup-request-status" role="alert"><p>{error}</p><button type="button" disabled={busy} onClick={retryRequest}>다시 시도</button>{retry !== 'vote' && <button type="button" disabled={busy} onClick={abandonLocal}>새로 시작하기</button>}</div>}
       {!session && <section className="start-screen" aria-labelledby="start-title">
@@ -203,7 +205,7 @@ export default function HomePage() {
         <div className="match-heading"><div><span className="round-tag">{roundLabel(session.progress.currentRoundSize!)}</span><h1 id="match-title">더 끌리는 버거는?</h1></div><div className="match-counter"><strong>{String(session.progress.roundMatchNumber).padStart(2, '0')}</strong><span>/ {String(session.progress.roundMatchCount).padStart(2, '0')} MATCH</span></div></div>
         <div className="progress-track" aria-label={`전체 ${session.progress.totalMatches}경기 중 ${session.progress.completedMatches}경기 완료`}><span style={{ width: `${session.progress.completedMatches / session.progress.totalMatches * 100}%` }} /></div>
         <div className="versus-stage"><BurgerCard burger={session.currentMatch.left} side="A" disabled={busy || Boolean(pendingVote.current)} onSelect={select} /><div className="vs-divider"><span>VS</span></div><BurgerCard burger={session.currentMatch.right} side="B" disabled={busy || Boolean(pendingVote.current)} onSelect={select} /></div>
-        <div className="match-help"><span role="status">{busy ? '선택을 저장하고 있습니다…' : '마음이 가는 버거 카드를 클릭하세요.'}</span><button type="button" disabled={busy} onClick={reset}>강수 선택으로 돌아가기</button></div>
+        <div className="match-help"><span role="status">{busy ? '선택을 저장하고 있습니다…' : '버거 카드를 눌러 선택하세요.'}</span><button type="button" disabled={busy} onClick={reset}>강수 선택으로 돌아가기</button></div>
       </section>}
       {session?.status === 'COMPLETED' && session.winner && <section className="result-screen" aria-labelledby="result-title" aria-live="polite">
         <div className="confetti" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
@@ -225,7 +227,13 @@ function ProductImage({ product }: { product: WorldcupProduct }) {
 }
 
 function BurgerCard({ burger, side, disabled, onSelect }: { burger: WorldcupProduct; side: 'A' | 'B'; disabled: boolean; onSelect: (burger: WorldcupProduct) => void }) {
-  return <button className="burger-card" type="button" disabled={disabled} onClick={() => onSelect(burger)} style={{ '--accent': side === 'A' ? '#f0b735' : '#d84a30' } as React.CSSProperties}><span className="card-number">OPTION {side}</span><span className="burger-photo"><b><ProductImage product={burger} /></b></span><span className="card-copy"><small>{burger.brandName}</small><strong>{burger.name}</strong><em>{burger.description}</em><span>이 버거 선택하기 <b>→</b></span></span></button>;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const closeDetails = useCallback(() => setDetailsOpen(false), []);
+  return <div className="burger-card-container">
+    <button className="burger-card" type="button" disabled={disabled} aria-label={`${burger.brandName} ${burger.name} 선택`} onClick={() => onSelect(burger)} style={{ '--accent': side === 'A' ? '#f0b735' : '#d84a30' } as React.CSSProperties}><span className="card-number">OPTION {side}</span><span className="burger-photo"><b><ProductImage product={burger} /></b></span><span className="card-copy"><small>{burger.brandName}</small><strong>{burger.name}</strong><em>{burger.description}</em></span></button>
+    <button className="burger-detail-button" type="button" disabled={disabled} aria-haspopup="dialog" aria-label={`${burger.name} 상세보기`} onClick={() => setDetailsOpen(true)}>상세보기 <span aria-hidden="true">↗</span></button>
+    {detailsOpen && <BurgerSpecDialog key={burger.productId} productId={burger.productId} name={burger.name} onClose={closeDetails} />}
+  </div>;
 }
 
 function BurgerArtwork() {

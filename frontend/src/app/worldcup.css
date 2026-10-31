@@ -1,0 +1,138 @@
+/* Keep the responsive rules local to the tournament home. */
+html:has(.worldcup-home), body:has(.worldcup-home) { min-width: 320px; }
+.worldcup-home :is(.hero-copy, .winner-copy, .card-copy, .match-heading > div) { min-width: 0; }
+.worldcup-home :is(.card-copy > strong, .winner-name, .worldcup-request-status, .final-rankings-heading) { overflow-wrap: anywhere; }
+.final-rankings-scroll-hint { display: none; }
+.worldcup-home .final-rankings-table:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.worldcup-home .burger-card-container { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.worldcup-home .burger-card { width: 100%; }
+.worldcup-home .burger-detail-button { align-self: flex-end; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 700; cursor: pointer; }
+.worldcup-home .burger-detail-button:hover:not(:disabled) { background: var(--mustard); }
+.worldcup-home .burger-detail-button:disabled { opacity: .7; cursor: wait; }
+.worldcup-home .burger-detail-button:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+
+@media (max-width: 1099px) {
+  .worldcup-home { padding: 0 32px; min-height: 100svh; }
+  .worldcup-home .start-screen { grid-template-columns: minmax(0, 1fr); min-height: calc(100svh - 156px); }
+  .worldcup-home .hero-visual { display: none; }
+  .worldcup-home .hero-copy h1 { font-size: clamp(40px, 6vw, 64px); }
+  .worldcup-home .main-navigation { width: min(340px, 100vw); }
+  .worldcup-home .header-account { margin-right: 64px; }
+  .worldcup-home .match-screen { min-height: calc(100svh - 156px); }
+  .worldcup-home .versus-stage { gap: 28px; }
+  .worldcup-home .burger-card { height: auto; min-height: 440px; }
+  .worldcup-home .burger-photo { height: 245px; }
+  .worldcup-home .burger-photo b img { width: min(240px, 100%); height: 210px; }
+  .worldcup-home .burger-photo b { max-width: 100%; }
+  .worldcup-home .card-copy { padding: 20px 18px; }
+  .worldcup-home .card-copy > strong { font-size: 25px; line-height: 1.3; }
+  .worldcup-home .vs-divider { top: 200px; width: 56px; height: 56px; }
+  .worldcup-home .result-screen { grid-template-columns: minmax(0, 1fr); min-height: 0; gap: 24px; }
+  .worldcup-home .winner-visual { height: 340px; }
+  .worldcup-home .winner-visual::before { width: 280px; height: 280px; box-shadow: 8px 8px 0 var(--ink); }
+  .worldcup-home .winner-ring { width: 250px; height: 250px; }
+  .worldcup-home .ring-two { width: 200px; height: 200px; }
+  .worldcup-home .winner-burger { font-size: 140px; }
+  .worldcup-home .winner-burger img { width: 230px; height: 210px; }
+  .worldcup-home .crown { top: 0; font-size: 70px; }
+  .worldcup-home .winner-seal { left: calc(50% - 145px); bottom: 16px; width: 72px; height: 72px; font-size: 16px; }
+  .worldcup-home .winner-copy { padding-left: 0; }
+  .worldcup-home .winner-copy > h1 { font-size: 44px; }
+  .worldcup-home .winner-copy > h1 br { display: none; }
+  .worldcup-home .winner-copy > h1 strong { margin-left: .15em; }
+  .worldcup-home .final-rankings { width: 100%; margin-top: 24px; padding: 24px; }
+  .worldcup-home .final-rankings-heading { flex-wrap: wrap; gap: 0; }
+  .worldcup-home .final-rankings-heading .ranking-link-button { margin: 0 0 16px; }
+  .worldcup-home .final-rankings-table { max-width: 100%; overscroll-behavior-x: contain; }
+  .worldcup-home :is(.brand-button, .start-button, .round-option, .replay-button, .reset-button, .share-result-button, .header-login, .header-profile, .match-help button, .worldcup-request-status button, .worldcup-options-status button, .ranking-pagination button) { min-height: 44px; }
+}
+
+@media (max-width: 700px) {
+  .worldcup-home { padding: 0 16px; }
+  .worldcup-home .site-header { height: 72px; gap: 8px; }
+  .worldcup-home .brand { font-size: 18px; gap: 6px; white-space: nowrap; }
+  .worldcup-home .brand-mark { width: 30px; height: 30px; flex-shrink: 0; }
+  .worldcup-home .menu-toggle { top: 14px; right: 16px; width: 44px; height: 44px; }
+  .worldcup-home .header-account { margin-right: 52px; min-width: 0; }
+  .worldcup-home .header-login { display: inline-flex; align-items: center; padding: 8px 10px; white-space: nowrap; }
+  .worldcup-home .header-profile { padding: 4px; gap: 4px; }
+  .worldcup-home .header-profile > span { display: none; }
+  .worldcup-home .header-profile .account-avatar { display: grid; }
+  .worldcup-home .header-alert-badge { font-size: 10px; }
+  .worldcup-home .main-navigation { padding: 84px 20px 24px; }
+  .worldcup-home .start-screen { min-height: calc(100svh - 136px); padding: 28px 0 32px; }
+  .worldcup-home .eyebrow { max-width: 100%; font-size: 9px; letter-spacing: .08em; padding: 7px 9px; margin-bottom: 16px; }
+  .worldcup-home .hero-copy h1 { font-size: clamp(32px, 8.8vw, 48px); line-height: 1.2; letter-spacing: -1.5px; overflow-wrap: anywhere; }
+  .worldcup-home .hero-copy > p { margin-top: 16px; font-size: 14px; line-height: 1.65; }
+  .worldcup-home .round-picker { margin-top: 24px; }
+  .worldcup-home .round-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .worldcup-home .round-option { width: 100%; padding: 12px 10px; flex-wrap: wrap; gap: 4px 8px; }
+  .worldcup-home .worldcup-options-status { margin-top: 12px; }
+  .worldcup-home :is(.start-button, .ranking-link-button, .replay-button, .share-result-button) { width: 100%; max-width: 100%; }
+  .worldcup-home .start-button { font-size: 15px; padding: 15px 16px; }
+  .worldcup-home .hero-copy > .reset-button { display: block; margin-top: 14px; }
+  .worldcup-home .match-screen { min-height: calc(100svh - 136px); padding: 20px 0 16px; }
+  .worldcup-home .match-heading { align-items: center; gap: 12px; }
+  .worldcup-home .round-tag { margin-bottom: 4px; font-size: 11px; }
+  .worldcup-home .match-heading h1 { font-size: clamp(23px, 6vw, 30px); letter-spacing: -1px; }
+  .worldcup-home .match-counter { flex-wrap: wrap; justify-content: flex-end; gap: 2px 6px; max-width: 100px; }
+  .worldcup-home .match-counter strong { font-size: 28px; }
+  .worldcup-home .match-counter span { font-size: 9px; letter-spacing: 0; }
+  .worldcup-home .progress-track { margin-top: 12px; }
+  .worldcup-home .versus-stage { grid-template-columns: minmax(0, 1fr); gap: 8px; margin-top: 16px; }
+  .worldcup-home .burger-card { display: grid; grid-template-columns: clamp(90px, 28vw, 140px) minmax(0, 1fr); min-height: 148px; border-radius: 10px; box-shadow: 4px 4px 0 var(--ink); }
+  .worldcup-home .burger-photo { height: 100%; min-height: 148px; border-bottom: 0; border-right: 2px solid var(--ink); padding: 28px 6px 8px; }
+  .worldcup-home .burger-photo::before { width: 170px; height: 170px; }
+  .worldcup-home .burger-photo::after { width: 130px; height: 130px; border-width: 20px; }
+  .worldcup-home .burger-photo b { width: 100%; font-size: 64px; text-align: center; }
+  .worldcup-home .burger-photo b img { width: 100%; height: 100px; }
+  .worldcup-home .card-number { top: 8px; left: 7px; padding: 4px 6px; font-size: 8px; letter-spacing: .04em; }
+  .worldcup-home .card-copy { align-self: center; padding: 14px 12px; }
+  .worldcup-home .card-copy > small { font-size: 10px; letter-spacing: .04em; }
+  .worldcup-home .card-copy > strong { font-size: 21px; line-height: 1.25; letter-spacing: -.5px; }
+  .worldcup-home .card-copy > em { display: none; }
+  .worldcup-home .vs-divider { position: static; justify-self: center; width: 30px; height: 30px; border-width: 2px; box-shadow: 2px 2px 0 var(--ink); transform: rotate(-7deg); }
+  .worldcup-home .vs-divider span { font-size: 15px; }
+  .worldcup-home .match-help { flex-wrap: wrap; gap: 4px 12px; margin-top: 16px; font-size: 11px; }
+  .worldcup-home .match-help button { text-align: left; }
+  .worldcup-home .result-screen { padding: 24px 0; gap: 20px; }
+  .worldcup-home .winner-visual { height: 280px; }
+  .worldcup-home .winner-visual::before { width: 230px; height: 230px; }
+  .worldcup-home .winner-ring { width: 200px; height: 200px; }
+  .worldcup-home .ring-two { width: 160px; height: 160px; }
+  .worldcup-home .winner-burger { font-size: 110px; }
+  .worldcup-home .winner-burger img { width: 190px; height: 170px; }
+  .worldcup-home .crown { font-size: 60px; }
+  .worldcup-home .winner-seal { left: calc(50% - 120px); bottom: 8px; width: 62px; height: 62px; font-size: 14px; }
+  .worldcup-home .winner-copy > h1 { margin-top: 14px; font-size: 36px; line-height: 1.2; }
+  .worldcup-home .winner-name { margin-top: 18px; padding: 16px 0; }
+  .worldcup-home .winner-name h2 { font-size: 28px; line-height: 1.3; }
+  .worldcup-home .winner-name p { line-height: 1.7; }
+  .worldcup-home .result-actions { flex-direction: column; align-items: stretch; gap: 12px; margin-top: 18px; }
+  .worldcup-home .share-result-button { justify-content: center; }
+  .worldcup-home .final-rankings { margin-bottom: 32px; padding: 20px 12px; border-radius: 16px; }
+  .worldcup-home .final-rankings-heading { align-items: stretch; flex-direction: column; }
+  .worldcup-home .final-rankings-heading h2 { font-size: 22px; }
+  .worldcup-home .final-rankings > p { font-size: 13px; line-height: 1.7; overflow-wrap: anywhere; }
+  .worldcup-home .final-rankings-scroll-hint { display: block; margin-bottom: 8px; color: #655e55; }
+  .worldcup-home .final-rankings .ranking-table { min-width: 560px; }
+  .worldcup-home .ranking-pagination { flex-wrap: wrap; gap: 8px; }
+  .worldcup-home .ranking-pagination button { min-width: 76px; padding: 10px; }
+  .worldcup-home .ranking-page-count { min-width: 48px; }
+  .worldcup-home .worldcup-request-status { padding: 12px; margin: 16px 0; }
+  .worldcup-home .site-footer { height: auto; min-height: 64px; flex-wrap: wrap; gap: 8px; padding: 16px 0; font-size: 9px; letter-spacing: 0; }
+}
+
+@media (hover: none), (pointer: coarse) {
+  .worldcup-home .burger-card:hover,
+  .worldcup-home .burger-card:disabled:hover { transform: none; box-shadow: 8px 8px 0 var(--ink); }
+  .worldcup-home .burger-card:hover .burger-photo b { transform: none; }
+  .worldcup-home :is(.round-option, .start-button, .replay-button, .share-result-button, .header-login, .menu-toggle):hover { transform: none; }
+}
+@media (max-width: 700px) and (hover: none), (max-width: 700px) and (pointer: coarse) {
+  .worldcup-home .burger-card:hover,
+  .worldcup-home .burger-card:disabled:hover { box-shadow: 4px 4px 0 var(--ink); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .worldcup-home :is(.burger-card, .burger-photo b, .progress-track span) { transition: none; }
+}
