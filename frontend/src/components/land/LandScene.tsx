@@ -1,9 +1,9 @@
 'use client';
 
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
-import { useEffect, useLayoutEffect, useMemo, useRef, type RefObject } from 'react';
+import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, type RefObject } from 'react';
 import { Group, OrthographicCamera, Shape, Vector3 } from 'three';
-import { LAND_PLACES, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
+import { LAND_PATH_LIMIT, LAND_PLACES, LAND_RADIUS, LAND_ROAD_ROWS, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
 import type { LandLabel } from './BurgerLand';
 
 interface Props {
@@ -136,26 +136,26 @@ function Tree({ x, z, size = 1 }: { x: number; z: number; size?: number }) {
 
 function Village() {
   return <group>
-    <mesh position={[0, -.05, 0]}><cylinderGeometry args={[9.4, 8.9, .75, 16]} /><meshStandardMaterial color="#90b778" flatShading /></mesh>
-    <mesh position={[0, .33, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[9.35, 16]} /><meshStandardMaterial color="#bad393" /></mesh>
-    <Block position={[0, .36, .1]} size={[1.5, .045, 12]} color="#eeddac" />
-    {[-.8, 4.7].map((z) => <Block key={z} position={[0, .36, z]} size={[11.6, .045, 1.4]} color="#eeddac" />)}
-    <mesh position={[0, .39, 1.6]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[1.65, 32]} /><meshStandardMaterial color="#f4e5be" /></mesh>
-    {[[-7, -3.6, 1.1], [6.8, -4, 1.2], [-7.5, .4, .85], [7.2, 1.4, 1], [-6.5, 5.1, .7], [2, -6.4, .9], [-2.4, -6.2, .75]].map(([x, z, size], index) => <Tree key={index} x={x} z={z} size={size} />)}
-    {[[-2, 3.2], [2.2, .3]].map(([x, z], index) => <group key={index} position={[x, .45, z]}>
+    <mesh position={[0, -.05, 0]}><cylinderGeometry args={[LAND_RADIUS, LAND_RADIUS - .5, .75, 32]} /><meshStandardMaterial color="#90b778" flatShading /></mesh>
+    <mesh position={[0, .33, 0]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[LAND_RADIUS - .05, 32]} /><meshStandardMaterial color="#bad393" /></mesh>
+    <Block position={[0, .36, 0]} size={[2.8, .045, LAND_PATH_LIMIT * 2 + .6]} color="#eeddac" />
+    {LAND_ROAD_ROWS.map((z) => <Block key={z} position={[0, .36, z]} size={[LAND_PATH_LIMIT * 2 + .6, .045, 2.8]} color="#eeddac" />)}
+    <mesh position={[0, .39, 1.6]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[2.5, 32]} /><meshStandardMaterial color="#f4e5be" /></mesh>
+    {[[-7, -3.6, 1.1], [6.8, -4, 1.2], [-7.5, .4, .85], [7.2, 1.4, 1], [-6.5, 5.1, .7], [2, -6.4, .9], [-2.4, -6.2, .75]].map(([x, z, size], index) => <Tree key={index} x={x * 1.65} z={z * 1.65} size={size} />)}
+    {[[-2, 3.2], [2.2, .3]].map(([x, z], index) => <group key={index} position={[x * 1.65, .45, z * 1.65]}>
       <Block position={[0, .38, 0]} size={[1.25, .12, .5]} color="#ba8058" />
       <Block position={[0, .7, -.25]} size={[1.25, .45, .1]} color="#ca9568" />
       {[-.45, .45].map((leg) => <Block key={leg} position={[leg, .15, 0]} size={[.1, .5, .4]} color="#657760" />)}
     </group>)}
-    {[[-2, -4.5], [1.9, 5.9], [-5.5, -5.3], [6, -.6], [-7, 2.8], [3, 6.5]].map(([x, z], index) => <group key={index} position={[x, .4, z]}>
+    {[[-2, -4.5], [1.9, 5.9], [-5.5, -5.3], [6, -.6], [-7, 2.8], [3, 6.5]].map(([x, z], index) => <group key={index} position={[x * 1.65, .4, z * 1.65]}>
       <Ball position={[0, .15, 0]} scale={[.3, .18, .3]} color={index % 2 ? '#e4af9b' : '#f5d678'} />
       <Ball position={[.3, .1, .22]} scale={[.19, .13, .19]} color="#81a966" />
     </group>)}
-    <group position={[0, .4, 6.8]}><Block position={[-1.1, .6, 0]} size={[.1, 1.2, .1]} color="#9a7452" /><Block position={[1.1, .6, 0]} size={[.1, 1.2, .1]} color="#9a7452" /><Block position={[0, 1.15, 0]} size={[2.8, .5, .15]} color="#f1c96c" /></group>
+    <group position={[0, .4, 13.1]}><Block position={[-1.1, .6, 0]} size={[.1, 1.2, .1]} color="#9a7452" /><Block position={[1.1, .6, 0]} size={[.1, 1.2, .1]} color="#9a7452" /><Block position={[0, 1.15, 0]} size={[2.8, .5, .15]} color="#f1c96c" /></group>
   </group>;
 }
 
-function Character({ selected, reducedMotion, controls, onNearby }: Pick<Props, 'selected' | 'reducedMotion' | 'controls' | 'onNearby'>) {
+function Character({ selected, reducedMotion, controls, onNearby, playerPosition }: Pick<Props, 'selected' | 'reducedMotion' | 'controls' | 'onNearby'> & { playerPosition: Vector3 }) {
   const group = useRef<Group>(null);
   const path = useRef<LandPoint[]>([]);
   const proximity = useRef<LandPlaceId | null>(null);
@@ -205,6 +205,7 @@ function Character({ selected, reducedMotion, controls, onNearby }: Pick<Props, 
     if (moving) player.rotation.y = Math.atan2(point[0] - start[0], point[1] - start[1]);
     player.position.set(point[0], .5 + (moving && !reducedMotion ? Math.abs(Math.sin(state.clock.elapsedTime * 12)) * .09 : 0), point[1]);
     if (target && !manual && Math.hypot(point[0] - target[0], point[1] - target[1]) < .01) path.current.shift();
+    playerPosition.copy(player.position);
     const nearby = nearbyLandPlace(point);
     if (proximity.current !== nearby) {
       proximity.current = nearby;
@@ -221,21 +222,32 @@ function Character({ selected, reducedMotion, controls, onNearby }: Pick<Props, 
   </group>;
 }
 
-function Viewport({ onLabels, onReady, onUnavailable }: Pick<Props, 'onLabels' | 'onReady' | 'onUnavailable'>) {
+function Viewport({ onLabels, onReady, onUnavailable, playerPosition }: Pick<Props, 'onLabels' | 'onReady' | 'onUnavailable'> & { playerPosition: Vector3 }) {
   const { camera, size, gl, invalidate } = useThree();
-  useLayoutEffect(() => {
-    if (camera instanceof OrthographicCamera) {
-      camera.zoom = Math.min(size.width / (size.width <= 760 ? 20 : 23), size.height / 18);
-      camera.lookAt(0, .5, .6);
-      camera.updateProjectionMatrix();
-      camera.updateMatrixWorld();
-    }
+  const lastPosition = useRef(new Vector3(Infinity, 0, Infinity));
+  const updateCamera = useCallback(() => {
+    const x = playerPosition.x;
+    const z = playerPosition.z - 1.6;
+    camera.position.set(17 + x, 19, 23 + z);
+    camera.lookAt(x, .5, .6 + z);
+    camera.updateMatrixWorld();
+    lastPosition.current.copy(playerPosition);
     onLabels(LAND_PLACES.map((place) => {
       const point = new Vector3(place.position[0], 4.7, place.position[1]).project(camera);
       return { id: place.id, x: (point.x + 1) * 50, y: (1 - point.y) * 50 };
     }));
+  }, [camera, playerPosition, onLabels]);
+  useLayoutEffect(() => {
+    if (camera instanceof OrthographicCamera) {
+      camera.zoom = Math.min(size.width / (size.width <= 760 ? 23 : 27), size.height / 20);
+      camera.updateProjectionMatrix();
+    }
+    updateCamera();
     invalidate();
-  }, [camera, size.width, size.height, onLabels, invalidate]);
+  }, [camera, size.width, size.height, updateCamera, invalidate]);
+  useFrame(() => {
+    if (!lastPosition.current.equals(playerPosition)) updateCamera();
+  });
   useEffect(() => {
     const canvas = gl.domElement;
     const lost = (event: Event) => { event.preventDefault(); onUnavailable(); };
@@ -246,7 +258,8 @@ function Viewport({ onLabels, onReady, onUnavailable }: Pick<Props, 'onLabels' |
   return null;
 }
 
-export default function LandScene(props: Props) {
+export default memo(function LandScene(props: Props) {
+  const playerPosition = useMemo(() => new Vector3(0, .5, 1.6), []);
   return <Canvas className="land-canvas" orthographic camera={{ position: [17, 19, 23], near: .1, far: 100, zoom: 28 }} frameloop="demand" dpr={[1, 1.5]} gl={{ antialias: true, alpha: true, powerPreference: 'low-power' }}
     fallback={<span>아래 장소 카드에서 게임을 선택해 주세요.</span>} aria-label="버거 건물과 버거 친구가 있는 3D 마을">
     <ambientLight intensity={1.9} />
@@ -254,7 +267,7 @@ export default function LandScene(props: Props) {
     <directionalLight position={[8, 7, -8]} intensity={.65} color="#cbe8e8" />
     <Village />
     {LAND_PLACES.map((place) => <Landmark key={place.id} place={place} selected={props.selected === place.id} onSelect={props.onSelect} />)}
-    <Character selected={props.selected} reducedMotion={props.reducedMotion} controls={props.controls} onNearby={props.onNearby} />
-    <Viewport onLabels={props.onLabels} onReady={props.onReady} onUnavailable={props.onUnavailable} />
+    <Character playerPosition={playerPosition} selected={props.selected} reducedMotion={props.reducedMotion} controls={props.controls} onNearby={props.onNearby} />
+    <Viewport playerPosition={playerPosition} onLabels={props.onLabels} onReady={props.onReady} onUnavailable={props.onUnavailable} />
   </Canvas>;
-}
+});

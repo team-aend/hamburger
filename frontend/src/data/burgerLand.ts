@@ -15,11 +15,15 @@ export interface LandPlace {
   entrance: LandPoint;
 }
 
+export const LAND_RADIUS = 15;
+export const LAND_PATH_LIMIT = 12;
+export const LAND_ROAD_ROWS = [-2, 7] as const;
+
 export const LAND_PLACES: readonly LandPlace[] = [
-  { id: 'arena', number: '01', name: '버거 아레나', label: 'WORLD CUP', icon: '🏟️', description: '둘 중 더 끌리는 버거를 골라보세요. 마지막까지 살아남을 나의 최애 버거는?', activity: '햄버거 월드컵', href: '/', color: '#f3b94c', position: [-4.4, -2.9], entrance: [-4.4, -.8] },
-  { id: 'factory', number: '02', name: '버거 공장', label: 'STACK & PLAY', icon: '🍟', description: '주문서를 보고 차곡차곡! 제한 시간 안에 나만의 버거를 완성해 보세요.', activity: '햄버거 쌓기', href: '/game', color: '#f0907c', position: [4.2, -2.9], entrance: [4.2, -.8] },
-  { id: 'lab', number: '03', name: '취향 연구소', label: 'DISCOVER YOU', icon: '🔮', description: '버거를 고르는 순간 드러나는 나의 성격. 어떤 버거 유형인지 알아볼까요?', activity: '버거 심리테스트', href: '/burger-mbti', color: '#b9a5e5', position: [-4.4, 2.6], entrance: [-4.4, 4.7] },
-  { id: 'hall', number: '04', name: '명예의 전당', label: 'HALL OF FAME', icon: '🏆', description: '모두의 선택을 받은 버거들을 만나보세요. 오늘의 인기 버거는 누구일까요?', activity: '월드컵 랭킹', href: '/ranking', color: '#a4c7df', position: [4.2, 2.6], entrance: [4.2, 4.7] },
+  { id: 'arena', number: '01', name: '버거 아레나', label: 'WORLD CUP', icon: '🏟️', description: '둘 중 더 끌리는 버거를 골라보세요. 마지막까지 살아남을 나의 최애 버거는?', activity: '햄버거 월드컵', href: '/', color: '#f3b94c', position: [-7, -4.9], entrance: [-7, -2] },
+  { id: 'factory', number: '02', name: '버거 공장', label: 'STACK & PLAY', icon: '🍟', description: '주문서를 보고 차곡차곡! 제한 시간 안에 나만의 버거를 완성해 보세요.', activity: '햄버거 쌓기', href: '/game', color: '#f0907c', position: [7, -4.9], entrance: [7, -2] },
+  { id: 'lab', number: '03', name: '취향 연구소', label: 'DISCOVER YOU', icon: '🔮', description: '버거를 고르는 순간 드러나는 나의 성격. 어떤 버거 유형인지 알아볼까요?', activity: '버거 심리테스트', href: '/burger-mbti', color: '#b9a5e5', position: [-7, 4.1], entrance: [-7, 7] },
+  { id: 'hall', number: '04', name: '명예의 전당', label: 'HALL OF FAME', icon: '🏆', description: '모두의 선택을 받은 버거들을 만나보세요. 오늘의 인기 버거는 누구일까요?', activity: '월드컵 랭킹', href: '/ranking', color: '#a4c7df', position: [7, 4.1], entrance: [7, 7] },
 ];
 
 export function landDestination(place: LandPlace): string {
@@ -56,9 +60,9 @@ export function landKeyDirection(code: string, key: string): LandPoint | undefin
 
 /** Keep the player on the connected paths, clear of buildings and the island edge. */
 export function isLandPath([x, z]: LandPoint): boolean {
-  return (Math.abs(x) <= .55 && z >= -5.6 && z <= 5.8)
-    || (Math.abs(x) <= 5.5 && (Math.abs(z + .8) <= .45 || Math.abs(z - 4.7) <= .45))
-    || Math.hypot(x, z - 1.6) <= 1.25;
+  return (Math.abs(x) <= 1.05 && Math.abs(z) <= LAND_PATH_LIMIT)
+    || (Math.abs(x) <= LAND_PATH_LIMIT && LAND_ROAD_ROWS.some((row) => Math.abs(z - row) <= 1.05))
+    || Math.hypot(x, z - 1.6) <= 2.1;
 }
 
 export function moveOnLand(start: LandPoint, direction: LandPoint, distance: number): LandPoint {

@@ -98,7 +98,7 @@ export default function BurgerLand() {
           {unavailable ? <div className="land-map-message" role="status"><span aria-hidden="true">🍔</span><strong>아래에서 가고 싶은 장소를 골라주세요.</strong><p>지도를 표시할 수 없어도 모든 게임을 즐길 수 있어요.</p></div>
             : <MapBoundary onUnavailable={onUnavailable}><LandScene selected={selected} reducedMotion={reducedMotion} controls={controls} onNearby={onNearby} onReady={onReady} onUnavailable={onUnavailable} onLabels={setLabels} onSelect={onSelect} /></MapBoundary>}
           {!ready && !unavailable && <span className="land-map-loading" role="status">마을을 열고 있어요…</span>}
-          <div className="land-map-labels">{labels.map((label) => {
+          <div className="land-map-labels">{labels.filter((label) => label.x > 0 && label.x < 100 && label.y > 0 && label.y < 100).map((label) => {
             const item = LAND_PLACES.find((candidate) => candidate.id === label.id)!;
             return <button key={label.id} type="button" aria-label={`${item.name} 선택`} aria-pressed={selected === item.id} className="land-map-label" style={{ left: `${label.x}%`, top: `${label.y}%`, '--place-color': item.color } as CSSProperties} onClick={() => onSelect(item.id)}><small>{item.number}</small>{item.name}<span aria-hidden="true">↗</span></button>;
           })}</div>

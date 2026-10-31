@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LAND_KEYS, LAND_PLACES, isLandPath, landDestination, landKeyDirection, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPoint } from '../src/data/burgerLand';
+import { LAND_KEYS, LAND_PATH_LIMIT, LAND_PLACES, LAND_RADIUS, isLandPath, landDestination, landKeyDirection, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPoint } from '../src/data/burgerLand';
 
 test('each land building enters the existing activity with a return-to-land marker', () => {
   assert.deepEqual(LAND_PLACES.map(landDestination), ['/?from=land', '/game?from=land', '/burger-mbti?from=land', '/ranking?from=land']);
@@ -8,12 +8,15 @@ test('each land building enters the existing activity with a return-to-land mark
 });
 
 test('walks follow the central path and never cut diagonally through buildings, including redirected walks', () => {
-  for (const start of [[0, 1.6], [-4.4, -.8], [2.2, 4.7], [0, 2.8]] as LandPoint[]) {
+  for (const start of [[0, 1.6], [0, -12], [-12, -2], [12, 7], [0, 12]] as LandPoint[]) {
     for (const place of LAND_PLACES) {
       const path = landWalkPath(start, place.entrance);
       let previous = start;
       for (const point of path) {
         assert.ok(previous[0] === point[0] || previous[1] === point[1]);
+        for (let sample = 0; sample <= 10; sample++) {
+          assert.ok(isLandPath([previous[0] + (point[0] - previous[0]) * sample / 10, previous[1] + (point[1] - previous[1]) * sample / 10]));
+        }
         previous = point;
       }
       assert.deepEqual(previous, place.entrance);
@@ -43,10 +46,10 @@ test('keyboard and touch directions move on paths and stop at island and buildin
   for (const direction of Object.values(LAND_KEYS)) {
     const point = moveOnLand([0, 1.6], direction, 30);
     assert.ok(isLandPath(point));
-    assert.ok(Math.abs(point[0]) <= 5.5 && point[1] >= -5.6 && point[1] <= 5.8);
+    assert.ok(Math.abs(point[0]) <= LAND_PATH_LIMIT && Math.abs(point[1]) <= LAND_PATH_LIMIT);
   }
-  const blocked = moveOnLand([-4.4, -.8], [0, -1], 3);
-  assert.ok(blocked[1] >= -1.25, 'cannot walk through the arena');
+  const blocked = moveOnLand(LAND_PLACES[0].entrance, [0, -1], 3);
+  assert.ok(blocked[1] >= LAND_PLACES[0].entrance[1] - 1.05, 'cannot walk through the arena');
 });
 
 test('every entrance is reachable by manual movement and entry expires when walking away', () => {
@@ -59,5 +62,17 @@ test('every entrance is reachable by manual movement and entry expires when walk
     assert.equal(nearbyLandPlace(point), place.id);
     const away = moveOnLand(point, [-Math.sign(point[0]), 0], 1.5);
     assert.equal(nearbyLandPlace(away), null);
+  }
+});
+
+test('expanded roads allow long walks while remaining on the island and outside buildings', () => {
+  assert.ok(LAND_RADIUS > 9.4 * 1.5);
+  assert.ok(moveOnLand([0, 1.6], [0, -1], 30)[1] < -11.8);
+  for (const place of LAND_PLACES) {
+    const edge = moveOnLand([0, place.entrance[1]], [Math.sign(place.entrance[0]), 0], 30);
+    assert.ok(Math.abs(edge[0]) > 11.8);
+    assert.ok(Math.hypot(...edge) < LAND_RADIUS - .5);
+    const blocked = moveOnLand(place.entrance, [0, -1], 4);
+    assert.ok(blocked[1] > place.position[1] + 1.7, 'player stops before the building front');
   }
 });
