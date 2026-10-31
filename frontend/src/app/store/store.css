@@ -1,0 +1,6 @@
+/* 사이트 기본 html/body min-width(1100px)를 매장 화면에서는 풀어서 폰 화면에 꽉 차게 */
+html:has(.store-shell),
+body:has(.store-shell) {
+  min-width: 320px;
+  overflow: hidden;
+}

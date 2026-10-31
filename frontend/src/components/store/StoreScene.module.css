@@ -1,0 +1,320 @@
+/* 화면 전체를 3D 매장으로 쓰고, 버튼들은 그 위에 얹는다 (산사처럼 유리 느낌 패널) */
+.root {
+  position: fixed;
+  inset: 0;
+  overflow: hidden;
+  background: #f7e9d2;
+  font-family: inherit;
+  color: var(--ink, #1a1a1a);
+  touch-action: none;
+  user-select: none;
+}
+
+.canvas {
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+.top {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 12px);
+  left: 12px;
+  right: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  pointer-events: none;
+}
+
+.top > * {
+  pointer-events: auto;
+}
+
+.iconButton {
+  display: grid;
+  place-items: center;
+  width: 44px;
+  height: 44px;
+  border: 2px solid var(--ink, #1a1a1a);
+  border-radius: 50%;
+  background: rgb(255 247 230 / 0.88);
+  backdrop-filter: blur(6px);
+  color: inherit;
+  font-size: 18px;
+  font-weight: 800;
+  text-decoration: none;
+  cursor: pointer;
+}
+
+.place {
+  flex: 1;
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+  height: 44px;
+  padding: 0 16px;
+  align-items: center;
+  border: 2px solid var(--ink, #1a1a1a);
+  border-radius: 999px;
+  background: rgb(255 247 230 / 0.88);
+  backdrop-filter: blur(6px);
+}
+
+.place b {
+  font-size: 15px;
+}
+
+.place span {
+  font-size: 12px;
+  color: #7a6f5c;
+}
+
+.nameTag {
+  position: absolute;
+  top: 0;
+  left: 0;
+  padding: 4px 10px;
+  border: 1.5px solid var(--ink, #1a1a1a);
+  border-radius: 999px;
+  background: rgb(255 255 255 / 0.92);
+  font-size: 12px;
+  font-weight: 700;
+  white-space: nowrap;
+  pointer-events: none;
+  transition: opacity 0.2s;
+}
+
+.bubble {
+  position: absolute;
+  left: 50%;
+  bottom: calc(100% + 6px);
+  transform: translateX(-50%);
+  padding: 2px 8px;
+  border: 1.5px solid var(--ink, #1a1a1a);
+  border-radius: 12px;
+  background: #fff;
+  font-size: 20px;
+  animation: wave 0.4s ease-in-out infinite alternate;
+}
+
+@keyframes wave {
+  to {
+    transform: translateX(-50%) rotate(14deg);
+  }
+}
+
+.nameTag span {
+  display: inline-block;
+  margin-right: 4px;
+  padding: 0 6px;
+  border-radius: 999px;
+  background: #e8442c;
+  color: #fff;
+  font-size: 11px;
+}
+
+.toast {
+  position: absolute;
+  top: calc(env(safe-area-inset-top) + 72px);
+  left: 50%;
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 10px 16px;
+  border: 2px solid var(--ink, #1a1a1a);
+  border-radius: 16px;
+  background: #ffcc2e;
+  box-shadow: 3px 3px 0 var(--ink, #1a1a1a);
+  font-size: 14px;
+  font-weight: 800;
+  text-align: center;
+  animation: pop 0.25s ease-out;
+}
+
+@keyframes pop {
+  from {
+    transform: translate(-50%, -8px);
+    opacity: 0;
+  }
+}
+
+.hint {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 100px);
+  transform: translateX(-50%);
+  width: max-content;
+  max-width: calc(100% - 32px);
+  margin: 0;
+  padding: 6px 12px;
+  border-radius: 999px;
+  background: rgb(26 26 26 / 0.62);
+  color: #fff;
+  font-size: 12px;
+  text-align: center;
+  pointer-events: none;
+}
+
+.actions {
+  position: absolute;
+  left: 50%;
+  bottom: calc(env(safe-area-inset-bottom) + 16px);
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  padding: 6px;
+  border: 2px solid var(--ink, #1a1a1a);
+  border-radius: 24px;
+  background: rgb(255 247 230 / 0.9);
+  backdrop-filter: blur(8px);
+}
+
+.actions button {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  min-width: 78px;
+  padding: 8px 10px;
+  border: 0;
+  border-radius: 18px;
+  background: transparent;
+  color: inherit;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.actions button span {
+  font-size: 22px;
+  line-height: 1.1;
+}
+
+.actions button:active:not(:disabled) {
+  background: rgb(26 26 26 / 0.08);
+}
+
+.actions button:disabled {
+  opacity: 0.35;
+  cursor: default;
+}
+
+.actions button.primary {
+  background: #e8442c;
+  color: #fff;
+}
+
+/* 키오스크 주문 화면 */
+.kioskBackdrop {
+  position: absolute;
+  inset: 0;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgb(26 26 26 / 0.45);
+  touch-action: auto;
+}
+
+.kiosk {
+  width: min(440px, 100%);
+  max-height: min(640px, 100%);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 3px solid var(--ink, #1a1a1a);
+  border-radius: 20px;
+  background: #fff7e6;
+  box-shadow: 5px 5px 0 var(--ink, #1a1a1a);
+}
+
+.kioskHead {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 12px 16px;
+  background: #e8442c;
+  color: #fff;
+  font-size: 18px;
+}
+
+.kioskHead button {
+  border: 0;
+  background: transparent;
+  color: inherit;
+  font-size: 20px;
+  cursor: pointer;
+}
+
+.kioskEmpty {
+  margin: 0;
+  padding: 40px 16px;
+  text-align: center;
+  color: #7a6f5c;
+  font-weight: 700;
+}
+
+.menu {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 10px;
+  margin: 0;
+  padding: 12px;
+  overflow-y: auto;
+  list-style: none;
+}
+
+.menu button {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 2px;
+  padding: 8px;
+  border: 2px solid var(--ink, #1a1a1a);
+  border-radius: 14px;
+  background: #fff;
+  color: inherit;
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.menu button:active {
+  transform: translateY(2px);
+}
+
+.menu img,
+.menuEmoji {
+  width: 100%;
+  aspect-ratio: 4 / 3;
+  object-fit: contain;
+  border-radius: 8px;
+  background: #fbf1de;
+}
+
+.menuEmoji {
+  display: grid;
+  place-items: center;
+  font-size: 40px;
+}
+
+.menu small {
+  margin-top: 4px;
+  font-size: 11px;
+  color: #7a6f5c;
+}
+
+.menu b {
+  font-size: 13px;
+  line-height: 1.3;
+}
+
+.menu em {
+  font-style: normal;
+  font-size: 13px;
+  font-weight: 800;
+  color: #e8442c;
+}
