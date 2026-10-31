@@ -13,6 +13,7 @@ import { useBurgerGame } from '@/hooks/useBurgerGame';
 import { keyLabel, keyToAction, type GameKeyAction } from '@/lib/burgerGame';
 import type { IngredientType } from '@/types/burgerGame';
 import BurgerStack from './BurgerStack';
+import IngredientIcon from './IngredientIcon';
 import GameHeader from './GameHeader';
 import IngredientPanel from './IngredientPanel';
 import OrderCard from './OrderCard';
@@ -240,7 +241,7 @@ function KeyboardGuide() {
           {row.map((type) => (
             <span key={type} className={styles.keycap} title={INGREDIENTS[type].name}>
               <b>{keyLabel(INGREDIENT_KEYS[type])}</b>
-              <span>{INGREDIENTS[type].emoji}</span>
+              <IngredientIcon type={type} className={styles.keycapIcon} />
             </span>
           ))}
         </div>

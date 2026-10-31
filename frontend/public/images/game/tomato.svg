@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 204 36" width="204" height="36">
+  <!-- 햄버거 쌓기 게임 재료: tomato (직접 그림) -->
+  <defs></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <ellipse cx="54" cy="18" rx="48" ry="14" fill="#e2392a"/>
+      <ellipse cx="24" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="24" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="44" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="44" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="64" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="64" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="84" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="84" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+    <path d="M18 9 Q54 4 84 8" fill="none" stroke="#ff9d8a" stroke-width="3.5" opacity="0.9"/>
+    <ellipse cx="150" cy="18" rx="48" ry="14" fill="#e2392a"/>
+      <ellipse cx="120" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="120" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="140" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="140" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="160" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="160" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+      <ellipse cx="180" cy="18" rx="9" ry="6.5" fill="#ff8a6b" stroke="none"/>
+      <ellipse cx="180" cy="18" rx="2.6" ry="1.6" fill="#fff0c4" stroke="none"/>
+    <path d="M114 9 Q150 4 180 8" fill="none" stroke="#ff9d8a" stroke-width="3.5" opacity="0.9"/>
+
+  </g>
+</svg>

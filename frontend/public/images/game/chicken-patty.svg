@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 58" width="200" height="58">
+  <!-- 햄버거 쌓기 게임 재료: chicken-patty (직접 그림) -->
+  <defs><linearGradient id="fry" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eda23e"/><stop offset="1" stop-color="#b8621a"/></linearGradient></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M10 10 L10.0 8.0 L14.5 13.0 L19.0 8.0 L23.5 13.0 L28.0 8.0 L32.5 13.0 L37.0 8.0 L41.5 13.0 L46.0 8.0 L50.5 13.0 L55.0 8.0 L59.5 13.0 L64.0 8.0 L68.5 13.0 L73.0 8.0 L77.5 13.0 L82.0 8.0 L86.5 13.0 L91.0 8.0 L95.5 13.0 L100.0 8.0 L104.5 13.0 L109.0 8.0 L113.5 13.0 L118.0 8.0 L122.5 13.0 L127.0 8.0 L131.5 13.0 L136.0 8.0 L140.5 13.0 L145.0 8.0 L149.5 13.0 L154.0 8.0 L158.5 13.0 L163.0 8.0 L167.5 13.0 L172.0 8.0 L176.5 13.0 L181.0 8.0 L185.5 13.0 L190.0 8.0 Q200 28 190 46 L190.0 45.0 L185.5 49.0 L181.0 45.0 L176.5 49.0 L172.0 45.0 L167.5 49.0 L163.0 45.0 L158.5 49.0 L154.0 45.0 L149.5 49.0 L145.0 45.0 L140.5 49.0 L136.0 45.0 L131.5 49.0 L127.0 45.0 L122.5 49.0 L118.0 45.0 L113.5 49.0 L109.0 45.0 L104.5 49.0 L100.0 45.0 L95.5 49.0 L91.0 45.0 L86.5 49.0 L82.0 45.0 L77.5 49.0 L73.0 45.0 L68.5 49.0 L64.0 45.0 L59.5 49.0 L55.0 45.0 L50.5 49.0 L46.0 45.0 L41.5 49.0 L37.0 45.0 L32.5 49.0 L28.0 45.0 L23.5 49.0 L19.0 45.0 L14.5 49.0 L10.0 45.0 Q0 28 10 10 Z" fill="url(#fry)"/>
+    <circle cx="30" cy="22" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="52" cy="32" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="76" cy="20" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="98" cy="34" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="120" cy="22" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="144" cy="32" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="166" cy="22" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="64" cy="40" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="132" cy="40" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="110" cy="28" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="40" cy="40" r="2.2" fill="#ffd27a" stroke="none"/>
+    <circle cx="156" cy="40" r="2.2" fill="#ffd27a" stroke="none"/>
+    <path d="M26 17 Q70 11 112 15" fill="none" stroke="#ffcf7a" stroke-width="5" opacity="0.7"/>
+  </g>
+</svg>

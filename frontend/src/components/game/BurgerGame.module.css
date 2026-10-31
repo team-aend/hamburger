@@ -402,7 +402,10 @@
   line-height: 1;
 }
 
-.keycap span {
+.keycapIcon {
+  width: 32px;
+  height: 18px;
+  object-fit: contain;
   font-size: 16px;
   line-height: 1;
 }

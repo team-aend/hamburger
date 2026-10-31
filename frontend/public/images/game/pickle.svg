@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 186 30" width="186" height="30">
+  <!-- 햄버거 쌓기 게임 재료: pickle (직접 그림) -->
+  <defs></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <circle cx="36" cy="15" r="13" fill="#4f7d25"/>
+    <circle cx="36" cy="15" r="9" fill="#a9d05a" stroke="none"/>
+      <circle cx="41.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="38.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="33.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="31.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="33.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="38.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+    <circle cx="93" cy="15" r="13" fill="#4f7d25"/>
+    <circle cx="93" cy="15" r="9" fill="#a9d05a" stroke="none"/>
+      <circle cx="98.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="95.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="90.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="88.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="90.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="95.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+    <circle cx="150" cy="15" r="13" fill="#4f7d25"/>
+    <circle cx="150" cy="15" r="9" fill="#a9d05a" stroke="none"/>
+      <circle cx="155.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="152.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="147.5" cy="19.3" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="145.0" cy="15.0" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="147.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+      <circle cx="152.5" cy="10.7" r="1.6" fill="#f2f7c8" stroke="none"/>
+
+  </g>
+</svg>
