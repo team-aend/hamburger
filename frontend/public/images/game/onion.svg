@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 194 28" width="194" height="28">
+  <!-- 햄버거 쌓기 게임 재료: onion (직접 그림) -->
+  <defs></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <ellipse cx="36" cy="14" rx="28" ry="9" fill="#fbf4ff"/>
+    <ellipse cx="36" cy="14" rx="18" ry="5" fill="none" stroke="#c9a7dd" stroke-width="3"/>
+    <ellipse cx="36" cy="14" rx="9" ry="2.5" fill="none" stroke="#c9a7dd" stroke-width="2.5"/>
+    <ellipse cx="97" cy="14" rx="28" ry="9" fill="#fbf4ff"/>
+    <ellipse cx="97" cy="14" rx="18" ry="5" fill="none" stroke="#c9a7dd" stroke-width="3"/>
+    <ellipse cx="97" cy="14" rx="9" ry="2.5" fill="none" stroke="#c9a7dd" stroke-width="2.5"/>
+    <ellipse cx="158" cy="14" rx="28" ry="9" fill="#fbf4ff"/>
+    <ellipse cx="158" cy="14" rx="18" ry="5" fill="none" stroke="#c9a7dd" stroke-width="3"/>
+    <ellipse cx="158" cy="14" rx="9" ry="2.5" fill="none" stroke="#c9a7dd" stroke-width="2.5"/>
+
+  </g>
+</svg>

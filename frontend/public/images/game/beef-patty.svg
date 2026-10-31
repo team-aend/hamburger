@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 54" width="200" height="54">
+  <!-- 햄버거 쌓기 게임 재료: beef-patty (직접 그림) -->
+  <defs><linearGradient id="beef" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#7a4129"/><stop offset="1" stop-color="#4a2213"/></linearGradient></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M14 12 Q40 4 70 9 Q100 3 130 9 Q160 4 186 12 Q199 27 186 42 Q160 50 130 45 Q100 51 70 45 Q40 50 14 42 Q1 27 14 12 Z" fill="url(#beef)"/>
+    <circle cx="40" cy="22" r="3" fill="#8a4f33" stroke="none"/>
+    <circle cx="70" cy="30" r="2.5" fill="#8a4f33" stroke="none"/>
+    <circle cx="100" cy="20" r="3" fill="#8a4f33" stroke="none"/>
+    <circle cx="132" cy="32" r="2.5" fill="#8a4f33" stroke="none"/>
+    <circle cx="160" cy="22" r="3" fill="#8a4f33" stroke="none"/>
+    <circle cx="56" cy="38" r="2" fill="#8a4f33" stroke="none"/>
+    <circle cx="118" cy="40" r="2" fill="#8a4f33" stroke="none"/>
+    <circle cx="150" cy="40" r="2" fill="#8a4f33" stroke="none"/>
+    <path d="M30 16 Q70 9 110 13" fill="none" stroke="#a8684a" stroke-width="5" opacity="0.8"/>
+  </g>
+</svg>

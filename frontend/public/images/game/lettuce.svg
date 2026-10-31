@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 222 44" width="222" height="44">
+  <!-- 햄버거 쌓기 게임 재료: lettuce (직접 그림) -->
+  <defs><linearGradient id="leaf" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#8fd14f"/><stop offset="1" stop-color="#4c962b"/></linearGradient></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M12 8 Q23 12 34 8 Q45 4 56 8 Q67 12 78 8 Q89 4 100 8 Q111 12 122 8 Q133 4 144 8 Q155 12 166 8 Q177 4 188 8 Q199 12 210 8 Q218 20 210 34 Q199 30 188 34 Q177 40 166 34 Q155 30 144 34 Q133 40 122 34 Q111 30 100 34 Q89 40 78 34 Q67 30 56 34 Q45 40 34 34 Q23 30 12 34 Q4 22 12 8 Z" fill="url(#leaf)"/>
+    <path d="M24 30 Q30 20 38 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M50 30 Q56 20 64 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M76 30 Q82 20 90 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M102 30 Q108 20 116 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M128 30 Q134 20 142 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M154 30 Q160 20 168 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+    <path d="M180 30 Q186 20 194 14" fill="none" stroke="#c4ec8a" stroke-width="2.5"/>
+
+  </g>
+</svg>

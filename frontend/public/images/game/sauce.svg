@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 212 30" width="212" height="30">
+  <!-- 햄버거 쌓기 게임 재료: sauce (직접 그림) -->
+  <defs></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M8 10 Q30 2 52 10 T96 10 T140 10 T184 10 Q200 6 204 12 Q206 18 196 18 Q184 20 174 17 Q170 26 162 26 Q156 24 156 17 Q120 22 96 17 Q92 28 82 28 Q74 26 76 17 Q40 22 18 18 Q4 18 8 10 Z" fill="#e8442c"/>
+    <path d="M22 9 Q40 5 60 9" fill="none" stroke="#ff9a80" stroke-width="3" opacity="0.9"/>
+  </g>
+</svg>

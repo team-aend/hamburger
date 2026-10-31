@@ -11,24 +11,28 @@
 
 .large {
   --unit: 10px;
-  height: 280px;
+  --stage-h: 300px;
+  height: var(--stage-h);
 }
 
 .small {
   --unit: 6px;
-  height: 150px;
+  --stage-h: 150px;
+  height: var(--stage-h);
 }
 
 /* 배열의 첫 번째 재료가 화면 맨 아래에 오도록 column-reverse 로 쌓는다. */
 .stack {
-  width: calc(var(--unit) * 24);
+  /* 기본 너비. 층이 많아 칸 높이를 넘으면 (칸 높이 ÷ 층 비율 합) 만큼으로 줄여서 위빵까지 다 보이게 */
+  width: min(calc(var(--unit) * 24), calc((var(--stage-h) - var(--unit) * 4) / var(--stack-ratio, 1)));
   max-width: 88%;
   min-height: 0;
   display: flex;
   flex-direction: column-reverse;
   align-items: center;
   justify-content: flex-start;
-  padding: 0 4%;
+  /* 여백을 % 로 주면 바깥 칸 폭 기준이라, 버거가 작아질 때 재료가 지나치게 좁아진다 → 버거 크기 단위로 */
+  padding: 0 calc(var(--unit) * 0.5);
 }
 
 .plate {
@@ -57,11 +61,11 @@
 @media (max-width: 700px) {
   .large {
     --unit: 6.5px;
-    height: 160px;
+    --stage-h: 220px;
   }
 
   .small {
     --unit: 4px;
-    height: 96px;
+    --stage-h: 110px;
   }
 }

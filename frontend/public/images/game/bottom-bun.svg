@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 58" width="200" height="58">
+  <!-- 햄버거 쌓기 게임 재료: bottom-bun (직접 그림) -->
+  <defs><linearGradient id="bun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eba347"/><stop offset="1" stop-color="#c86e22"/></linearGradient></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M9 8 L191 8 Q196 8 195 15 C191 42 168 52 100 52 C32 52 9 42 5 15 Q4 8 9 8 Z" fill="url(#bun)"/>
+    <path d="M9 8 L191 8 Q196 8 195 15 L194 20 Q100 26 6 20 L5 15 Q4 8 9 8 Z" fill="#f8d79a"/>
+  </g>
+</svg>

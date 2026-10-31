@@ -13,17 +13,18 @@ export const COUNTDOWN_STEP_MS = 800;
 /** 주문마다 바뀌는 손님 색 */
 export const CUSTOMER_COLORS = ['#f5b82e', '#7fb3d5', '#e8836f', '#8fbf7a', '#c9a0dc'];
 
+// 재료 그림: public/images/game/*.svg (큐플레이 햄버거 모드처럼 두툼하고 테두리 진한 그림, 직접 그림)
 export const INGREDIENTS: Record<IngredientType, Ingredient> = {
-  bottomBun: { id: 'bottomBun', name: '아래빵', emoji: '🍞' },
-  topBun: { id: 'topBun', name: '위빵', emoji: '🍔' },
-  beefPatty: { id: 'beefPatty', name: '소고기 패티', emoji: '🥩' },
-  chickenPatty: { id: 'chickenPatty', name: '치킨 패티', emoji: '🍗' },
-  cheese: { id: 'cheese', name: '치즈', emoji: '🧀' },
-  lettuce: { id: 'lettuce', name: '양상추', emoji: '🥬' },
-  tomato: { id: 'tomato', name: '토마토', emoji: '🍅' },
-  pickle: { id: 'pickle', name: '피클', emoji: '🥒' },
-  onion: { id: 'onion', name: '양파', emoji: '🧅' },
-  sauce: { id: 'sauce', name: '소스', emoji: '🥫' },
+  bottomBun: { id: 'bottomBun', name: '아래빵', emoji: '🍞', imageUrl: '/images/game/bottom-bun.svg', imageAspect: 58 / 200 },
+  topBun: { id: 'topBun', name: '위빵', emoji: '🍔', imageUrl: '/images/game/top-bun.svg', imageAspect: 96 / 200 },
+  beefPatty: { id: 'beefPatty', name: '소고기 패티', emoji: '🥩', imageUrl: '/images/game/beef-patty.svg', imageAspect: 54 / 200 },
+  chickenPatty: { id: 'chickenPatty', name: '치킨 패티', emoji: '🍗', imageUrl: '/images/game/chicken-patty.svg', imageAspect: 58 / 200 },
+  cheese: { id: 'cheese', name: '치즈', emoji: '🧀', imageUrl: '/images/game/cheese.svg', imageAspect: 46 / 212 },
+  lettuce: { id: 'lettuce', name: '양상추', emoji: '🥬', imageUrl: '/images/game/lettuce.svg', imageAspect: 44 / 222 },
+  tomato: { id: 'tomato', name: '토마토', emoji: '🍅', imageUrl: '/images/game/tomato.svg', imageAspect: 36 / 204 },
+  pickle: { id: 'pickle', name: '피클', emoji: '🥒', imageUrl: '/images/game/pickle.svg', imageAspect: 30 / 186 },
+  onion: { id: 'onion', name: '양파', emoji: '🧅', imageUrl: '/images/game/onion.svg', imageAspect: 28 / 194 },
+  sauce: { id: 'sauce', name: '소스', emoji: '🥫', imageUrl: '/images/game/sauce.svg', imageAspect: 30 / 212 },
 };
 
 /** 재료 선택 버튼 배치 순서 */

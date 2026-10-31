@@ -16,6 +16,8 @@ export interface Ingredient {
   emoji: string;
   /** 실제 PNG/WebP 이미지가 준비되면 경로만 채운다. 없으면 CSS 도형으로 그린다. */
   imageUrl?: string;
+  /** 그림의 세로÷가로 비율. 층이 많을 때 버거 전체가 칸 안에 들어오도록 크기를 줄이는 데 쓴다. */
+  imageAspect?: number;
 }
 
 export type RecipeDifficulty = 'easy' | 'normal' | 'hard';

@@ -1,6 +1,7 @@
 import { INGREDIENT_KEYS, INGREDIENT_ORDER, INGREDIENTS } from '@/data/burgerGame';
 import { keyLabel } from '@/lib/burgerGame';
 import type { IngredientType } from '@/types/burgerGame';
+import IngredientIcon from './IngredientIcon';
 import styles from './IngredientPanel.module.css';
 
 interface IngredientPanelProps {
@@ -24,9 +25,7 @@ export default function IngredientPanel({ onSelect, pressed }: IngredientPanelPr
             aria-keyshortcuts={key}
           >
             <kbd className={styles.key} aria-hidden="true">{key}</kbd>
-            <span className={styles.emoji} aria-hidden="true">
-              {ingredient.emoji}
-            </span>
+            <IngredientIcon type={type} className={styles.emoji} />
             <span className={styles.name}>{ingredient.name}</span>
           </button>
         );

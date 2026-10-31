@@ -67,6 +67,10 @@
 }
 
 .emoji {
+  /* 그림이면 너비 기준으로, 이모지면 글자 크기로 */
+  width: 46px;
+  height: 26px;
+  object-fit: contain;
   font-size: 26px;
   line-height: 1;
 }
@@ -93,6 +97,8 @@
   }
 
   .emoji {
+    width: 36px;
+    height: 20px;
     font-size: 19px;
   }
 

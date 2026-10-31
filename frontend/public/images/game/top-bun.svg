@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 96" width="200" height="96">
+  <!-- 햄버거 쌓기 게임 재료: top-bun (직접 그림) -->
+  <defs><linearGradient id="bun" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f9b955"/><stop offset="1" stop-color="#d97f28"/></linearGradient></defs>
+  <g stroke="#3b2314" stroke-width="4" stroke-linejoin="round" stroke-linecap="round">
+    <path d="M8 82 C8 30 50 6 100 6 C150 6 192 30 192 82 Q192 92 181 92 L19 92 Q8 92 8 82 Z" fill="url(#bun)"/>
+    <path d="M30 40 C40 24 62 14 84 12" fill="none" stroke="#ffe1a6" stroke-width="7" opacity="0.8"/>
+    <ellipse cx="56" cy="30" rx="6" ry="3.2" transform="rotate(-25 56 30)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="86" cy="20" rx="6" ry="3.2" transform="rotate(-8 86 20)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="118" cy="19" rx="6" ry="3.2" transform="rotate(10 118 19)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="148" cy="30" rx="6" ry="3.2" transform="rotate(25 148 30)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="40" cy="52" rx="6" ry="3.2" transform="rotate(-35 40 52)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="72" cy="44" rx="6" ry="3.2" transform="rotate(-15 72 44)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="104" cy="40" rx="6" ry="3.2" transform="rotate(0 104 40)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="136" cy="45" rx="6" ry="3.2" transform="rotate(15 136 45)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="166" cy="54" rx="6" ry="3.2" transform="rotate(35 166 54)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="90" cy="62" rx="6" ry="3.2" transform="rotate(-5 90 62)" fill="#fff4cf" stroke-width="1.6"/>
+    <ellipse cx="124" cy="63" rx="6" ry="3.2" transform="rotate(8 124 63)" fill="#fff4cf" stroke-width="1.6"/>
+
+  </g>
+</svg>
