@@ -7,6 +7,7 @@ import SiteHeader, { menuRoutes, type MenuKey } from '@/components/SiteHeader';
 import ShareResultButton from '@/components/worldcup/ShareResultButton';
 import WorldcupFinalRankings from '@/components/WorldcupFinalRankings';
 import { getWorldcupSession, startWorldcupSession, voteWorldcup, type WorldcupProduct, type WorldcupRoundSize, type WorldcupSession } from '@/lib/worldcupSession';
+import './worldcup.css';
 
 type WorldcupOptions = {
   eligibleProductCount: number;
@@ -178,7 +179,7 @@ export default function HomePage() {
   };
 
   return (
-    <main className="worldcup-shell">
+    <main className="worldcup-shell worldcup-home">
       <SiteHeader activeMenu="worldcup" onSelectMenu={navigate} />
       {error && <div className="worldcup-request-status" role="alert"><p>{error}</p><button type="button" disabled={busy} onClick={retryRequest}>다시 시도</button>{retry !== 'vote' && <button type="button" disabled={busy} onClick={abandonLocal}>새로 시작하기</button>}</div>}
       {!session && <section className="start-screen" aria-labelledby="start-title">
@@ -203,7 +204,7 @@ export default function HomePage() {
         <div className="match-heading"><div><span className="round-tag">{roundLabel(session.progress.currentRoundSize!)}</span><h1 id="match-title">더 끌리는 버거는?</h1></div><div className="match-counter"><strong>{String(session.progress.roundMatchNumber).padStart(2, '0')}</strong><span>/ {String(session.progress.roundMatchCount).padStart(2, '0')} MATCH</span></div></div>
         <div className="progress-track" aria-label={`전체 ${session.progress.totalMatches}경기 중 ${session.progress.completedMatches}경기 완료`}><span style={{ width: `${session.progress.completedMatches / session.progress.totalMatches * 100}%` }} /></div>
         <div className="versus-stage"><BurgerCard burger={session.currentMatch.left} side="A" disabled={busy || Boolean(pendingVote.current)} onSelect={select} /><div className="vs-divider"><span>VS</span></div><BurgerCard burger={session.currentMatch.right} side="B" disabled={busy || Boolean(pendingVote.current)} onSelect={select} /></div>
-        <div className="match-help"><span role="status">{busy ? '선택을 저장하고 있습니다…' : '마음이 가는 버거 카드를 클릭하세요.'}</span><button type="button" disabled={busy} onClick={reset}>강수 선택으로 돌아가기</button></div>
+        <div className="match-help"><span role="status">{busy ? '선택을 저장하고 있습니다…' : '버거 카드를 눌러 선택하세요.'}</span><button type="button" disabled={busy} onClick={reset}>강수 선택으로 돌아가기</button></div>
       </section>}
       {session?.status === 'COMPLETED' && session.winner && <section className="result-screen" aria-labelledby="result-title" aria-live="polite">
         <div className="confetti" aria-hidden="true">{Array.from({ length: 18 }, (_, index) => <i key={index} />)}</div>
