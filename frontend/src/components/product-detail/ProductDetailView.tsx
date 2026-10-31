@@ -413,9 +413,7 @@ function ReviewsSection({ productId }: { productId: number }) {
         <p className="pd-error" role="alert">한 줄 평을 불러오지 못했어요.</p>
       ) : !data ? (
         <p className="pd-empty-note">불러오는 중...</p>
-      ) : data.reviews.length === 0 ? (
-        <p className="pd-empty-note">아직 한 줄 평이 없어요. 첫 번째로 남겨보세요!</p>
-      ) : (
+      ) : data.reviews.length === 0 ? null : (
         <ul className="pd-reviews">
           {data.reviews.map((review) => (
             <li key={review.id}>
