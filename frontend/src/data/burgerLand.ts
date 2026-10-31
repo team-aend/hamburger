@@ -30,16 +30,71 @@ export function landDestination(place: LandPlace): string {
   return `${place.href}?from=land`;
 }
 
-/** Walk along the central path before approaching an entrance, avoiding buildings. */
+// Includes clearance for the character around each building footprint.
+export const LAND_BUILDING_CLEARANCE = 2.15;
+export const LAND_WALK_RADIUS = LAND_RADIUS - .6;
+
+/** All ground is walkable except building interiors and the island edge. */
+export function isLandWalkable([x, z]: LandPoint): boolean {
+  return Math.hypot(x, z) <= LAND_WALK_RADIUS
+    && LAND_PLACES.every((place) => Math.abs(x - place.position[0]) >= LAND_BUILDING_CLEARANCE
+      || Math.abs(z - place.position[1]) >= LAND_BUILDING_CLEARANCE);
+}
+
+/** Segment/box intersection prevents automatic walks from cutting through buildings. */
+function clearLandSegment(start: LandPoint, end: LandPoint): boolean {
+  return LAND_PLACES.every((place) => {
+    let near = 0;
+    let far = 1;
+    for (const axis of [0, 1] as const) {
+      const delta = end[axis] - start[axis];
+      const min = place.position[axis] - LAND_BUILDING_CLEARANCE + 1e-7;
+      const max = place.position[axis] + LAND_BUILDING_CLEARANCE - 1e-7;
+      if (Math.abs(delta) < 1e-9) {
+        if (start[axis] < min || start[axis] > max) return true;
+      } else {
+        const a = (min - start[axis]) / delta;
+        const b = (max - start[axis]) / delta;
+        near = Math.max(near, Math.min(a, b));
+        far = Math.min(far, Math.max(a, b));
+        if (near > far) return true;
+      }
+    }
+    return false;
+  });
+}
+
+/** Find a short route across the grass, detouring around building corners. */
 export function landWalkPath(start: LandPoint, entrance: LandPoint): LandPoint[] {
   if (Math.hypot(start[0] - entrance[0], start[1] - entrance[1]) <= .01) return [];
-  const points: LandPoint[] = [[0, start[1]], [0, entrance[1]], entrance];
-  let previous = start;
-  return points.filter((point) => {
-    const different = Math.hypot(point[0] - previous[0], point[1] - previous[1]) > .01;
-    previous = point;
-    return different;
-  });
+  if (!isLandWalkable(start) || !isLandWalkable(entrance)) return [];
+  const margin = LAND_BUILDING_CLEARANCE + .08;
+  const corners: LandPoint[] = LAND_PLACES.flatMap((place) =>
+    [-1, 1].flatMap((x) => [-1, 1].map((z): LandPoint => [place.position[0] + x * margin, place.position[1] + z * margin])));
+  const nodes = [start, entrance, ...corners.filter(isLandWalkable)];
+  const distances = nodes.map(() => Infinity);
+  const previous = nodes.map(() => -1);
+  const visited = new Set<number>();
+  distances[0] = 0;
+  while (visited.size < nodes.length) {
+    let current = -1;
+    for (let i = 0; i < nodes.length; i++) {
+      if (!visited.has(i) && (current === -1 || distances[i] < distances[current])) current = i;
+    }
+    if (current === -1 || !Number.isFinite(distances[current])) return [];
+    if (current === 1) {
+      const path: LandPoint[] = [];
+      for (let i = 1; i !== 0; i = previous[i]) path.unshift(nodes[i]);
+      return path;
+    }
+    visited.add(current);
+    for (let i = 0; i < nodes.length; i++) {
+      if (visited.has(i) || !clearLandSegment(nodes[current], nodes[i])) continue;
+      const distance = distances[current] + Math.hypot(nodes[current][0] - nodes[i][0], nodes[current][1] - nodes[i][1]);
+      if (distance < distances[i]) { distances[i] = distance; previous[i] = current; }
+    }
+  }
+  return [];
 }
 
 export function stepToward(start: LandPoint, target: LandPoint, distance: number): LandPoint {
@@ -58,24 +113,17 @@ export function landKeyDirection(code: string, key: string): LandPoint | undefin
   return LAND_KEYS[code] ?? LAND_KEYS[key] ?? LAND_KEYS[`Key${key.toUpperCase()}`];
 }
 
-/** Keep the player on the connected paths, clear of buildings and the island edge. */
-export function isLandPath([x, z]: LandPoint): boolean {
-  return (Math.abs(x) <= 1.05 && Math.abs(z) <= LAND_PATH_LIMIT)
-    || (Math.abs(x) <= LAND_PATH_LIMIT && LAND_ROAD_ROWS.some((row) => Math.abs(z - row) <= 1.05))
-    || Math.hypot(x, z - 1.6) <= 2.1;
-}
-
 export function moveOnLand(start: LandPoint, direction: LandPoint, distance: number): LandPoint {
   const length = Math.hypot(...direction);
   if (!length || distance <= 0) return start;
-  // Substeps prevent skipping across a path edge on slow frames.
+  // Substeps prevent skipping across a building or island edge on slow frames.
   const steps = Math.ceil(distance / .08);
   const dx = direction[0] / length * distance / steps;
   const dz = direction[1] / length * distance / steps;
   let [x, z] = start;
   for (let step = 0; step < steps; step++) {
-    if (isLandPath([x + dx, z])) x += dx;
-    if (isLandPath([x, z + dz])) z += dz;
+    if (isLandWalkable([x + dx, z])) x += dx;
+    if (isLandWalkable([x, z + dz])) z += dz;
   }
   return [x, z];
 }

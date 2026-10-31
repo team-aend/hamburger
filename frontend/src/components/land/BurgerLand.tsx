@@ -93,7 +93,7 @@ export default function BurgerLand() {
       </div>
 
       <section className="land-playground" aria-label="버거 랜드 탐험">
-        <div className="land-map" role="group" aria-label="3D 마을 지도. 방향키 또는 WASD로 길을 따라 이동하세요. 건물 입구에서 입장할 수 있습니다.">
+        <div className="land-map" role="group" aria-label="3D 마을 지도. 방향키 또는 WASD로 잔디와 산책로를 자유롭게 이동하세요. 건물 입구에서 입장할 수 있습니다.">
           <div className="land-map-top"><span><i /> BURGER LAND</span><span>작은 모험의 시작</span></div>
           {unavailable ? <div className="land-map-message" role="status"><span aria-hidden="true">🍔</span><strong>아래에서 가고 싶은 장소를 골라주세요.</strong><p>지도를 표시할 수 없어도 모든 게임을 즐길 수 있어요.</p></div>
             : <MapBoundary onUnavailable={onUnavailable}><LandScene selected={selected} reducedMotion={reducedMotion} controls={controls} onNearby={onNearby} onReady={onReady} onUnavailable={onUnavailable} onLabels={setLabels} onSelect={onSelect} /></MapBoundary>}
@@ -118,7 +118,7 @@ export default function BurgerLand() {
       </section>
 
       {!unavailable && <div className="land-controls" role="group" aria-label="모바일 이동 컨트롤">
-        <span>길을 따라 이동</span>
+        <span>자유롭게 이동</span>
         {([['up', '위로', '▲', [0, -1]], ['left', '왼쪽으로', '◀', [-1, 0]], ['down', '아래로', '▼', [0, 1]], ['right', '오른쪽으로', '▶', [1, 0]]] as const).map(([id, label, icon, direction]) =>
           <button key={id} className={`land-direction land-direction-${id}`} type="button" aria-label={`${label} 이동`} disabled={!ready}
             onPointerDown={(event) => { event.preventDefault(); event.currentTarget.setPointerCapture(event.pointerId); controls.current.set(`tap-pointer-${event.pointerId}`, direction); controls.current.set(`pointer-${event.pointerId}`, direction); setSelected(null); }}
