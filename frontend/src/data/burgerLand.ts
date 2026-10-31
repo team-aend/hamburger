@@ -34,22 +34,35 @@ export function landDestination(place: LandPlace): string {
 export const LAND_BUILDING_CLEARANCE = 2.15;
 export const LAND_WALK_RADIUS = LAND_RADIUS - .6;
 
-/** All ground is walkable except building interiors and the island edge. */
+// Rendering and collision share the same object positions and sizes.
+export const LAND_TREES = [
+  [-7, -3.6, 1.1], [6.8, -4, 1.2], [-7.5, .4, .85], [7.2, 1.4, 1],
+  [-6.5, 5.1, .7], [2, -6.4, .9], [-2.4, -6.2, .75],
+].map(([x, z, size]) => ({ position: [x * 1.65, z * 1.65] as LandPoint, size }));
+export const LAND_BENCHES: readonly LandPoint[] = [[-2 * 1.65, 3.2 * 1.65], [2.2 * 1.65, .3 * 1.65]];
+
+export const LAND_OBSTACLES: readonly { kind: 'building' | 'tree' | 'bench'; position: LandPoint; halfSize: LandPoint }[] = [
+  ...LAND_PLACES.map((place) => ({ kind: 'building' as const, position: place.position, halfSize: [LAND_BUILDING_CLEARANCE, LAND_BUILDING_CLEARANCE] as LandPoint })),
+  ...LAND_TREES.map((tree) => ({ kind: 'tree' as const, position: tree.position, halfSize: [.85 * tree.size + .4, .85 * tree.size + .4] as LandPoint })),
+  ...LAND_BENCHES.map((position) => ({ kind: 'bench' as const, position, halfSize: [1.025, .7] as LandPoint })),
+];
+
+/** All ground is walkable except solid objects and the island edge. */
 export function isLandWalkable([x, z]: LandPoint): boolean {
   return Math.hypot(x, z) <= LAND_WALK_RADIUS
-    && LAND_PLACES.every((place) => Math.abs(x - place.position[0]) >= LAND_BUILDING_CLEARANCE
-      || Math.abs(z - place.position[1]) >= LAND_BUILDING_CLEARANCE);
+    && LAND_OBSTACLES.every((obstacle) => Math.abs(x - obstacle.position[0]) >= obstacle.halfSize[0]
+      || Math.abs(z - obstacle.position[1]) >= obstacle.halfSize[1]);
 }
 
-/** Segment/box intersection prevents automatic walks from cutting through buildings. */
+/** Segment/box intersection prevents automatic walks from cutting through solid objects. */
 function clearLandSegment(start: LandPoint, end: LandPoint): boolean {
-  return LAND_PLACES.every((place) => {
+  return LAND_OBSTACLES.every((obstacle) => {
     let near = 0;
     let far = 1;
     for (const axis of [0, 1] as const) {
       const delta = end[axis] - start[axis];
-      const min = place.position[axis] - LAND_BUILDING_CLEARANCE + 1e-7;
-      const max = place.position[axis] + LAND_BUILDING_CLEARANCE - 1e-7;
+      const min = obstacle.position[axis] - obstacle.halfSize[axis] + 1e-7;
+      const max = obstacle.position[axis] + obstacle.halfSize[axis] - 1e-7;
       if (Math.abs(delta) < 1e-9) {
         if (start[axis] < min || start[axis] > max) return true;
       } else {
@@ -64,13 +77,12 @@ function clearLandSegment(start: LandPoint, end: LandPoint): boolean {
   });
 }
 
-/** Find a short route across the grass, detouring around building corners. */
+/** Find a short route across the grass, detouring around buildings, trees and benches. */
 export function landWalkPath(start: LandPoint, entrance: LandPoint): LandPoint[] {
   if (Math.hypot(start[0] - entrance[0], start[1] - entrance[1]) <= .01) return [];
   if (!isLandWalkable(start) || !isLandWalkable(entrance)) return [];
-  const margin = LAND_BUILDING_CLEARANCE + .08;
-  const corners: LandPoint[] = LAND_PLACES.flatMap((place) =>
-    [-1, 1].flatMap((x) => [-1, 1].map((z): LandPoint => [place.position[0] + x * margin, place.position[1] + z * margin])));
+  const corners: LandPoint[] = LAND_OBSTACLES.flatMap((obstacle) =>
+    [-1, 1].flatMap((x) => [-1, 1].map((z): LandPoint => [obstacle.position[0] + x * (obstacle.halfSize[0] + .08), obstacle.position[1] + z * (obstacle.halfSize[1] + .08)])));
   const nodes = [start, entrance, ...corners.filter(isLandWalkable)];
   const distances = nodes.map(() => Infinity);
   const previous = nodes.map(() => -1);

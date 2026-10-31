@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { LAND_KEYS, LAND_PLACES, LAND_RADIUS, LAND_WALK_RADIUS, isLandWalkable, landDestination, landKeyDirection, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPoint } from '../src/data/burgerLand';
+import { LAND_OBSTACLES, LAND_TREES, LAND_BENCHES, LAND_KEYS, LAND_PLACES, LAND_RADIUS, LAND_WALK_RADIUS, isLandWalkable, landDestination, landKeyDirection, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPoint } from '../src/data/burgerLand';
 
 test('each land building enters the existing activity with a return-to-land marker', () => {
   assert.deepEqual(LAND_PLACES.map(landDestination), ['/?from=land', '/game?from=land', '/burger-mbti?from=land', '/ranking?from=land']);
@@ -77,11 +77,11 @@ test('expanded ground allows long walks while remaining on the island and outsid
 });
 
 test('grass is freely walkable, with collision from every side of every building', () => {
-  for (const point of [[4, 0], [-4, -9], [10, 9], [-10, 9], [0, -14]] as LandPoint[]) {
+  for (const point of [[2, 0], [-4, -9], [10, 9], [-9, 10], [0, -14]] as LandPoint[]) {
     assert.ok(isLandWalkable(point), `grass ${point} is walkable`);
   }
-  const grassWalk = moveOnLand([0, 0], [1, 0], 4);
-  assert.ok(Math.hypot(grassWalk[0] - 4, grassWalk[1]) < 1e-9);
+  const grassWalk = moveOnLand([0, 0], [1, 0], 2);
+  assert.ok(Math.hypot(grassWalk[0] - 2, grassWalk[1]) < 1e-9);
   assert.equal(isLandWalkable([15, 0]), false);
   assert.equal(isLandWalkable([11, 11]), false);
   for (const place of LAND_PLACES) {
@@ -92,6 +92,47 @@ test('grass is freely walkable, with collision from every side of every building
       assert.ok(isLandWalkable(end));
       assert.ok(Math.hypot(end[0] - place.position[0], end[1] - place.position[1]) >= 2.15);
       assert.ok(Math.hypot(end[0] - start[0], end[1] - start[1]) < 1);
+    }
+  }
+});
+
+test('all rendered trees and benches block manual movement from accessible sides', () => {
+  const objects = LAND_OBSTACLES.filter((obstacle) => obstacle.kind !== 'building');
+  assert.equal(objects.filter((object) => object.kind === 'tree').length, LAND_TREES.length);
+  assert.equal(objects.filter((object) => object.kind === 'bench').length, LAND_BENCHES.length);
+  for (const object of objects) {
+    assert.equal(isLandWalkable(object.position), false);
+    let approaches = 0;
+    for (const direction of [[1, 0], [-1, 0], [0, 1], [0, -1]] as LandPoint[]) {
+      const axis = direction[0] ? 0 : 1;
+      const distance = object.halfSize[axis] + .25;
+      const start: LandPoint = [object.position[0] - direction[0] * distance, object.position[1] - direction[1] * distance];
+      if (!isLandWalkable(start)) continue;
+      approaches++;
+      const end = moveOnLand(start, direction, distance * 2);
+      assert.ok(isLandWalkable(end));
+      assert.ok(Math.hypot(end[0] - start[0], end[1] - start[1]) <= .251, `${object.kind} stops movement`);
+    }
+    assert.ok(approaches >= 2);
+  }
+});
+
+test('automatic movement routes around trees and benches and still reaches all entrances', () => {
+  for (const object of LAND_OBSTACLES.filter((obstacle) => obstacle.kind !== 'building')) {
+    const start: LandPoint = [object.position[0] - object.halfSize[0] - .25, object.position[1]];
+    if (!isLandWalkable(start)) continue;
+    for (const place of LAND_PLACES) {
+      let previous = start;
+      const path = landWalkPath(start, place.entrance);
+      assert.ok(path.length);
+      for (const point of path) {
+        const samples = Math.ceil(Math.hypot(point[0] - previous[0], point[1] - previous[1]) / .02);
+        for (let i = 0; i <= samples; i++) {
+          assert.ok(isLandWalkable([previous[0] + (point[0] - previous[0]) * i / samples, previous[1] + (point[1] - previous[1]) * i / samples]));
+        }
+        previous = point;
+      }
+      assert.deepEqual(previous, place.entrance);
     }
   }
 });

@@ -3,7 +3,7 @@
 import { Canvas, useFrame, useThree, type ThreeEvent } from '@react-three/fiber';
 import { memo, useCallback, useEffect, useLayoutEffect, useMemo, useRef, type RefObject } from 'react';
 import { Group, OrthographicCamera, Shape, Vector3 } from 'three';
-import { LAND_PATH_LIMIT, LAND_PLACES, LAND_RADIUS, LAND_ROAD_ROWS, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
+import { LAND_BENCHES, LAND_TREES, LAND_PATH_LIMIT, LAND_PLACES, LAND_RADIUS, LAND_ROAD_ROWS, landWalkPath, moveOnLand, nearbyLandPlace, stepToward, type LandPlace, type LandPlaceId, type LandPoint } from '@/data/burgerLand';
 import type { LandLabel } from './BurgerLand';
 
 interface Props {
@@ -141,8 +141,8 @@ function Village() {
     <Block position={[0, .36, 0]} size={[2.8, .045, LAND_PATH_LIMIT * 2 + .6]} color="#eeddac" />
     {LAND_ROAD_ROWS.map((z) => <Block key={z} position={[0, .36, z]} size={[LAND_PATH_LIMIT * 2 + .6, .045, 2.8]} color="#eeddac" />)}
     <mesh position={[0, .39, 1.6]} rotation={[-Math.PI / 2, 0, 0]}><circleGeometry args={[2.5, 32]} /><meshStandardMaterial color="#f4e5be" /></mesh>
-    {[[-7, -3.6, 1.1], [6.8, -4, 1.2], [-7.5, .4, .85], [7.2, 1.4, 1], [-6.5, 5.1, .7], [2, -6.4, .9], [-2.4, -6.2, .75]].map(([x, z, size], index) => <Tree key={index} x={x * 1.65} z={z * 1.65} size={size} />)}
-    {[[-2, 3.2], [2.2, .3]].map(([x, z], index) => <group key={index} position={[x * 1.65, .45, z * 1.65]}>
+    {LAND_TREES.map(({ position: [x, z], size }, index) => <Tree key={index} x={x} z={z} size={size} />)}
+    {LAND_BENCHES.map(([x, z], index) => <group key={index} position={[x, .45, z]}>
       <Block position={[0, .38, 0]} size={[1.25, .12, .5]} color="#ba8058" />
       <Block position={[0, .7, -.25]} size={[1.25, .45, .1]} color="#ca9568" />
       {[-.45, .45].map((leg) => <Block key={leg} position={[leg, .15, 0]} size={[.1, .5, .4]} color="#657760" />)}
