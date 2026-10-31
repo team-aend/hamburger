@@ -472,11 +472,6 @@ body:has(.recommend-shell) {
   border-top: 1px dashed var(--line);
 }
 
-.rc-section-tools {
-  display: flex;
-  justify-content: flex-end;
-}
-
 .rc-field-row {
   display: flex;
   align-items: center;
