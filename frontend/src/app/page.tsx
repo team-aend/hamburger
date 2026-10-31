@@ -2,9 +2,10 @@
 
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
-import { useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState } from 'react';
 import SiteHeader, { menuRoutes, type MenuKey } from '@/components/SiteHeader';
 import ShareResultButton from '@/components/worldcup/ShareResultButton';
+import BurgerSpecDialog from '@/components/worldcup/BurgerSpecDialog';
 import WorldcupFinalRankings from '@/components/WorldcupFinalRankings';
 import { getWorldcupSession, startWorldcupSession, voteWorldcup, type WorldcupProduct, type WorldcupRoundSize, type WorldcupSession } from '@/lib/worldcupSession';
 import './worldcup.css';
@@ -226,7 +227,13 @@ function ProductImage({ product }: { product: WorldcupProduct }) {
 }
 
 function BurgerCard({ burger, side, disabled, onSelect }: { burger: WorldcupProduct; side: 'A' | 'B'; disabled: boolean; onSelect: (burger: WorldcupProduct) => void }) {
-  return <button className="burger-card" type="button" disabled={disabled} onClick={() => onSelect(burger)} style={{ '--accent': side === 'A' ? '#f0b735' : '#d84a30' } as React.CSSProperties}><span className="card-number">OPTION {side}</span><span className="burger-photo"><b><ProductImage product={burger} /></b></span><span className="card-copy"><small>{burger.brandName}</small><strong>{burger.name}</strong><em>{burger.description}</em><span>이 버거 선택하기 <b>→</b></span></span></button>;
+  const [detailsOpen, setDetailsOpen] = useState(false);
+  const closeDetails = useCallback(() => setDetailsOpen(false), []);
+  return <div className="burger-card-container">
+    <button className="burger-card" type="button" disabled={disabled} onClick={() => onSelect(burger)} style={{ '--accent': side === 'A' ? '#f0b735' : '#d84a30' } as React.CSSProperties}><span className="card-number">OPTION {side}</span><span className="burger-photo"><b><ProductImage product={burger} /></b></span><span className="card-copy"><small>{burger.brandName}</small><strong>{burger.name}</strong><em>{burger.description}</em><span>이 버거 선택하기 <b>→</b></span></span></button>
+    <button className="burger-detail-button" type="button" disabled={disabled} aria-haspopup="dialog" aria-label={`${burger.name} 상세보기`} onClick={() => setDetailsOpen(true)}>상세보기 <span aria-hidden="true">↗</span></button>
+    {detailsOpen && <BurgerSpecDialog key={burger.productId} productId={burger.productId} name={burger.name} onClose={closeDetails} />}
+  </div>;
 }
 
 function BurgerArtwork() {

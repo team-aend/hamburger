@@ -4,6 +4,12 @@ html:has(.worldcup-home), body:has(.worldcup-home) { min-width: 320px; }
 .worldcup-home :is(.card-copy > strong, .winner-name, .worldcup-request-status, .final-rankings-heading) { overflow-wrap: anywhere; }
 .final-rankings-scroll-hint { display: none; }
 .worldcup-home .final-rankings-table:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.worldcup-home .burger-card-container { display: flex; flex-direction: column; gap: 8px; min-width: 0; }
+.worldcup-home .burger-card { width: 100%; }
+.worldcup-home .burger-detail-button { align-self: flex-end; display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 16px; border: 1px solid var(--ink); border-radius: 999px; background: var(--paper); font-size: 13px; font-weight: 700; cursor: pointer; }
+.worldcup-home .burger-detail-button:hover:not(:disabled) { background: var(--mustard); }
+.worldcup-home .burger-detail-button:disabled { opacity: .7; cursor: wait; }
+.worldcup-home .burger-detail-button:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
 
 @media (max-width: 1099px) {
   .worldcup-home { padding: 0 32px; min-height: 100svh; }

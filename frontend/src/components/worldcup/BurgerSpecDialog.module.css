@@ -1,0 +1,48 @@
+.dialog {
+  width: min(640px, calc(100% - 32px));
+  max-height: calc(100vh - 32px);
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  overscroll-behavior: contain;
+  border: 2px solid var(--ink);
+  border-radius: 16px;
+  background: var(--paper);
+  color: var(--ink);
+  box-shadow: 8px 8px 0 rgba(27, 25, 22, .25);
+  overflow-wrap: anywhere;
+}
+.dialog::backdrop { background: rgba(27, 25, 22, .6); }
+.header { position: sticky; top: 0; z-index: 1; display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; padding: 20px; border-bottom: 2px solid var(--ink); background: var(--paper); }
+.header > div { min-width: 0; }
+.header p { color: var(--red-dark); font-size: 12px; font-weight: 800; }
+.header h2 { margin-top: 6px; font-size: 24px; line-height: 1.35; }
+.dialog button { min-width: 44px; min-height: 44px; padding: 8px 12px; border: 1px solid var(--ink); border-radius: 8px; background: var(--paper); cursor: pointer; font-weight: 700; }
+.header button { flex-shrink: 0; }
+.dialog button:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+.content { padding: 20px; }
+.brand { color: var(--red-dark); font-size: 13px; font-weight: 800; }
+.description { margin-top: 8px; color: #655e55; line-height: 1.7; }
+.variants { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 20px; }
+.variants button[aria-pressed='true'] { background: var(--ink); color: var(--paper); }
+.section { margin-top: 24px; }
+.section h3 { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; margin-bottom: 12px; font-size: 18px; }
+.section h3 small { color: #655e55; font-size: 12px; font-weight: 500; }
+.section > p { color: #655e55; font-size: 14px; line-height: 1.7; }
+.stats { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+.stats > div { padding: 14px; border: 1px solid var(--line); border-radius: 10px; background: var(--cream); }
+.stats dt { color: #655e55; font-size: 12px; }
+.stats dd { margin-top: 6px; font-size: 22px; font-weight: 800; }
+.stats dd small { margin-left: 4px; font-size: 12px; font-weight: 500; }
+.ingredients > div { display: grid; grid-template-columns: 72px minmax(0, 1fr); gap: 12px; padding: 10px 0; border-bottom: 1px solid var(--line); font-size: 14px; line-height: 1.7; }
+.ingredients dt { font-weight: 700; }
+.ingredients dd { color: #655e55; }
+.error { line-height: 1.7; }
+.error button { margin-top: 12px; }
+@media (max-width: 700px) {
+  .header, .content { padding: 16px; }
+  .header h2 { font-size: 21px; }
+  .stats > div { padding: 12px; }
+  .stats dd { font-size: 20px; }
+}
