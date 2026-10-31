@@ -14,7 +14,7 @@ type SiteHeaderProps = {
 
 const menuItems: { key: MenuKey; label: string; badge?: string }[] = [
   { key: 'worldcup', label: '햄버거 월드컵', badge: 'PLAY' },
-  { key: 'recommend', label: '버거 검색 · 추천' },
+  { key: 'recommend', label: '햄버거 검색 · 추천' },
   { key: 'compare', label: '햄버거 비교' },
   { key: 'game', label: '햄버거 쌓기', badge: 'GAME' },
   { key: 'test', label: '버거 심리테스트', badge: 'TEST' },
